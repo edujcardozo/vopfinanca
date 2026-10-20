@@ -12,7 +12,7 @@ test('email flow creates/verifies a managed session without revealing account ex
   const auth={signInWithOtp:async request=>{requests.push(request);return {error:null};},verifyOtp:async request=>{requests.push(request);return {data:{session},error:null};}};
   const flow=createEmailAuth({auth,now:()=>clock,onSession:s=>authorized=s});
   assert.equal(await flow.send('bad'),false);assert.equal(requests.length,0);
-  assert.equal(await flow.send(' Edu@Example.test '),true);assert.deepEqual(requests[0],{email:'edu@example.test',options:{shouldCreateUser:true}});assert.equal(flow.state.stage,'code');
+  assert.equal(await flow.send(' Edu@Example.test '),true);assert.deepEqual(requests[0],{email:'edu@example.test',options:{shouldCreateUser:false}});assert.equal(flow.state.stage,'code');
   assert.equal(await flow.send(flow.state.email),false);assert.equal(requests.length,1);
   assert.equal(await flow.verify('123'),false);assert.equal(authorized,null);
   clock+=60001;assert.equal(await flow.send(flow.state.email),true);

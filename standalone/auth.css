@@ -29,3 +29,20 @@ html[data-auth-required] #landing,html[data-auth-required] #budget-app{display:n
 @media(max-width:760px){.vpo-access-shell{display:block;background:#f7f6f2}.vpo-access-story{display:none}.vpo-access-main{min-height:100dvh;padding:calc(28px + env(safe-area-inset-top)) 24px calc(28px + env(safe-area-inset-bottom));box-sizing:border-box}.vpo-access-card{max-width:400px;padding:0;background:transparent;border:0;box-shadow:none;border-radius:0}.vpo-access-mobile-logo{display:block;margin-bottom:35px;border-radius:14px}.vpo-access-card h2{font-size:34px;max-width:290px}.vpo-access-card #access-intro{margin-bottom:30px}.vpo-access-footer{margin-top:30px;padding-top:22px}.vpo-access-card input{height:56px}.vpo-access-submit{min-height:54px}.vpo-access-card button:not(.vpo-access-submit){min-height:44px}.vpo-access-resend{margin-top:12px}}
 @media(max-height:620px) and (max-width:760px){.vpo-access-main{place-items:start center;padding-top:24px}.vpo-access-mobile-logo{margin-bottom:20px}.vpo-access-footer{margin-top:20px;padding-top:16px}}
 @media(prefers-reduced-motion:reduce){#vpo-access *{scroll-behavior:auto;transition:none}}
+.vpo-access-card [hidden]{display:none!important}
+.vpo-access-modes{display:grid;grid-template-columns:.8fr 1fr 1.3fr;gap:3px;background:#f2f1f9;border-radius:11px;padding:4px;margin:0 0 25px}
+.vpo-access-card .vpo-access-modes button{font-size:12px;line-height:1.3;padding:9px 5px;min-height:42px;border-radius:8px;color:#707088}
+.vpo-access-card .vpo-access-modes button[aria-pressed=true]{background:white;color:#202052;box-shadow:0 2px 6px #2020520a}
+#vpo-signup-fields input{margin-bottom:18px}.vpo-field-optional{font-weight:400;color:#85859c;font-size:11px;margin-left:4px}
+.vpo-field-help{font-size:12px;line-height:1.5;margin:8px 0 18px;color:#77778c}
+.vpo-access-card:has(#vpo-signup-fields:not([hidden])){max-width:450px}
+.vpo-gate-symbol{display:grid;place-items:center;width:52px;height:52px;border-radius:17px;background:#eef4e6;color:#48702f;font-size:25px;margin-bottom:22px}
+.vpo-gate-summary{padding:15px;background:#f3f2f9;border-radius:12px;font-size:13px;line-height:1.6;margin:18px 0;overflow-wrap:anywhere}.vpo-gate-summary strong,.vpo-gate-summary span{display:block}
+.vpo-gate-actions{display:flex;flex-wrap:wrap;gap:4px 12px;justify-content:center;margin-top:14px}
+.vpo-gate-message{font-size:13px;line-height:1.6;color:#6b6b83;margin:16px 0 0}.vpo-gate-status{min-height:20px;font-size:12px;color:#5c6280;line-height:1.5;margin-top:12px}
+.vpo-admin-card{min-width:0;grid-column:1/-1}.vpo-admin-heading{display:flex;gap:12px;align-items:start;justify-content:space-between}.vpo-admin-heading h2{margin-bottom:5px}
+.vpo-admin-card [hidden]{display:none!important}
+.vpo-admin-note{font-size:12px!important;line-height:1.6!important;color:#77778c!important}.vpo-admin-filters{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0 16px}.vpo-admin-filters button[aria-pressed=true]{background:#eeedff;color:#4c50c8}
+.vpo-admin-list{display:grid;gap:12px;margin:16px 0}.vpo-admin-request{padding:16px;border:1px solid #e6e6ef;border-radius:14px;min-width:0}.vpo-admin-request strong{font-size:15px;display:block;color:#202052;overflow-wrap:anywhere}.vpo-admin-request p{margin:4px 0!important;font-size:13px!important;line-height:1.5!important;overflow-wrap:anywhere}.vpo-admin-request small{font-size:11px;color:#818197;display:block;margin-top:6px}
+.vpo-admin-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:13px}.vpo-admin-actions button{min-height:40px;padding:8px 14px}.vpo-admin-pages{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12px}.vpo-admin-status{font-size:13px;line-height:1.5;min-height:20px;overflow-wrap:anywhere}
+@media(max-width:760px){.vpo-access-modes{margin-bottom:26px}.vpo-access-card .vpo-access-modes button{min-height:44px;font-size:12px}.vpo-access-card:has(#vpo-signup-fields:not([hidden])){max-width:400px}.vpo-access-card:has(#vpo-signup-fields:not([hidden])) .vpo-access-mobile-logo{margin-bottom:22px}.vpo-admin-heading{flex-wrap:wrap}}

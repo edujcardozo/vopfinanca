@@ -4,7 +4,10 @@ Versão com conta própria por e-mail e código de seis números, preparada para
 
 ## O que está implementado
 
-- Login e cadastro no mesmo fluxo, com Supabase Auth, confirmação de e-mail, renovação de sessão e saída deste aparelho.
+- Acessos separados para **Entrar**, **Criar conta** e **Tenho um convite**, com Supabase Auth, confirmação de e-mail, renovação de sessão e saída deste aparelho.
+- Cadastro com nome completo, e-mail confirmado e celular opcional. Novas contas pessoais aguardam aprovação; a tela verifica a liberação automaticamente.
+- Administração de cadastros em Ajustes, restrita ao usuário verificado de `edujcardozo@gmail.com`, vinculado ao UUID uma única vez. Aprovar e recusar são decisões registradas no servidor.
+- Fila persistente e funções Netlify para avisos de novos cadastros a `edujcardozo@gmail.com`, via Resend. O envio depende da configuração privada do provedor; não é simulado como concluído.
 - Cada nova conta começa com categorias iniciais e sem gastos, entradas ou valores planejados de exemplo.
 - Convites por link em Ajustes: validade de 24 horas, uso único e aceite explícito. O proprietário pode cancelar convites e remover o acesso da pessoa convidada.
 - Plano pessoal e plano compartilhado separados. Proprietário e pessoa convidada podem editar os mesmos lançamentos e categorias.
@@ -18,7 +21,9 @@ O projeto dedicado **VPO**, região São Paulo (`sa-east-1`), foi criado no Supa
 
 `project.json` contém somente a URL e a chave **publishable**, destinadas ao navegador. As tabelas não podem ser acessadas diretamente; as funções do banco verificam o e-mail confirmado, a identidade e o acesso ao orçamento. Nunca use uma chave `secret` ou `service_role` no frontend.
 
-`database.sql` é o esquema inicial, seguido por `billing.sql` e `asaas.sql`, que preparam o acesso comercial e o Asaas sem ativar cobranças. Para instalar em outro projeto dedicado, execute os três arquivos uma vez, nessa ordem, no SQL Editor e substitua a configuração pública em `project.json`.
+`database.sql` é o esquema inicial, seguido por `billing.sql`, `asaas.sql` e `registration.sql`. Os três últimos preparam as assinaturas e a aprovação manual sem ativar cobranças. Para instalar em outro projeto dedicado, execute os quatro arquivos uma vez, nessa ordem, no SQL Editor e substitua a configuração pública em `project.json`. Antes de instalar a aprovação em outro produto, substitua o e-mail administrador pelo seu endereço verificado.
+
+O fluxo de cadastro, convite, aprovação e ativação dos avisos está documentado em [CADASTROS.md](CADASTROS.md). O recebimento real dos avisos ainda depende da configuração do serviço de envio e da publicação das funções no Netlify.
 
 ## Ativar os códigos por e-mail
 
@@ -42,13 +47,13 @@ O fluxo escolhido é desenvolver aqui, enviar o código ao repositório [edujcar
 
 No Netlify, importe o repositório do VPO e selecione a branch `main`. Mantenha o diretório base na raiz, a pasta de publicação `dist-independent` e as funções em `netlify/functions`. O `netlify.toml` executa os testes antes de gerar e publicar a versão independente; uma falha de teste interrompe essa publicação. Não é necessário enviar ZIPs a cada alteração.
 
-As credenciais do Asaas e a chave administrativa do Supabase ficam nas variáveis privadas das funções do Netlify, conforme `ASSINATURAS.md`. A conexão com o GitHub não ativa cobranças nem configura o SMTP. Os dados dos clientes permanecem no Supabase e não fazem parte do repositório.
+As credenciais do Asaas, Resend e a chave administrativa do Supabase ficam nas variáveis privadas das funções do Netlify, conforme `ASSINATURAS.md` e `CADASTROS.md`. A conexão com o GitHub não ativa cobranças nem configura o SMTP. Os dados dos clientes permanecem no Supabase e não fazem parte do repositório.
 
 A conexão só deve ser considerada concluída depois que um commit enviado daqui provocar um deploy bem-sucedido no projeto Netlify correto. Registre então o repositório, a branch de produção e o ID/endereço do projeto para as próximas atualizações.
 
 Opção A: importe o código para um repositório seu e conecte-o ao Netlify. A configuração de build será lida do `netlify.toml`.
 
-Opção B: depois de gerar `dist-independent`, envie o conteúdo dessa pasta para uma implantação manual do Netlify. O pacote estático inclui HTML, CSS, JavaScript, fontes, ícones e os arquivos `_headers` e `_redirects`. Essa opção publica somente a interface. Para cobrança, publique também `netlify/functions` via repositório ou CLI e configure as variáveis privadas, como descrito em `ASSINATURAS.md`.
+Opção B: depois de gerar `dist-independent`, envie o conteúdo dessa pasta para uma implantação manual do Netlify. O pacote estático inclui HTML, CSS, JavaScript, fontes, ícones e os arquivos `_headers` e `_redirects`. Essa opção publica somente a interface. Para cobrança e avisos de cadastro, publique também `netlify/functions` via repositório ou CLI e configure as variáveis privadas, como descrito em `ASSINATURAS.md` e `CADASTROS.md`.
 
 Para gerar localmente:
 

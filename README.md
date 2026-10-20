@@ -8,6 +8,8 @@ O repositório de publicação é [edujcardozo/vopfinanca](https://github.com/ed
 
 O vínculo ao Netlify ainda está pendente. O SMTP e a homologação do Asaas continuam necessários antes de liberar o uso comercial. A configuração atual é R$ 12,90/mês após 15 dias grátis, com cobranças desativadas.
 
+A tela independente agora separa entrar, criar conta e aceitar convite. Novos planos pessoais aguardam liberação manual em Ajustes; a fila de avisos para `edujcardozo@gmail.com` usa funções Netlify e Resend, ainda dependentes da configuração privada do envio. Consulte [cadastros e aprovação](standalone/CADASTROS.md).
+
 An independent Portuguese-language design study based on the current YNAB marketing website, with a usable account-synced budget planner. Created for Edu on 2026-10-18. It is not affiliated with YNAB and does not collect credentials or connect to the official service.
 
 ## Experience

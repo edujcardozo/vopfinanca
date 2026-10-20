@@ -2,7 +2,7 @@ const reply=(value,status=200)=>new Response(JSON.stringify(value),{status,heade
 export function createSupabaseTransport(client){
   return async function fetcher(path,options={}){
     const url=new URL(path,'https://vpo.invalid');
-    if(!['/api/plan','/api/plan/head','/api/billing','/api/billing/quote'].includes(url.pathname)&&!url.pathname.startsWith('/api/sharing'))return reply({error:'Não encontrado.'},404);
+    if(!['/api/plan','/api/plan/head','/api/billing','/api/billing/quote','/api/access'].includes(url.pathname)&&!url.pathname.startsWith('/api/sharing')&&!url.pathname.startsWith('/api/access/'))return reply({error:'Não encontrado.'},404);
     let body={};
     try{if(options.body)body=JSON.parse(options.body);}catch{return reply({error:'Pedido inválido.'},400);}
     if(url.searchParams.has('ack'))body.ack=url.searchParams.get('ack');
