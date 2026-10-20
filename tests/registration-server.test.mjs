@@ -35,5 +35,26 @@ test('mail endpoint verifies live identity, origin and empty input; an account c
 });
 test('missing mail configuration reports an honest pending state without sending anything or logging secrets',async()=>{
   let called=0;const logs=[];const handler=createRegistrationHandler({env:{...env,RESEND_API_KEY:''},fetcher:async()=>called++,logger:entry=>logs.push(entry)});
-  const response=await handler(request());assert.equal(response.status,503);assert.equal((await response.json()).code,'EMAIL_NOT_CONFIGURED');assert.equal(called,0);assert.deepEqual(logs,[{code:'EMAIL_NOT_CONFIGURED'}]);
+  const response=await handler(request());assert.equal(response.status,503);const result=await response.json();assert.equal(result.code,'EMAIL_NOT_CONFIGURED');assert.deepEqual(result.fields,['RESEND_API_KEY']);assert.equal(called,0);assert.deepEqual(logs,[{code:'EMAIL_NOT_CONFIGURED'}]);
+});
+test('configuration diagnostics identify all invalid fields without reflecting their values to an unauthenticated caller',async()=>{
+  const invalid={SUPABASE_URL:'https://private-user:private-password@vpo.supabase.co',VPO_SITE_URL:'not-an-origin-private',SUPABASE_SECRET_KEY:'private-invalid-key',VPO_EMAIL_PROVIDER:'gmail',GMAIL_USER:'private-invalid-user',GMAIL_APP_PASSWORD:'private-invalid-password'};
+  let called=0;const logs=[],handler=createRegistrationHandler({env:invalid,fetcher:async()=>called++,logger:entry=>logs.push(entry)});
+  const response=await handler(request({}, {Authorization:''})),result=await response.json();
+  assert.equal(response.status,503);assert.equal(response.headers.get('Cache-Control'),'no-store');
+  assert.deepEqual(result.fields,['SUPABASE_URL','VPO_SITE_URL','SUPABASE_SECRET_KEY','GMAIL_USER','GMAIL_APP_PASSWORD']);
+  const visible=JSON.stringify({result,logs});for(const value of Object.values(invalid))if(value!=='gmail')assert.equal(visible.includes(value),false);
+  assert.deepEqual(logs,[{code:'EMAIL_NOT_CONFIGURED'}]);assert.equal(called,0);
+});
+test('configuration rejects an unknown provider without asking for unrelated provider credentials',()=>{
+  assert.throws(()=>registrationConfig({...env,VPO_EMAIL_PROVIDER:'unsupported-private-value'}),error=>{
+    assert.deepEqual(error.fields,['VPO_EMAIL_PROVIDER']);assert.doesNotMatch(error.message,/unsupported-private-value/);return true;
+  });
+});
+test('configuration tolerates surrounding whitespace in provider and private key without weakening origin checks',async()=>{
+  const config=registrationConfig({...env,SUPABASE_SECRET_KEY:'  '+env.SUPABASE_SECRET_KEY+'\n',VPO_EMAIL_PROVIDER:' RESEND '});
+  assert.equal(config.secret,env.SUPABASE_SECRET_KEY);assert.equal(config.provider,'resend');
+  assert.throws(()=>registrationConfig({...env,VPO_SITE_URL:env.VPO_SITE_URL+'/private-path'}),error=>{assert.deepEqual(error.fields,['VPO_SITE_URL']);return true;});
+  const handler=createRegistrationHandler({env,fetcher:async()=>assert.fail('No authentication or email request expected')});
+  const response=await handler(request({}, {Authorization:''}));assert.equal(response.status,401);assert.equal((await response.json()).fields,undefined);
 });

@@ -6,9 +6,9 @@ O repositório de publicação é [edujcardozo/vopfinanca](https://github.com/ed
 
 `standalone/deployment.json` registra o destino e o estado verificado da publicação automática. `scripts/export-github.mjs` prepara somente os arquivos rastreados para o conector autenticado, com hashes de conteúdo e sem a identidade interna da hospedagem anterior. Nenhuma credencial de GitHub, Netlify ou Asaas faz parte desse export. Atualizações neste projeto devem ser enviadas à branch `main` desse repositório após as verificações, para o Netlify publicar quando o vínculo estiver ativo.
 
-O vínculo ao Netlify ainda está pendente. O SMTP e a homologação do Asaas continuam necessários antes de liberar o uso comercial. A configuração atual é R$ 12,90/mês após 15 dias grátis, com cobranças desativadas.
+O site independente está publicado em [vpofinancas.netlify.app](https://vpofinancas.netlify.app). A publicação automática a partir de novos commits ainda precisa ser confirmada. A função de avisos está publicada, mas a configuração privada de e-mail ainda retorna `EMAIL_NOT_CONFIGURED`; o recebimento real não foi validado. A configuração atual é R$ 12,90/mês após 15 dias grátis, com cobranças desativadas até a homologação do Asaas.
 
-A tela independente agora separa entrar, criar conta e aceitar convite. Novos planos pessoais aguardam liberação manual em Ajustes; a fila de avisos para `edujcardozo@gmail.com` usa funções Netlify e Resend, ainda dependentes da configuração privada do envio. Consulte [cadastros e aprovação](standalone/CADASTROS.md).
+A tela independente agora separa entrar, criar conta e aceitar convite. Novos planos pessoais aguardam liberação manual em Ajustes; a fila de avisos para `edujcardozo@gmail.com` usa funções Netlify com Gmail SMTP ou Resend, ainda dependentes da configuração privada do envio. Consulte [cadastros e aprovação](standalone/CADASTROS.md).
 
 Para começar sem domínio próprio, os avisos também aceitam Gmail SMTP com senha de app. A configuração continua privada nas funções, preserva a fila de aprovação e está descrita em [envio pelo Gmail](standalone/GMAIL.md). Não há envio real ativado sem configurar as credenciais nos painéis seguros.
 

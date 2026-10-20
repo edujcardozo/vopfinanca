@@ -3,22 +3,30 @@ import {sendGmailRegistration} from './gmail.mjs';
 const json=(body,status=200)=>new Response(JSON.stringify(body),{status,headers:{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
 export class RegistrationError extends Error{constructor(code,message,status=503){super(message);Object.assign(this,{code,status});}}
 export function registrationConfig(env){
-  const fail=()=>{throw new RegistrationError('EMAIL_NOT_CONFIGURED','O envio automático de e-mails ainda precisa ser configurado. O cadastro está salvo para aprovação em Ajustes.');};
-  let url,site;try{url=new URL(env.SUPABASE_URL);site=new URL(env.VPO_SITE_URL);}catch{return fail();}
-  const secret=env.SUPABASE_SECRET_KEY||env.SUPABASE_SERVICE_ROLE_KEY;
+  // Report constant variable names only. Never echo environment values or
+  // parser/provider errors: this check also runs before authentication.
+  const fields=[],check=(valid,name)=>{if(!valid)fields.push(name);};
+  const fail=()=>{const error=new RegistrationError('EMAIL_NOT_CONFIGURED','O envio automático de e-mails ainda precisa ser configurado. O cadastro está salvo para aprovação em Ajustes.');error.fields=fields;throw error;};
+  let url,site;try{url=new URL(env.SUPABASE_URL);}catch{/* Report below. */}try{site=new URL(env.VPO_SITE_URL);}catch{/* Report below. */}
+  check(url?.protocol==='https:'&&url.hostname.endsWith('.supabase.co')&&url.pathname==='/'&&!url.username&&!url.password&&!url.search&&!url.hash,'SUPABASE_URL');
+  check(site?.protocol==='https:'&&site.pathname==='/'&&!site.username&&!site.password&&!site.search&&!site.hash,'VPO_SITE_URL');
+  const secret=String(env.SUPABASE_SECRET_KEY||env.SUPABASE_SERVICE_ROLE_KEY||'').trim();
   let role;try{role=JSON.parse(Buffer.from(secret.split('.')[1],'base64url')).role;}catch{/* Modern secret key. */}
-  if(url.protocol!=='https:'||!url.hostname.endsWith('.supabase.co')||url.pathname!=='/'||url.username||url.password||url.search||url.hash
-    ||site.protocol!=='https:'||site.pathname!=='/'||site.username||site.password||site.search||site.hash
-    ||!secret||!secret.startsWith('sb_secret_')&&role!=='service_role')return fail();
-  const provider=env.VPO_EMAIL_PROVIDER||'resend',base={url:url.origin,siteUrl:site.origin,secret,provider};
+  check(secret&&(secret.startsWith('sb_secret_')||role==='service_role'),env.SUPABASE_SERVICE_ROLE_KEY&&!env.SUPABASE_SECRET_KEY?'SUPABASE_SERVICE_ROLE_KEY':'SUPABASE_SECRET_KEY');
+  const provider=String(env.VPO_EMAIL_PROVIDER||'resend').trim().toLowerCase();
+  check(provider==='gmail'||provider==='resend','VPO_EMAIL_PROVIDER');
   if(provider==='gmail'){
     const gmailUser=String(env.GMAIL_USER||'').trim().toLowerCase(),gmailPassword=String(env.GMAIL_APP_PASSWORD||'').replace(/\s/g,'');
-    if(!/^[a-z0-9._%+-]+@gmail\.com$/.test(gmailUser)||!/^\w{16}$/.test(gmailPassword))return fail();
-    return {...base,gmailUser,gmailPassword,from:`VPO <${gmailUser}>`};
+    check(/^[a-z0-9._%+-]+@gmail\.com$/.test(gmailUser),'GMAIL_USER');check(/^\w{16}$/.test(gmailPassword),'GMAIL_APP_PASSWORD');
+    if(fields.length)return fail();
+    return {url:url.origin,siteUrl:site.origin,secret,provider,gmailUser,gmailPassword,from:`VPO <${gmailUser}>`};
   }
-  if(provider!=='resend'||!/^re_[A-Za-z0-9_-]{12,}$/.test(env.RESEND_API_KEY||'')||!env.VPO_EMAIL_FROM||env.VPO_EMAIL_FROM.length>200
-    ||/[\r\n]/.test(env.VPO_EMAIL_FROM)||!/(?:^|<)[^\s<>@]+@[^\s<>@]+\.[^\s<>@]+>?$/.test(env.VPO_EMAIL_FROM))return fail();
-  return {...base,resendKey:env.RESEND_API_KEY,from:env.VPO_EMAIL_FROM};
+  if(provider==='resend'){
+    check(/^re_[A-Za-z0-9_-]{12,}$/.test(env.RESEND_API_KEY||''),'RESEND_API_KEY');
+    check(env.VPO_EMAIL_FROM&&env.VPO_EMAIL_FROM.length<=200&&!/[\r\n]/.test(env.VPO_EMAIL_FROM)&&/(?:^|<)[^\s<>@]+@[^\s<>@]+\.[^\s<>@]+>?$/.test(env.VPO_EMAIL_FROM),'VPO_EMAIL_FROM');
+  }
+  if(fields.length)return fail();
+  return {url:url.origin,siteUrl:site.origin,secret,provider,resendKey:env.RESEND_API_KEY,from:env.VPO_EMAIL_FROM};
 }
 export function registrationDatabase(config,fetcher=fetch){return async(action,actor=null,data={})=>{
   const response=await fetcher(config.url+'/rest/v1/rpc/vpo_registration_delivery',{method:'POST',headers:{apikey:config.secret,...(config.secret.startsWith('eyJ')?{Authorization:'Bearer '+config.secret}:{}),'Content-Type':'application/json'},body:JSON.stringify({p_action:action,p_actor:actor,p_data:data}),signal:AbortSignal.timeout(5000),redirect:'error'});
@@ -63,5 +71,5 @@ export function createRegistrationHandler({env,fetcher=fetch,logger=()=>{},smtpS
     if(action==='status')return json({configured:true});
     if(action!=='notify')return json({error:'Pedido inválido.'},400);
     return json(await deliverRegistration({config,db:registrationDatabase(config,fetcher),fetcher,actor:user.id,smtpSend}));
-  }catch(error){const known=error instanceof RegistrationError;logger({code:known?error.code:'EMAIL_UNAVAILABLE'});return json({error:known?error.message:'O aviso será tentado novamente. Seu cadastro continua salvo.',code:known?error.code:'EMAIL_UNAVAILABLE'},known?error.status:503);}
+  }catch(error){const known=error instanceof RegistrationError;logger({code:known?error.code:'EMAIL_UNAVAILABLE'});return json({error:known?error.message:'O aviso será tentado novamente. Seu cadastro continua salvo.',code:known?error.code:'EMAIL_UNAVAILABLE',...(known&&error.code==='EMAIL_NOT_CONFIGURED'?{fields:error.fields}:{})},known?error.status:503);}
 };}

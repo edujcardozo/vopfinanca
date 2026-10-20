@@ -40,6 +40,8 @@ Para obter a chave secreta, use Supabase → Settings → API Keys. Ela começa 
 
 Com `VPO_EMAIL_PROVIDER=gmail`, não são necessárias `RESEND_API_KEY` nem `VPO_EMAIL_FROM`: o remetente é fixado em `VPO <edujcardozo@gmail.com>` usando o valor de `GMAIL_USER`. O destino dos avisos continua vindo da configuração privada do banco, e não do formulário do navegador. Após salvar as variáveis, faça um novo deploy. O projeto precisa publicar as funções `vpo-registration` e `vpo-registration-queue`; um upload somente da pasta estática não as publica.
 
+Se a função retornar `EMAIL_NOT_CONFIGURED`, o campo `fields` da resposta indica apenas os nomes das variáveis ausentes ou inválidas. Corrija esses campos no painel privado do Netlify e publique novamente. Valores e senhas não aparecem nessa resposta nem nos logs do aplicativo. Essa checagem valida o preenchimento; a entrega só é confirmada quando o provedor aceita um aviso de um cadastro real.
+
 ## 4. Conferir o fluxo real
 
 Entre primeiro com **edujcardozo@gmail.com**, confirme o código e complete seu cadastro de administrador. Crie um cadastro com outro e-mail controlado por você, confirme o código e aguarde a tela de aprovação. O aviso deverá chegar ao Gmail; confira o resultado em Ajustes → Novos cadastros e aprove o pedido. O recebimento real precisa ser testado depois que as credenciais estiverem configuradas.

@@ -43,7 +43,7 @@ O `netlify.toml` na raiz já define Node 24, o comando `npm test && npm run buil
 
 ### Atualizações automáticas pelo GitHub
 
-O fluxo escolhido é desenvolver aqui, enviar o código ao repositório [edujcardozo/vopfinanca](https://github.com/edujcardozo/vopfinanca) e deixar o Netlify publicar cada atualização da branch de produção. O acesso autenticado ao GitHub foi confirmado em 20/10/2026. A autorização e o vínculo do Netlify para esse repositório ainda estão pendentes.
+O fluxo escolhido é desenvolver aqui, enviar o código ao repositório [edujcardozo/vopfinanca](https://github.com/edujcardozo/vopfinanca) e deixar o Netlify publicar cada atualização da branch de produção. O site está disponível em [vpofinancas.netlify.app](https://vpofinancas.netlify.app), com a versão independente atual e a função de avisos publicadas. Ainda falta confirmar que um novo commit dispara uma publicação automática. A função de avisos retorna `EMAIL_NOT_CONFIGURED`; a entrega real de e-mails ainda não foi validada.
 
 No Netlify, importe o repositório do VPO e selecione a branch `main`. Mantenha o diretório base na raiz, a pasta de publicação `dist-independent` e as funções em `netlify/functions`. O `netlify.toml` executa os testes antes de gerar e publicar a versão independente; uma falha de teste interrompe essa publicação. Não é necessário enviar ZIPs a cada alteração.
 
