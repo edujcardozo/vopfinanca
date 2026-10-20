@@ -2,7 +2,8 @@ import {createClient} from '@supabase/supabase-js';
 import {mountLogin} from './auth.js';
 import {accountStorage} from './storage.js';
 import {createSupabaseTransport} from './api.js';
-import {restoreSession,signOutDevice} from './session.js';
+import {restoreSession} from './session.js';
+import {mountAccountUI} from './account-ui.js';
 import {createBillingUI} from './billing-ui.js';
 import {mountBillingAccess} from './billing-access.js';
 import {createBillingClient} from './billing-client.js';
@@ -68,17 +69,11 @@ export const platform={
     window.addEventListener('online',checkApproval);
     if(accountAccess.isAdmin){const admin=document.createElement('article');admin.className='settings-card';document.querySelector('.settings-grid').append(admin);mountRegistrationAdmin({root:admin,api:registrationAPI,notifier:registrationNotifier,notify});}
     const card=document.createElement('article');card.className='settings-card';
-    card.innerHTML='<h2>Sua conta VPO.</h2><p class="vpo-account-email"></p><p>Entre com este e-mail para abrir seu plano em outro aparelho.</p><button type="button" class="subtle-button" id="vpo-signout">Sair deste aparelho →</button>';
+    card.innerHTML='<h2>Sua conta VPO.</h2><p class="vpo-account-name"></p><p class="vpo-account-email"></p><p>Entre com este e-mail para abrir seu plano em outro aparelho.</p><button type="button" class="subtle-button" id="vpo-signout">Sair deste aparelho →</button>';
+    card.querySelector('.vpo-account-name').textContent=accountAccess.fullName||'';
     card.querySelector('.vpo-account-email').textContent=session.user.email||'';
     document.querySelector('.settings-grid').append(card);
-    card.querySelector('#vpo-signout').onclick=async e=>{
-      const button=e.currentTarget;button.disabled=true;
-      try{
-        const result=await signOutDevice({auth:client.auth,sync,storage,beforeSignOut:()=>leaving=true});
-        if(!result.ok){leaving=false;notify(result.message);return;}
-        conceal();location.reload();
-      }catch{leaving=false;notify('Não foi possível sair agora. Tente novamente.');}finally{button.disabled=false;}
-    };
+    mountAccountUI({root:document.querySelector('.app-sidebar .sidebar-bottom'),name:accountAccess.fullName,email:session.user.email,auth:client.auth,sync,storage,otherButtons:[card.querySelector('#vpo-signout')],notify,onLeaving:value=>leaving=value,onSignedOut:()=>{conceal();location.reload();}});
     if(!location.hash.startsWith('#plano'))history.replaceState(null,'',location.pathname+'#plano');
     access.hidden=true;access.innerHTML='';document.documentElement.removeAttribute('data-auth-required');
   }

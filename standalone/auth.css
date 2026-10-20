@@ -46,3 +46,23 @@ html[data-auth-required] #landing,html[data-auth-required] #budget-app{display:n
 .vpo-admin-list{display:grid;gap:12px;margin:16px 0}.vpo-admin-request{padding:16px;border:1px solid #e6e6ef;border-radius:14px;min-width:0}.vpo-admin-request strong{font-size:15px;display:block;color:#202052;overflow-wrap:anywhere}.vpo-admin-request p{margin:4px 0!important;font-size:13px!important;line-height:1.5!important;overflow-wrap:anywhere}.vpo-admin-request small{font-size:11px;color:#818197;display:block;margin-top:6px}
 .vpo-admin-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:13px}.vpo-admin-actions button{min-height:40px;padding:8px 14px}.vpo-admin-pages{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12px}.vpo-admin-status{font-size:13px;line-height:1.5;min-height:20px;overflow-wrap:anywhere}
 @media(max-width:760px){.vpo-access-modes{margin-bottom:26px}.vpo-access-card .vpo-access-modes button{min-height:44px;font-size:12px}.vpo-access-card:has(#vpo-signup-fields:not([hidden])){max-width:400px}.vpo-access-card:has(#vpo-signup-fields:not([hidden])) .vpo-access-mobile-logo{margin-bottom:22px}.vpo-admin-heading{flex-wrap:wrap}}
+
+/* Signed-in identity stays anchored at the bottom of the desktop sidebar. */
+.app-sidebar .sidebar-bottom.vpo-sidebar-account{margin-top:auto;padding:18px 0 0;border-top:1px solid #ffffff1f}
+.app-sidebar .vpo-account-summary{display:flex;align-items:center;gap:10px;min-width:0;margin:0;padding:9px 7px;border-radius:11px;color:#fff;text-decoration:none;transition:background .15s}
+.app-sidebar .vpo-account-summary:hover{background:#ffffff0b}
+.vpo-account-avatar{display:grid;place-items:center;flex:0 0 35px;height:35px;background:#bae677;color:#202052;border-radius:12px;font-size:13px;font-weight:800;letter-spacing:-.02em}
+.vpo-account-identity{display:flex;flex-direction:column;min-width:0;flex:1;gap:2px}
+.vpo-account-identity small{font-size:8px;letter-spacing:.09em;font-weight:700;color:#b4b7dd}
+.vpo-account-identity strong{font-size:13px;font-weight:650;line-height:1.45;color:#fff}
+.vpo-account-identity>span{font-size:10px;color:#c8cae7;line-height:1.5}
+.vpo-account-identity strong,.vpo-account-identity>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vpo-account-summary>svg{flex:0 0 15px;color:#a9add8}
+.vpo-account-signout{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:40px;margin-top:9px;padding:9px 12px;border:1px solid #ffffff24;border-radius:9px;background:transparent;color:#dedff3;font:inherit;font-size:11px;font-weight:600;cursor:pointer;transition:background .15s,border-color .15s}
+.vpo-account-signout:hover{background:#ffffff0c;border-color:#ffffff48;color:#fff}
+.vpo-account-summary:focus-visible,.vpo-account-signout:focus-visible{outline:2px solid #bae677;outline-offset:3px}
+.vpo-account-signout:disabled{opacity:.65;cursor:wait}
+.vpo-account-name{font-weight:700;color:#202052!important}.vpo-account-name,.vpo-account-email{overflow-wrap:anywhere}
+@media(pointer:coarse){.vpo-account-signout{min-height:44px}}
+@media(max-height:680px) and (min-width:720px){.app-sidebar .sidebar-bottom.vpo-sidebar-account{padding-top:10px}.vpo-account-signout{margin-top:5px}}
+@media(prefers-reduced-motion:reduce){.vpo-account-summary,.vpo-account-signout{transition:none}}
