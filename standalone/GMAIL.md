@@ -32,11 +32,12 @@ No projeto conectado ao repositório `edujcardozo/vopfinanca`, abra **Project co
 | `VPO_EMAIL_PROVIDER` | `gmail` |
 | `GMAIL_USER` | `edujcardozo@gmail.com` |
 | `GMAIL_APP_PASSWORD` | A senha de app criada no Google |
-| `SUPABASE_URL` | `https://lucpzpqixgdeenlvwaxf.supabase.co` |
 | `SUPABASE_SECRET_KEY` | Chave secreta do projeto VPO, somente no servidor |
-| `VPO_SITE_URL` | Origem HTTPS final do app, por exemplo `https://seu-app.netlify.app`, sem `#plano` |
+| `VPO_SITE_URL` | `https://vpofinancas.netlify.app`, sem `#plano` |
 
 Para obter a chave secreta, use Supabase → Settings → API Keys. Ela começa com `sb_secret_`. Cole-a somente na variável privada do Netlify. A configuração pública do navegador usa uma chave publishable diferente.
+
+O endereço público do Supabase é lido de `standalone/project.json`, como no build do app. Os avisos de cadastro não dependem de uma segunda variável `SUPABASE_URL`. Se substituir o projeto pela variável pública `VPO_SUPABASE_URL`, aplique-a tanto ao build quanto às funções. A chave secreta precisa pertencer ao mesmo projeto. As funções de cobrança mantêm sua configuração própria enquanto a cobrança está desativada.
 
 Com `VPO_EMAIL_PROVIDER=gmail`, não são necessárias `RESEND_API_KEY` nem `VPO_EMAIL_FROM`: o remetente é fixado em `VPO <edujcardozo@gmail.com>` usando o valor de `GMAIL_USER`. O destino dos avisos continua vindo da configuração privada do banco, e não do formulário do navegador. Após salvar as variáveis, faça um novo deploy. O projeto precisa publicar as funções `vpo-registration` e `vpo-registration-queue`; um upload somente da pasta estática não as publica.
 

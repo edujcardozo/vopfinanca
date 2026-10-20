@@ -34,7 +34,7 @@ Publique as funções pelo repositório conectado ao Netlify e configure estas v
 
 | Variável | Valor necessário |
 | --- | --- |
-| `SUPABASE_URL` | `https://lucpzpqixgdeenlvwaxf.supabase.co` |
+| Endereço do Supabase | Automático a partir de `standalone/project.json`, compartilhado com o app |
 | `SUPABASE_SECRET_KEY` | Chave secreta do projeto dedicado, somente no servidor. Também é aceita a variável legada `SUPABASE_SERVICE_ROLE_KEY`. |
 | `VPO_SITE_URL` | Origem HTTPS final do seu site Netlify, sem caminho, query ou fragmento. |
 | `RESEND_API_KEY` | Chave do Resend com autorização para o remetente escolhido. |

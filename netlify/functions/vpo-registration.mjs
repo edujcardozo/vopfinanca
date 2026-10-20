@@ -1,2 +1,3 @@
 import {createRegistrationHandler} from '../../standalone/server/registration.mjs';
-export default createRegistrationHandler({env:process.env,logger:entry=>console.error(entry.code)});
+import {registrationEnvironment} from '../../standalone/server/environment.mjs';
+export default createRegistrationHandler({env:registrationEnvironment(process.env),logger:entry=>console.error(entry.code)});
