@@ -3,7 +3,8 @@ const emailPattern=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export function authMessage(error){
   const code=error?.code||'',status=error?.status;
   if(code==='otp_expired'||code==='token_expired'||code==='otp_disabled')return 'O código é inválido ou expirou. Confira o e-mail ou solicite outro código.';
-  if(status===429||/rate_limit|over_email_send_rate_limit/.test(code))return 'Aguarde um pouco antes de solicitar outro código.';
+  if(code==='over_email_send_rate_limit')return 'O serviço de e-mail atingiu o limite de envios. Tente mais tarde ou entre em contato com o VPO.';
+  if(status===429||/rate_limit/.test(code))return 'Aguarde um pouco antes de solicitar outro código.';
   if(code==='email_address_invalid')return 'Confira o endereço de e-mail e tente novamente.';
   if(/email_address_not_authorized|unexpected_failure/.test(code))return 'Não foi possível enviar o código agora. Tente novamente mais tarde.';
   if(status===0||error?.name==='AuthRetryableFetchError'||error instanceof TypeError)return 'Confira sua conexão e tente novamente.';

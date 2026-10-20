@@ -7,7 +7,7 @@ Versão com conta própria por e-mail e código de seis números, preparada para
 - Acessos separados para **Entrar**, **Criar conta** e **Tenho um convite**, com Supabase Auth, confirmação de e-mail, renovação de sessão e saída deste aparelho.
 - Cadastro com nome completo, e-mail confirmado e celular opcional. Novas contas pessoais aguardam aprovação; a tela verifica a liberação automaticamente.
 - Administração de cadastros em Ajustes, restrita ao usuário verificado de `edujcardozo@gmail.com`, vinculado ao UUID uma única vez. Aprovar e recusar são decisões registradas no servidor.
-- Fila persistente e funções Netlify para avisos de novos cadastros a `edujcardozo@gmail.com`, via Resend. O envio depende da configuração privada do provedor; não é simulado como concluído.
+- Fila persistente e funções Netlify para avisos de novos cadastros a `edujcardozo@gmail.com`, via Gmail SMTP (sem domínio próprio) ou Resend. O envio depende da configuração privada do provedor; não é simulado como concluído. Veja [GMAIL.md](GMAIL.md) para a opção inicial com a conta Google.
 - Cada nova conta começa com categorias iniciais e sem gastos, entradas ou valores planejados de exemplo.
 - Convites por link em Ajustes: validade de 24 horas, uso único e aceite explícito. O proprietário pode cancelar convites e remover o acesso da pessoa convidada.
 - Plano pessoal e plano compartilhado separados. Proprietário e pessoa convidada podem editar os mesmos lançamentos e categorias.

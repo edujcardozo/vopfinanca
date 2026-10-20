@@ -22,7 +22,7 @@ Cobranças continuam desativadas. Aprovar uma conta não inicia um teste ou assi
 
 ## Ativar os e-mails
 
-Existem dois envios distintos: os códigos de login, pelo SMTP do Supabase, e os avisos de cadastro, pelas funções do Netlify. É possível usar o **Resend** para os dois. Não é necessário configurar o Asaas para ativar os cadastros.
+Existem dois envios distintos: os códigos de login, pelo SMTP do Supabase, e os avisos de cadastro, pelas funções do Netlify. Para começar **sem domínio próprio**, o app também aceita Gmail com senha de app: veja [GMAIL.md](GMAIL.md). O **Resend** permanece como alternativa para domínio verificado. Não é necessário configurar o Asaas para ativar os cadastros. As instruções a seguir referem-se ao Resend; a configuração do Gmail está no guia indicado.
 
 ### Códigos de acesso
 

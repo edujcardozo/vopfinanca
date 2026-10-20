@@ -10,6 +10,8 @@ O vínculo ao Netlify ainda está pendente. O SMTP e a homologação do Asaas co
 
 A tela independente agora separa entrar, criar conta e aceitar convite. Novos planos pessoais aguardam liberação manual em Ajustes; a fila de avisos para `edujcardozo@gmail.com` usa funções Netlify e Resend, ainda dependentes da configuração privada do envio. Consulte [cadastros e aprovação](standalone/CADASTROS.md).
 
+Para começar sem domínio próprio, os avisos também aceitam Gmail SMTP com senha de app. A configuração continua privada nas funções, preserva a fila de aprovação e está descrita em [envio pelo Gmail](standalone/GMAIL.md). Não há envio real ativado sem configurar as credenciais nos painéis seguros.
+
 An independent Portuguese-language design study based on the current YNAB marketing website, with a usable account-synced budget planner. Created for Edu on 2026-10-18. It is not affiliated with YNAB and does not collect credentials or connect to the official service.
 
 ## Experience

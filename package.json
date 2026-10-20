@@ -10,13 +10,14 @@
     "build:standalone": "node scripts/build-standalone.mjs"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "0.5.10",
     "drizzle-kit": "0.31.10",
     "drizzle-orm": "0.45.2",
     "esbuild": "0.25.5",
-    "linkedom": "0.18.12",
-    "@electric-sql/pglite": "0.5.10"
+    "linkedom": "0.18.12"
   },
   "dependencies": {
-    "@supabase/supabase-js": "2.118.0"
+    "@supabase/supabase-js": "2.118.0",
+    "nodemailer": "10.1.7"
   }
 }
