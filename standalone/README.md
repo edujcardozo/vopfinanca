@@ -43,13 +43,13 @@ O `netlify.toml` na raiz já define Node 24, o comando `npm test && npm run buil
 
 ### Atualizações automáticas pelo GitHub
 
-O fluxo escolhido é desenvolver aqui, enviar o código ao repositório [edujcardozo/vopfinanca](https://github.com/edujcardozo/vopfinanca) e deixar o Netlify publicar cada atualização da branch de produção. O site está disponível em [vpofinancas.netlify.app](https://vpofinancas.netlify.app), com a versão independente atual e a função de avisos publicadas. Ainda falta confirmar que um novo commit dispara uma publicação automática. A função de avisos retorna `EMAIL_NOT_CONFIGURED`; a entrega real de e-mails ainda não foi validada.
+O fluxo escolhido é desenvolver aqui, enviar o código ao repositório [edujcardozo/vopfinanca](https://github.com/edujcardozo/vopfinanca) e deixar o Netlify publicar cada atualização da branch de produção. O site está disponível em [vpofinancas.netlify.app](https://vpofinancas.netlify.app), com a versão independente atual e a função de avisos publicadas. A publicação automática foi confirmada em 20/10/2026: depois do envio do commit `2c8af60` à branch `main`, a função pública passou a responder com o diagnóstico introduzido por esse commit. Na verificação, somente `SUPABASE_URL` estava ausente ou inválida; a entrega real de e-mails ainda não foi validada.
 
 No Netlify, importe o repositório do VPO e selecione a branch `main`. Mantenha o diretório base na raiz, a pasta de publicação `dist-independent` e as funções em `netlify/functions`. O `netlify.toml` executa os testes antes de gerar e publicar a versão independente; uma falha de teste interrompe essa publicação. Não é necessário enviar ZIPs a cada alteração.
 
 As credenciais do Asaas, Resend e a chave administrativa do Supabase ficam nas variáveis privadas das funções do Netlify, conforme `ASSINATURAS.md` e `CADASTROS.md`. A conexão com o GitHub não ativa cobranças nem configura o SMTP. Os dados dos clientes permanecem no Supabase e não fazem parte do repositório.
 
-A conexão só deve ser considerada concluída depois que um commit enviado daqui provocar um deploy bem-sucedido no projeto Netlify correto. Registre então o repositório, a branch de produção e o ID/endereço do projeto para as próximas atualizações.
+A evidência da publicação automática e o endereço de produção estão registrados em `deployment.json`. O ID privado do projeto Netlify não foi obtido; as atualizações usam o repositório e a branch já conectados, sem depender desse ID.
 
 Opção A: importe o código para um repositório seu e conecte-o ao Netlify. A configuração de build será lida do `netlify.toml`.
 

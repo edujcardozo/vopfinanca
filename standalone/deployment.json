@@ -4,6 +4,8 @@
   "netlify": {
     "siteId": null,
     "siteUrl": "https://vpofinancas.netlify.app",
-    "automaticDeploysVerified": false
+    "automaticDeploysVerified": true,
+    "automaticDeploysVerifiedAt": "2026-10-20T17:10:13Z",
+    "verifiedCommit": "2c8af608e2bc2c26afe53d9744d80188b90017b7"
   }
 }
