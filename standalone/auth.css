@@ -55,14 +55,19 @@ html[data-auth-required] #landing,html[data-auth-required] #budget-app{display:n
 .vpo-account-identity{display:flex;flex-direction:column;min-width:0;flex:1;gap:2px}
 .vpo-account-identity small{font-size:8px;letter-spacing:.09em;font-weight:700;color:#b4b7dd}
 .vpo-account-identity strong{font-size:13px;font-weight:650;line-height:1.45;color:#fff}
-.vpo-account-identity>span{font-size:10px;color:#c8cae7;line-height:1.5}
-.vpo-account-identity strong,.vpo-account-identity>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vpo-account-identity strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .vpo-account-summary>svg{flex:0 0 15px;color:#a9add8}
 .vpo-account-signout{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:40px;margin-top:9px;padding:9px 12px;border:1px solid #ffffff24;border-radius:9px;background:transparent;color:#dedff3;font:inherit;font-size:11px;font-weight:600;cursor:pointer;transition:background .15s,border-color .15s}
 .vpo-account-signout:hover{background:#ffffff0c;border-color:#ffffff48;color:#fff}
 .vpo-account-summary:focus-visible,.vpo-account-signout:focus-visible{outline:2px solid #bae677;outline-offset:3px}
 .vpo-account-signout:disabled{opacity:.65;cursor:wait}
-.vpo-account-name{font-weight:700;color:#202052!important}.vpo-account-name,.vpo-account-email{overflow-wrap:anywhere}
+.vpo-account-overview{display:flex;align-items:center;gap:12px;width:100%;min-width:0}
+.vpo-account-settings .vpo-account-identity small{font-size:11px;letter-spacing:0;font-weight:500;color:#77778c}
+.vpo-account-settings .vpo-account-identity strong{font-size:15px;line-height:1.5;color:#202052}
+.vpo-account-settings-signout{display:inline-flex;align-items:center;justify-content:center;gap:7px;flex:none;min-height:44px;padding:10px 13px;border:1px solid #e4e2ed;border-radius:12px;background:#f7f6fc;color:#555af5;font:inherit;font-size:13px;font-weight:650;cursor:pointer}
+.vpo-account-settings-signout:hover{background:#eeedff}
+.vpo-account-settings-signout:disabled{opacity:.6;cursor:wait}
+@media(max-width:719px){.vpo-account-settings{gap:14px}.vpo-account-settings .vpo-account-identity strong{color:#11110f}.vpo-account-settings .vpo-account-identity small{color:#6c6b65}.vpo-account-settings-signout{background:#f6f5f0;border-color:#ece8dc}.vpo-account-overview{gap:10px}}
 @media(pointer:coarse){.vpo-account-signout{min-height:44px}}
 @media(max-height:680px) and (min-width:720px){.app-sidebar .sidebar-bottom.vpo-sidebar-account{padding-top:10px}.vpo-account-signout{margin-top:5px}}
 @media(prefers-reduced-motion:reduce){.vpo-account-summary,.vpo-account-signout{transition:none}}

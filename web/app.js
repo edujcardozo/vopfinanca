@@ -16,6 +16,7 @@ import {createCloudSync} from './cloud-sync.js?v=vpo-34';
 import {createSharingUI} from './sharing-ui.js?v=vpo-34';
 import {platform} from './platform.js';
 import {householdForSharing,inactiveHousehold} from './household-context.js';
+import {accountUsername} from './account-identity.js';
 
 const $=s=>document.querySelector(s);
 const $$=s=>[...document.querySelectorAll(s)];
@@ -71,7 +72,7 @@ function showSyncStatus(info){
   $('#sync-retry').hidden=info.kind==='auth'||info.kind==='connecting';$('#sync-retry').textContent=info.kind==='conflict'?'Revisar':info.kind==='blocked'?'Abrir Ajustes':'Tentar agora';
   $('#sync-signin').hidden=info.kind!=='auth';
   $('#sync-settings-status').textContent=label;
-  $('#sync-account-label').textContent=info.user?.email?'Conta: '+info.user.email:platform.independent?'Sua conta VPO em todos os aparelhos.':'A mesma conta do ChatGPT em todos os aparelhos.';
+  $('#sync-account-label').textContent=info.user?.email?'Conta: '+accountUsername(info.user.email):platform.independent?'Sua conta VPO em todos os aparelhos.':'A mesma conta do ChatGPT em todos os aparelhos.';
   $('#sync-last-update').textContent=info.updatedAt?'Última confirmação: '+new Date(info.updatedAt).toLocaleString('pt-BR'):'Aguardando a primeira confirmação da conta.';
   $('#sync-retry').onclick=()=>{if(info.kind==='conflict')cloudSync.review();else if(info.kind==='blocked'){goPlan('settings');sharingUI.refresh();}else cloudSync.flush();};
 }
