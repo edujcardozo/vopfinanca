@@ -1,6 +1,6 @@
 # VPO independente
 
-Versão com conta própria por e-mail e código de seis números, preparada para o Netlify. Não exige conta no ChatGPT.
+Versão com conta própria por e-mail e código de acesso, preparada para o Netlify. Não exige conta no ChatGPT. O campo aceita códigos de 6 a 10 dígitos, incluindo os 8 dígitos usados no projeto VPO; a validade é sempre conferida pelo Supabase.
 
 ## O que está implementado
 
@@ -31,7 +31,7 @@ Antes de abrir cadastros para outras pessoas:
 
 1. Em [Authentication → Email → SMTP](https://supabase.com/dashboard/project/lucpzpqixgdeenlvwaxf/auth/smtp), configure seu provedor SMTP e endereço remetente autorizado. O envio padrão do Supabase limita destinatários à equipe do projeto e não atende este uso público.
 2. Em [Email Templates](https://supabase.com/dashboard/project/lucpzpqixgdeenlvwaxf/auth/templates), use `email-code.html` no template **Magic Link**. Utilize também o template de código em **Confirm signup** caso seu fluxo de novo cadastro utilize essa mensagem. Assunto: `Seu código de acesso ao VPO`. O corpo precisa manter `{{ .Token }}`.
-3. Nas configurações do provedor Email, mantenha a confirmação de e-mail ativa, código com seis dígitos e configure a validade, por exemplo, 10 minutos. Não ative login anônimo nem confirmação automática de e-mail.
+3. Nas configurações do provedor Email, mantenha a confirmação de e-mail ativa e configure a validade, por exemplo, 10 minutos. O app aceita o código completo de 6 a 10 dígitos, conforme a configuração do projeto, sem reduzi-lo a seis números. Não ative login anônimo nem confirmação automática de e-mail.
 4. Após criar o endereço no Netlify, configure esse endereço como **Site URL** em [URL Configuration](https://supabase.com/dashboard/project/lucpzpqixgdeenlvwaxf/auth/url-configuration). O fluxo implementado usa o código digitado na mesma página e preserva o convite no endereço.
 5. Teste envio, recebimento, código incorreto, expiração e novo cadastro com dois e-mails controlados por você. Nenhuma mensagem real foi enviada durante a implementação.
 

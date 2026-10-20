@@ -20,7 +20,7 @@ O app atual no ChatGPT mantém a experiência existente. As funções financeira
 
 ## Fluxo do cliente
 
-1. Entra com e-mail e código de seis números.
+1. Entra com e-mail e o código completo recebido.
 2. Confere R$ 0,00 hoje, 15 dias grátis e R$ 12,90/mês após o teste. O consentimento não vem marcado.
 3. A cotação fixa preço e datas no servidor, sem reiniciar em outro aparelho. A primeira data é arredondada para o próximo início de dia em São Paulo para preservar 15 dias completos.
 4. A função cria um checkout com CREDIT_CARD, RECURRENT, MONTHLY e primeira cobrança futura. CPF, cartão e CVV são preenchidos no Asaas e não passam pelo orçamento do VPO.

@@ -2,7 +2,7 @@
 
 O VPO independente oferece três caminhos na mesma tela, preservando o layout no computador e no celular:
 
-- **Entrar:** usa um e-mail já cadastrado e confirma um código de seis números. Não cria uma conta silenciosamente.
+- **Entrar:** usa um e-mail já cadastrado e confirma o código completo recebido por e-mail, de 6 a 10 dígitos conforme o projeto Supabase. Não cria uma conta silenciosamente.
 - **Criar conta:** pede nome completo, e-mail e celular opcional. Após a confirmação do e-mail, grava a solicitação e aguarda aprovação. Nesta fase não há coleta de CPF, cartão ou cobrança.
 - **Tenho um convite:** recebe um link compartilhado e o e-mail da pessoa convidada. Novas pessoas também confirmam o e-mail e completam o nome. Antes do aceite, a tela mostra quem compartilhou o orçamento. Somente o clique em **Aceitar e abrir o plano** concede acesso ao plano indicado.
 

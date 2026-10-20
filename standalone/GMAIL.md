@@ -21,7 +21,7 @@ Abra o [SMTP do VPO](https://supabase.com/dashboard/project/lucpzpqixgdeenlvwaxf
 | Username | `edujcardozo@gmail.com` |
 | Password | A senha de app criada no Google |
 
-Em [Email Templates](https://supabase.com/dashboard/project/lucpzpqixgdeenlvwaxf/auth/templates), aplique `email-code.html` em Magic Link e Confirm signup. O template precisa exibir `{{ .Token }}`, pois o aplicativo espera um código de seis números. Mantenha a confirmação de e-mail ativa. Configure a URL final do Netlify como Site URL, em Authentication → URL Configuration. Confirme o limite de envio configurado em Authentication → Rate Limits; o Gmail também tem seu próprio limite.
+Em [Email Templates](https://supabase.com/dashboard/project/lucpzpqixgdeenlvwaxf/auth/templates), aplique `email-code.html` em Magic Link e Confirm signup. O template precisa exibir `{{ .Token }}` completo. O app aceita códigos de 6 a 10 dígitos, incluindo os 8 dígitos enviados pelo projeto VPO. Mantenha a confirmação de e-mail ativa. Configure a URL final do Netlify como Site URL, em Authentication → URL Configuration. Confirme o limite de envio configurado em Authentication → Rate Limits; o Gmail também tem seu próprio limite.
 
 ## 3. Avisos enviados pelo Netlify
 

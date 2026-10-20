@@ -30,7 +30,7 @@ export function createEmailAuth({auth,now=()=>Date.now(),onChange=()=>{},onSessi
   async function verify(value){
     if(busy||stage!=='code')return false;
     const token=String(value).replace(/\s/g,'');
-    if(!/^\d{6}$/.test(token)){error='Digite os 6 números do código recebido.';update();return false;}
+    if(!/^\d{6,10}$/.test(token)){error='Digite o código completo recebido por e-mail.';update();return false;}
     busy=true;error='';update();
     try{
       const result=await auth.verifyOtp({email,token,type:'email'});
@@ -52,7 +52,7 @@ export function mountLogin({root,auth,onSession,windowObject=window}){
       <label for="vpo-email">Seu e-mail</label><input id="vpo-email" type="email" name="email" autocomplete="email" inputmode="email" autocapitalize="none" spellcheck="false" maxlength="254" placeholder="voce@exemplo.com" required aria-describedby="access-error">
       <button class="vpo-access-submit" type="submit"></button><p class="vpo-access-note" id="vpo-mode-note"></p>
     </form>
-    <form id="vpo-code-form" hidden><div class="vpo-access-address"><span id="vpo-sent-email"></span><button type="button" id="vpo-change-email">Alterar</button></div><label for="vpo-code">Código de 6 números</label><input id="vpo-code" name="code" type="text" inputmode="numeric" pattern="[0-9]{6}" autocomplete="one-time-code" maxlength="6" placeholder="000000" required aria-describedby="access-error"><button class="vpo-access-submit" type="submit">Confirmar e-mail →</button><div class="vpo-access-resend"><span>Não recebeu? Confira o spam.</span><button type="button" id="vpo-resend">Reenviar código</button></div></form>
+    <form id="vpo-code-form" hidden><div class="vpo-access-address"><span id="vpo-sent-email"></span><button type="button" id="vpo-change-email">Alterar</button></div><label for="vpo-code">Código recebido por e-mail</label><input id="vpo-code" name="code" type="text" inputmode="numeric" pattern="[0-9]{6,10}" autocomplete="one-time-code" maxlength="10" placeholder="00000000" required aria-describedby="access-error"><button class="vpo-access-submit" type="submit">Confirmar e-mail →</button><div class="vpo-access-resend"><span>Não recebeu? Confira o spam.</span><button type="button" id="vpo-resend">Reenviar código</button></div></form>
     <p id="access-error" class="vpo-access-error" role="alert" hidden></p><p id="access-status" class="sr-only" aria-live="polite"></p>
     <div class="vpo-access-footer"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><span>Seu orçamento é privado. Cada pessoa entra com seu próprio e-mail.</span></div><p id="vpo-invite-preserved" class="vpo-access-invite" hidden>Seu convite está guardado. Confirme seu e-mail para conferir e aceitar.</p>`);
   const $=selector=>root.querySelector(selector),emailForm=$('#vpo-email-form'),codeForm=$('#vpo-code-form'),codeInput=$('#vpo-code');
@@ -93,7 +93,7 @@ export function mountLogin({root,auth,onSession,windowObject=window}){
   });
   for(const button of root.querySelectorAll('[data-access-mode]'))button.onclick=()=>{if(!flow.state.busy){mode=button.dataset.accessMode;flow.changeEmail();render(flow.state);}};
   codeForm.addEventListener('submit',e=>{e.preventDefault();flow.verify(codeInput.value);});
-  codeInput.addEventListener('input',()=>{codeInput.value=codeInput.value.replace(/\D/g,'').slice(0,6);});
+  codeInput.addEventListener('input',()=>{codeInput.value=codeInput.value.replace(/\D/g,'').slice(0,10);});
   $('#vpo-change-email').onclick=()=>{flow.changeEmail();$('#vpo-email').focus();};
   $('#vpo-resend').onclick=()=>flow.send(flow.state.email);
   $('#vpo-invite-preserved').hidden=!invitationToken(windowObject.location.hash);

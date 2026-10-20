@@ -26,13 +26,25 @@ test('expired, failed and duplicate requests never open a budget',async()=>{
   flow.changeEmail();assert.equal(flow.state.stage,'email');assert.equal(flow.state.email,'x@example.test');
 });
 test('mobile code field supports paste/autofill and an invitation stays in the URL',async()=>{
-  const {document,event}=dom('<section id="login"></section>');let interval,verified=false;
+  const {document,event}=dom('<section id="login"></section>');let interval,verified=false,verification;
   const hash='#plano/convite/'+'a'.repeat(64);
-  const mounted=mountLogin({root:document.querySelector('section'),auth:{signInWithOtp:async()=>({error:null}),verifyOtp:async()=>({data:{session:{user:{id:'x'}}}})},onSession:()=>verified=true,windowObject:{location:{hash},setInterval:fn=>(interval=fn,1),clearInterval:()=>interval=null}});
+  const mounted=mountLogin({root:document.querySelector('section'),auth:{signInWithOtp:async()=>({error:null}),verifyOtp:async input=>(verification=input,{data:{session:{user:{id:'x'}}}})},onSession:()=>verified=true,windowObject:{location:{hash},setInterval:fn=>(interval=fn,1),clearInterval:()=>interval=null}});
   assert.equal(document.querySelector('#vpo-invite-preserved').hidden,false);
   const email=document.querySelector('#vpo-email');assert.equal(email.getAttribute('autocomplete'),'email');email.value='larissa@example.test';event(document.querySelector('#vpo-email-form'),'submit');await waitFor(()=>mounted.flow.state.stage==='code');
   const input=document.querySelector('#vpo-code');assert.equal(input.getAttribute('autocomplete'),'one-time-code');assert.equal(input.getAttribute('inputmode'),'numeric');assert.equal(document.activeElement,input);
-  input.value='12 34a56';event(input,'input');assert.equal(input.value,'123456');event(document.querySelector('#vpo-code-form'),'submit');await waitFor(()=>verified);assert.equal(hash,'#plano/convite/'+'a'.repeat(64));mounted.destroy();assert.equal(interval,null);
+  assert.equal(input.getAttribute('maxlength'),'10');assert.equal(input.getAttribute('pattern'),'[0-9]{6,10}');assert.doesNotMatch(document.querySelector('label[for="vpo-code"]').textContent,/6/);
+  input.value='00 34a56-78';event(input,'input');assert.equal(input.value,'00345678');event(document.querySelector('#vpo-code-form'),'submit');await waitFor(()=>verified);assert.deepEqual(verification,{email:'larissa@example.test',token:'00345678',type:'email'});assert.equal(hash,'#plano/convite/'+'a'.repeat(64));mounted.destroy();assert.equal(interval,null);
+});
+test('email codes support the configured Supabase length without truncating digits or granting access locally',async()=>{
+  for(const token of ['001234','0012345','00123456','001234567','0012345678']){
+    let received,opened=false;
+    const flow=createEmailAuth({auth:{signInWithOtp:async()=>({error:null}),verifyOtp:async input=>(received=input,{error:{code:'otp_expired'}})},onSession:()=>opened=true});
+    await flow.send('edu@example.test');assert.equal(await flow.verify(token),false);assert.equal(received.token,token);assert.equal(opened,false);assert.equal(flow.state.stage,'code');
+  }
+  let calls=0;const flow=createEmailAuth({auth:{signInWithOtp:async()=>({error:null}),verifyOtp:async()=>calls++}});
+  await flow.send('edu@example.test');
+  for(const token of ['12345','12345678901','1234a678']){assert.equal(await flow.verify(token),false);assert.match(flow.state.error,/código completo/);}
+  assert.equal(calls,0);
 });
 test('local caches, pending operations and recoveries are isolated by authenticated account',()=>{
   const map=new Map([['ynab-edu-plan-v1','previous ChatGPT budget']]);const raw={get length(){return map.size;},key:i=>[...map.keys()][i],getItem:k=>map.get(k)??null,setItem:(k,v)=>map.set(k,String(v)),removeItem:k=>map.delete(k)};
