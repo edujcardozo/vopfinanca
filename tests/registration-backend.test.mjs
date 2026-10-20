@@ -43,7 +43,7 @@ test('manual approval and invitation authorization run in the real SQL API',asyn
       await register(customer);assert.equal((await request(customer,'/api/access')).body.notification,'sent');
     });
     await t.test('a guest must confirm an explicit valid invitation and cannot open an unapproved personal budget',async()=>{
-      const response=await register(guest,'guest');assert.equal(response.body.status,'guest');assert.equal(response.body.canUse,false);assert.equal(response.body.notification,'none');
+      const response=await register(guest,'guest',{fullName:'Pessoa Convidada'});assert.equal(response.body.status,'guest');assert.equal(response.body.canUse,false);assert.equal(response.body.notification,'none');
       assert.equal((await request(guest,'/api/plan')).status,403);
       assert.equal((await request(guest,'/api/sharing/accept',{token:'0'.repeat(64)},'POST')).status,410);
       invitation=(await request(admin,'/api/sharing/invites',{},'POST')).body;
@@ -66,6 +66,15 @@ test('manual approval and invitation authorization run in the real SQL API',asyn
       const audit=(await db.query('select decided_by,decided_at from vpo_private.registrations where user_id=$1',[customer])).rows[0];assert.equal(audit.decided_by,admin);assert.ok(audit.decided_at);
       assert.equal((await db.query('select enabled from vpo_private.billing_config')).rows[0].enabled,false);
     });
+    await t.test('participant profiles are limited to the active plan and identical for owner and accepted guest',async()=>{
+      const own=(await request(admin,'/api/sharing')).body.participants,shared=(await request(guest,'/api/sharing')).body.participants;
+      assert.deepEqual(own,shared);assert.deepEqual(own.map(p=>p.id),[admin,guest]);assert.deepEqual(own.map(p=>p.role),['owner','editor']);
+      assert.deepEqual(own.map(p=>p.name),['Pessoa de Teste','Pessoa Convidada']);assert.equal(own.some(p=>p.id===customer||p.id===attacker),false);
+      assert.deepEqual((await request(customer,'/api/sharing')).body.participants.map(p=>p.id),[customer]);
+      await db.exec(await readFile(new URL('../standalone/participants.sql',import.meta.url),'utf8'));
+      assert.deepEqual((await request(guest,'/api/sharing')).body.participants,own);
+      assert.equal((await request(guest,'/api/plan')).body.state.planId,state.planId);
+    });
     await t.test('rejected accounts cannot resubmit, accept invitations or read budget data',async()=>{
       await register(rejected);assert.equal((await request(admin,'/api/access/decision',{userId:rejected,decision:'rejected'},'POST')).status,200);
       assert.equal((await register(rejected)).body.code,'ACCESS_REJECTED');assert.equal((await request(rejected,'/api/plan')).body.code,'ACCESS_REJECTED');
@@ -75,6 +84,7 @@ test('manual approval and invitation authorization run in the real SQL API',asyn
     await t.test('removing a guest immediately revokes cloud reads and writes without granting personal access',async()=>{
       assert.equal((await request(admin,'/api/sharing/remove-member',{memberId:guest},'POST')).status,200);
       assert.equal((await request(guest,'/api/access')).body.canUse,false);assert.equal((await request(guest,'/api/plan')).status,403);
+      assert.deepEqual((await request(admin,'/api/sharing')).body.participants.map(p=>p.id),[admin]);assert.equal((await request(guest,'/api/sharing')).status,403);
       await register(guest,'personal');assert.equal((await request(guest,'/api/access')).body.status,'pending');
     });
     await t.test('admin authorization stays bound to the verified immutable UUID after an email change',async()=>{

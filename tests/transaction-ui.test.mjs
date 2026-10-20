@@ -8,7 +8,9 @@ test('desktop transaction composer selects saved payee/category, saves once and 
  const savedGlobals={setTimeout:globalThis.setTimeout,clearTimeout:globalThis.clearTimeout,setInterval:globalThis.setInterval,clearInterval:globalThis.clearInterval,FormData:globalThis.FormData,fetch:globalThis.fetch};
  try{
   globalThis.setTimeout=()=>0;globalThis.setInterval=()=>0;globalThis.clearTimeout=()=>{};globalThis.clearInterval=()=>{};globalThis.fetch=async()=>new Response('{}',{status:503});
-  for(const width of [1440,390]){
+  for(const [width,shared] of [[1440,true],[390,true],[1440,false],[390,false]]){
+   const roster={user:{id:'owner'},scope:{id:'owner',role:'owner',ownerEmail:'ana@example.test',revoked:false},participants:[{id:'owner',name:'Ana Cliente',email:'ana@example.test',role:'owner'},...(shared?[{id:'guest',name:'Bruno Convidado',email:'bruno@example.test',role:'editor'}]:[])],members:shared?[{id:'guest',email:'bruno@example.test'}]:[],plans:[],invites:shared?[]:[{id:'pending'}]};
+   globalThis.fetch=async url=>String(url)==='/api/sharing'?Response.json(roster):new Response('{}',{status:503});
    const html=await readFile(new URL('../web/index.html',import.meta.url),'utf8'),f=dom(html),{document,window,event}=f;
    window.matchMedia=query=>({matches:query.includes('min-width')?width>=1000:query.includes('max-width')?width<=719:false,addEventListener(){}});globalThis.matchMedia=window.matchMedia;window.scrollTo=()=>{};
    Object.defineProperty(window.HTMLElement.prototype,'elements',{get(){return Object.fromEntries([...this.querySelectorAll('[name]')].map(el=>[el.getAttribute('name'),el]));},configurable:true});
@@ -17,9 +19,20 @@ test('desktop transaction composer selects saved payee/category, saves once and 
    Object.defineProperty(window.HTMLSelectElement.prototype,'value',{get(){return this.querySelector('option[selected]')?.value||'';},set(value){this.querySelectorAll('option').forEach(o=>o.toggleAttribute('selected',o.value===value));},configurable:true});
    const dialog=document.querySelector('dialog');dialog.showModal=()=>dialog.open=true;dialog.close=()=>{dialog.open=false;event(dialog,'close');};
    globalThis.location={hash:'#plano/planejar'};globalThis.localStorage=new MemoryStorage();
-   const state=createState(false,'2026-10');state.categories.find(c=>c.id==='mercado').target=100000;state.categories.find(c=>c.id==='moradia').name='Luz';state.categories.find(c=>c.id==='transporte').name='Internet';rememberPayee(state,'Panvel');saveTransaction(state,{id:'previous',type:'expense',description:'Zaffari',payee:'Zaffari',memo:'',amount:1000,date:'2026-10-01',categoryId:'mercado'});localStorage.setItem(STORAGE_KEY,JSON.stringify(state));
+   const state=createState(false,'2026-10');state.categories.find(c=>c.id==='mercado').target=100000;state.categories.find(c=>c.id==='moradia').name='Luz';state.categories.find(c=>c.id==='transporte').name='Internet';rememberPayee(state,'Panvel');saveTransaction(state,{id:'previous',type:'expense',description:'Zaffari',payee:'Zaffari',memo:'',amount:1000,date:'2026-10-01',categoryId:'mercado'});if(!shared)state.months['2026-10'].transactions[0].sharing={paidBy:'larissa',eduPercent:60};localStorage.setItem(STORAGE_KEY,JSON.stringify(state));
    globalThis.FormData=class{constructor(form){this.entries=new Map([...form.querySelectorAll('[name]')].filter(el=>!el.disabled).map(el=>[el.getAttribute('name'),el.value]));}get(name){return this.entries.get(name)??null;}};
-   await import('../web/app.js?ui-test='+width);await new Promise(setImmediate);
+   await import('../web/app.js?ui-test='+width+'-'+shared);await new Promise(setImmediate);
+   if(!shared){
+    assert.equal(document.querySelector('#couple-budget-summary').hidden,true);assert.equal(document.querySelector('#transaction-person-filter').closest('label').hidden,true);
+    globalThis.location.hash='#plano/inicio';event(window,'hashchange');assert.equal(document.querySelectorAll('#mobile-home-content [data-open-couple]').length,0);
+    event(document.querySelector('[data-add-transaction]'),'click');const single=document.querySelector('#transaction-form');
+    assert.equal(document.querySelector('#tx-sharing-fields').hidden,true);assert.equal(single.elements.paidBy.disabled,true);assert.equal(single.elements.splitMode.disabled,true);
+    single.elements.payee.value='Compra pessoal';single.elements.amount.value='25,00';single.elements.date.value='2026-10-19';single.elements.categorySearch.value='super';event(single.elements.categorySearch,'input');event(document.querySelector('#category-options [role=option]'),'click');event(single,'submit',{submitter:single.querySelector('button[type=submit]')});
+    const saved=JSON.parse(localStorage.getItem(STORAGE_KEY));assert.equal(saved.months['2026-10'].transactions.at(-1).sharing,undefined);assert.equal(saved.months['2026-10'].transactions.at(-1).amount,2500);
+    event(document.querySelector('[data-edit-tx=previous]'),'click');const legacy=document.querySelector('#transaction-form');legacy.elements.amount.value='12,00';event(legacy,'submit',{submitter:legacy.querySelector('button[type=submit]')});
+    const preserved=JSON.parse(localStorage.getItem(STORAGE_KEY)).months['2026-10'].transactions.find(t=>t.id==='previous');assert.deepEqual(preserved.sharing,{paidBy:'larissa',eduPercent:60});assert.equal(preserved.amount,1200);continue;
+   }
+
    globalThis.location.hash='#plano/visao';event(window,'hashchange');assert.equal(document.querySelector('.app-header').hidden,true);assert.equal(document.querySelector('#shared-month-slot').hidden,true);assert.ok(document.querySelector('[data-period-toggle]'));event(document.querySelector('[data-report-privacy]'),'click');assert.equal(JSON.parse(localStorage.getItem(STORAGE_KEY)).hideBalances,true);event(document.querySelector('[data-report-privacy]'),'click');globalThis.location.hash='#plano/planejar';event(window,'hashchange');assert.equal(document.querySelector('.app-header').hidden,false);
    assert.equal(document.querySelector('.app-month-row').parentElement.id,width>=720?'budget-desktop-month-slot':'budget-month-slot');
    const originalMedia=window.matchMedia;window.matchMedia=()=>({matches:false});event(window,'resize');assert.equal(document.querySelector('.app-month-row').parentElement.id,'budget-month-slot');window.matchMedia=originalMedia;event(window,'resize');assert.equal(document.querySelector('.app-month-row').parentElement.id,width>=720?'budget-desktop-month-slot':'budget-month-slot');
@@ -35,6 +48,7 @@ test('desktop transaction composer selects saved payee/category, saves once and 
    form.elements.amount.value='123,45';form.elements.date.value='2026-10-19';form.elements.categorySearch.value='Categoria inexistente';event(form.elements.categorySearch,'input');assert.equal(form.elements.categoryId.value,'');event(form,'submit',{submitter:form.querySelector('button[type=submit]')});assert.equal(JSON.parse(localStorage.getItem(STORAGE_KEY)).months['2026-10'].transactions.length,1);
    form.elements.categorySearch.value='super';event(form.elements.categorySearch,'input');event(document.querySelector('#category-options [role=option]'),'click');assert.equal(form.elements.categoryId.value,'mercado');
    assert.equal(document.querySelectorAll('[data-paid-by]').length,2);assert.equal(form.elements.paidBy.type,'hidden');
+   assert.match(document.querySelector('[data-paid-by=edu]').textContent,/Ana Cliente/);assert.match(document.querySelector('[data-paid-by=larissa]').textContent,/Bruno Convidado/);assert.doesNotMatch(document.querySelector('#tx-sharing-fields').textContent,/Eduardo|Larissa/);assert.equal(form.elements.paidBy.value,'edu');
    const eduButton=document.querySelector('[data-paid-by=edu]'),larissaButton=document.querySelector('[data-paid-by=larissa]');
    event(larissaButton,'click');assert.equal(form.elements.paidBy.value,'larissa');assert.equal(larissaButton.getAttribute('aria-pressed'),'true');
    event(eduButton,'click');assert.equal(form.elements.paidBy.value,'edu');assert.equal(eduButton.getAttribute('aria-pressed'),'true');assert.equal(larissaButton.getAttribute('aria-pressed'),'false');

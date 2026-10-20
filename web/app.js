@@ -15,6 +15,7 @@ import {wealthAt} from './reports-core.js?v=vpo-34';
 import {createCloudSync} from './cloud-sync.js?v=vpo-34';
 import {createSharingUI} from './sharing-ui.js?v=vpo-34';
 import {platform} from './platform.js';
+import {householdForSharing,inactiveHousehold} from './household-context.js';
 
 const $=s=>document.querySelector(s);
 const $$=s=>[...document.querySelectorAll(s)];
@@ -32,9 +33,11 @@ let state,hadStored=false,loadWarning=false,selectedMonth=currentMonth(),view='b
 const planStorage=platform.storage;
 try{const stored=planStorage.getItem(STORAGE_KEY);hadStored=!!stored;state=stored?validateState(JSON.parse(stored)):createState(platform.example);}catch{state=createState(platform.example);loadWarning=true;}
 const initialPlanSnapshot=JSON.stringify(state);
+let household=state.example&&!platform.independent?{enabled:true,people:{edu:'Edu',larissa:'Larissa'},current:null}:inactiveHousehold();
+function updateHousehold(info){const next=householdForSharing(info);if(JSON.stringify(next)===JSON.stringify(household))return;household=next;if(!household.enabled)personFilter='all';renderAll();}
 const reportUI=createReportsUI({root:$('#overview-content'),getState:()=>state,getEndMonth:()=>selectedMonth,onEditWealth:wealthDialog,onTogglePrivacy:()=>$('#privacy-toggle').click(),notify:toast});
 const cloudSync=createCloudSync({getState:()=>state,onApply:applyCloudPlan,onStatus:showSyncStatus,onConflict:syncConflictDialog,canApplyRemote:()=>!dialog.open&&$('#transaction-composer').hidden&&!document.querySelector('[data-assigned-input][data-editing=true]')&&!document.querySelector('#category-menu'),hadStored,storage:planStorage,fetcher:platform.fetcher});
-const sharingUI=createSharingUI({root:$('#sharing-settings'),sync:cloudSync,openDialog,closeDialog,notify:toast,fetcher:platform.fetcher,independent:platform.independent,allowEmptySwitch:()=>platform.independent&&!hadStored&&JSON.stringify(state)===initialPlanSnapshot&&!cloudSync.status.conflict});
+const sharingUI=createSharingUI({root:$('#sharing-settings'),sync:cloudSync,openDialog,closeDialog,notify:toast,fetcher:platform.fetcher,independent:platform.independent,onChange:updateHousehold,allowEmptySwitch:()=>platform.independent&&!hadStored&&JSON.stringify(state)===initialPlanSnapshot&&!cloudSync.status.conflict});
 platform.onReady?.(cloudSync,toast,{getState:()=>state,openDialog,closeDialog});
 
 const reorder=createReorder({root:$('#categories-list'),announce:message=>{$('#reorder-announcement').textContent=message;},onCancel:()=>renderBudget(),onCommit:(layout,label,focus)=>{
@@ -205,31 +208,37 @@ function renderTransactions(){
   $('#transactions-list').innerHTML=filtered.map(t=>{
     const c=state.categories.find(c=>c.id===t.categoryId),income=t.type==='income';
     const heading=t.date!==date?`<h3 class="tx-date">${esc(dayName(t.date))}</h3>`:'';date=t.date;
-    return `${heading}<article class="tx-row"><span class="tx-icon ${income?'income':''}">${income?icon('plus'):esc(c?categoryIcon(c.name):'•')}</span><button type="button" class="tx-info tx-edit" data-edit-tx="${esc(t.id)}" aria-label="Editar lançamento: ${esc(t.payee||t.description)}"><strong>${esc(t.payee||t.description)}</strong><small class="tx-category-tag ${income?'income':''}">${income?'Entrada de dinheiro':esc(c?categoryIcon(c.name)+' '+c.name:'Categoria')}</small>${!income?`<span class="tx-person-tag ${t.sharing?'':'unclassified'}">${esc(sharingLabel(t))}</span>`:''}${t.memo?`<span class="tx-memo">${esc(t.memo)}</span>`:''}</button><span class="tx-amount ${income?'income':''}">${income?'+':'−'} ${money(t.amount)}</span><button class="icon-button tx-delete" data-delete-tx="${esc(t.id)}" aria-label="Excluir ${esc(t.payee||t.description)}">${icon('trash')}</button></article>`;
+    return `${heading}<article class="tx-row"><span class="tx-icon ${income?'income':''}">${income?icon('plus'):esc(c?categoryIcon(c.name):'•')}</span><button type="button" class="tx-info tx-edit" data-edit-tx="${esc(t.id)}" aria-label="Editar lançamento: ${esc(t.payee||t.description)}"><strong>${esc(t.payee||t.description)}</strong><small class="tx-category-tag ${income?'income':''}">${income?'Entrada de dinheiro':esc(c?categoryIcon(c.name)+' '+c.name:'Categoria')}</small>${!income&&household.enabled?`<span class="tx-person-tag ${t.sharing?'':'unclassified'}">${esc(sharingLabel(t,household.people))}</span>`:''}${t.memo?`<span class="tx-memo">${esc(t.memo)}</span>`:''}</button><span class="tx-amount ${income?'income':''}">${income?'+':'−'} ${money(t.amount)}</span><button class="icon-button tx-delete" data-delete-tx="${esc(t.id)}" aria-label="Excluir ${esc(t.payee||t.description)}">${icon('trash')}</button></article>`;
   }).join('');
 }
 function renderOverview(){reportUI.render();}
-function renderHome(){$('#mobile-home-content').innerHTML=mobileHome(state,selectedMonth);}
+function renderHome(){$('#mobile-home-content').innerHTML=mobileHome(state,selectedMonth,{household});}
 function renderCouple(){
-  $('#couple-budget-summary').innerHTML=coupleCard(state,selectedMonth,{compact:true});
-  $('#couple-transactions-summary').innerHTML=coupleCard(state,selectedMonth,{header:true});
+  $('#couple-budget-summary').hidden=!household.enabled;
+  $('#couple-transactions-summary').hidden=!household.enabled||view!=='transactions';
+  $('#transaction-person-filter').closest('label').hidden=!household.enabled;
+  for(const key of ['edu','larissa'])$('#transaction-person-filter').querySelector(`[value=${key}]`).textContent=household.people[key]+' pagou';
+  $('#couple-budget-summary').innerHTML=household.enabled?coupleCard(state,selectedMonth,{compact:true,people:household.people}):'';
+  $('#couple-transactions-summary').innerHTML=household.enabled?coupleCard(state,selectedMonth,{header:true,people:household.people}):'';
   $('#transaction-person-filter').value=personFilter;
 }
 function coupleDialog(panel='summary'){
+  if(!household.enabled)return;
   closeComposer();
-  openDialog('Nosso acerto',coupleDetail(state,selectedMonth,{panel}),'UM PLANO PARA DOIS');dialog.classList.add('couple-dialog');
+  openDialog('Nosso acerto',coupleDetail(state,selectedMonth,{panel,people:household.people}),'UM PLANO PARA DOIS');dialog.classList.add('couple-dialog');
   $('#couple-month').onchange=e=>{if(validMonth(e.target.value)){selectedMonth=e.target.value;renderAll();coupleDialog(panel);}};
 }
 function settlementDialog(recordId=null){
+  if(!household.enabled)return;const people=household.people;
   const existing=recordId?state.household?.settlements.find(r=>r.id===recordId):null;
   if(recordId&&!existing)return toast('Este acerto não está mais disponível.');
   const summary=coupleSummary(state,selectedMonth),from=existing?.from||summary.from||'larissa',date=existing?.date||(selectedMonth===currentMonth()?today():selectedMonth+'-01');
-  openDialog(existing?'Editar acerto':'Registrar acerto',`<button type="button" class="couple-back" data-open-couple>‹ Voltar ao resumo</button><p class="settlement-note">Registre uma transferência que vocês já fizeram. Ela abate o saldo entre vocês e não muda as receitas, despesas ou o planejado da casa. Você pode registrar uma parte do valor.</p><form id="settlement-form"><label class="form-group"><span>Quem transferiu?</span><select name="from"><option value="edu" ${from==='edu'?'selected':''}>Edu → Larissa</option><option value="larissa" ${from==='larissa'?'selected':''}>Larissa → Edu</option></select></label><label class="form-group"><span>Valor transferido</span><input name="amount" inputmode="decimal" placeholder="0,00" value="${existing?inputMoney(existing.amount):summary.balance?inputMoney(Math.abs(summary.balance)):''}" maxlength="20" required><small>Informe o valor que foi efetivamente transferido.</small></label><label class="form-group"><span>Data da transferência</span><input type="date" name="date" value="${date}" min="1900-01-01" max="2199-12-31" required></label><label class="form-group"><span>Observação (opcional)</span><input name="memo" maxlength="280" value="${esc(existing?.memo||'')}" placeholder="Ex.: Pix do acerto de outubro"></label><p class="sharing-preview" id="settlement-preview" aria-live="polite"></p><p id="form-error" class="form-error" role="alert" hidden></p><button type="submit" class="btn btn-blue form-submit">${existing?'Salvar alterações':'Registrar transferência'} ${icon('check')}</button></form>`,'EDU + LARISSA');
+  openDialog(existing?'Editar acerto':'Registrar acerto',`<button type="button" class="couple-back" data-open-couple>‹ Voltar ao resumo</button><p class="settlement-note">Registre uma transferência que vocês já fizeram. Ela abate o saldo entre vocês e não muda as receitas, despesas ou o planejado da casa. Você pode registrar uma parte do valor.</p><form id="settlement-form"><label class="form-group"><span>Quem transferiu?</span><select name="from"><option value="edu" ${from==='edu'?'selected':''}>${esc(people.edu)} → ${esc(people.larissa)}</option><option value="larissa" ${from==='larissa'?'selected':''}>${esc(people.larissa)} → ${esc(people.edu)}</option></select></label><label class="form-group"><span>Valor transferido</span><input name="amount" inputmode="decimal" placeholder="0,00" value="${existing?inputMoney(existing.amount):summary.balance?inputMoney(Math.abs(summary.balance)):''}" maxlength="20" required><small>Informe o valor que foi efetivamente transferido.</small></label><label class="form-group"><span>Data da transferência</span><input type="date" name="date" value="${date}" min="1900-01-01" max="2199-12-31" required></label><label class="form-group"><span>Observação (opcional)</span><input name="memo" maxlength="280" value="${esc(existing?.memo||'')}" placeholder="Ex.: Pix do acerto de outubro"></label><p class="sharing-preview" id="settlement-preview" aria-live="polite"></p><p id="form-error" class="form-error" role="alert" hidden></p><button type="submit" class="btn btn-blue form-submit">${existing?'Salvar alterações':'Registrar transferência'} ${icon('check')}</button></form>`,people.edu+' + '+people.larissa);
   const form=$('#settlement-form');
   const preview=()=>{const amount=parseMoney(form.elements.amount.value),originalEffect=existing?(existing.from==='larissa'?existing.amount:-existing.amount):0,selectedEffect=form.elements.from.value==='larissa'?amount:-amount;
     if(!amount){$('#settlement-preview').textContent='';return;}
     const newMonth=form.elements.date.value.slice(0,7),balance=summary.balance+(existing&&existing.date.slice(0,7)<=selectedMonth?originalEffect:0)-(newMonth<=selectedMonth?selectedEffect:0);
-    $('#settlement-preview').textContent=newMonth!==selectedMonth?'O acerto será registrado no mês da data escolhida.':balance?`Após registrar: ${balance>0?'Larissa transfere para Edu':'Edu transfere para Larissa'} ${money(Math.abs(balance))}.`:'Após registrar: tudo equilibrado entre vocês.';
+    $('#settlement-preview').textContent=newMonth!==selectedMonth?'O acerto será registrado no mês da data escolhida.':balance?`Após registrar: ${balance>0?people.larissa+' transfere para '+people.edu:people.edu+' transfere para '+people.larissa} ${money(Math.abs(balance))}.`:'Após registrar: tudo equilibrado entre vocês.';
   };
   form.elements.amount.oninput=preview;form.elements.from.onchange=preview;form.elements.date.onchange=preview;preview();
   form.onsubmit=e=>{e.preventDefault();const f=new FormData(form),amount=parseMoney(f.get('amount'));
@@ -241,7 +250,7 @@ function removeSettlement(recordId){
   const record=state.household?.settlements.find(r=>r.id===recordId);if(!record)return;
   confirmAction('Excluir este acerto?','A transferência será removida do histórico e o saldo entre vocês será recalculado. As despesas da casa permanecem no plano.','Excluir acerto',()=>{state.household.settlements=state.household.settlements.filter(r=>r.id!==recordId);persist();renderAll();coupleDialog();toast('Acerto excluído.',()=>{if(!state.household.settlements.some(r=>r.id===record.id))state.household.settlements.push(record);persist();renderAll();if(dialog.open)coupleDialog();});});
 }
-function appOptions(){openDialog('Seu plano',`<div class="app-options"><button type="button" data-options-couple>${icon('home')} Nosso acerto</button><button type="button" data-options-privacy>${icon(state.hideBalances?'eye-off':'eye')} ${state.hideBalances?'Mostrar':'Ocultar'} valores</button><button type="button" data-options-group>${icon('plus')} Novo grupo</button><button type="button" data-options-category>${icon('plus')} Nova categoria</button><button type="button" data-options-settings>${icon('gear')} Ajustes e sincronização</button></div>`);$('[data-options-couple]').onclick=()=>coupleDialog();$('[data-options-privacy]').onclick=()=>{closeDialog();$('#privacy-toggle').click();};$('[data-options-group]').onclick=()=>groupDialog();$('[data-options-category]').onclick=()=>newCategoryDialog();$('[data-options-settings]').onclick=()=>{closeDialog();goPlan('settings');};}
+function appOptions(){openDialog('Seu plano',`<div class="app-options">${household.enabled?`<button type="button" data-options-couple>${icon('home')} Nosso acerto</button>`:''}<button type="button" data-options-privacy>${icon(state.hideBalances?'eye-off':'eye')} ${state.hideBalances?'Mostrar':'Ocultar'} valores</button><button type="button" data-options-group>${icon('plus')} Novo grupo</button><button type="button" data-options-category>${icon('plus')} Nova categoria</button><button type="button" data-options-settings>${icon('gear')} Ajustes e sincronização</button></div>`);if($('[data-options-couple]'))$('[data-options-couple]').onclick=()=>coupleDialog();$('[data-options-privacy]').onclick=()=>{closeDialog();$('#privacy-toggle').click();};$('[data-options-group]').onclick=()=>groupDialog();$('[data-options-category]').onclick=()=>newCategoryDialog();$('[data-options-settings]').onclick=()=>{closeDialog();goPlan('settings');};}
 
 function wealthDialog(month=selectedMonth){
   const wealth=wealthAt(state,month),snapshot=state.wealth?.[month];
@@ -282,6 +291,7 @@ function groupDialog(groupId=null){
 }
 function closeComposer(){$('#transaction-composer').hidden=true;$('#transaction-composer').replaceChildren();}
 function transactionDialog(type='expense',transactionId=null,options={}){
+  const people=household.people;
   const existing=transactionId?Object.values(state.months).flatMap(m=>m.transactions).find(t=>t.id===transactionId):null;
   if(transactionId&&!existing)return toast('Este lançamento não está mais disponível.');
   let txType=existing?.type||type;
@@ -295,7 +305,7 @@ function transactionDialog(type='expense',transactionId=null,options={}){
       <div class="form-group tx-payee-field"><label for="transaction-payee" id="payee-label">Estabelecimento</label><div class="payee-combobox"><div class="payee-input-wrap"><input id="transaction-payee" name="payee" value="${esc(existing?.payee||'')}" required maxlength="100" autocomplete="off" autocapitalize="words" spellcheck="false" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="payee-options" aria-describedby="payee-help" placeholder="Busque ou digite um novo"><button type="button" id="payee-toggle" aria-label="Mostrar estabelecimentos salvos" tabindex="-1">${icon('chevron')}</button></div><div id="payee-panel" class="payee-panel" hidden><div class="payee-panel-label">ESTABELECIMENTOS</div><div id="payee-options" role="listbox" aria-label="Estabelecimentos salvos"></div><div class="payee-panel-status" data-payee-status role="status" aria-live="polite"></div></div></div><small id="payee-help">Os novos nomes são guardados automaticamente ao salvar.</small></div>
       <div class="form-group" id="tx-category-field"><label for="transaction-category">Categoria</label><div class="payee-combobox category-combobox"><div class="payee-input-wrap"><input id="transaction-category" name="categorySearch" value="${esc(state.categories.find(c=>c.id===existing?.categoryId)?.name||'')}" placeholder="Digite para buscar uma categoria" maxlength="140" autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="category-options" required><button type="button" id="category-toggle" aria-label="Mostrar categorias" tabindex="-1">${icon('chevron')}</button></div><input type="hidden" name="categoryId" value="${esc(existing?.categoryId||'')}" hidden><div id="category-panel" class="payee-panel" hidden><div class="payee-panel-label">CATEGORIAS</div><div id="category-options" role="listbox" aria-label="Categorias disponíveis"></div><div class="payee-panel-status" data-payee-status role="status" aria-live="polite"></div></div></div></div>
       <label class="form-group transaction-date-field"><span>Data</span><span class="date-control">${icon('calendar')}<span class="date-text" id="transaction-date-value">${formatTransactionDate(date)}</span><span class="date-change">Alterar ${icon('chevron')}</span><input type="date" name="date" value="${date}" min="1900-01-01" max="2199-12-31" required aria-label="Data do lançamento"></span></label>
-      <div class="sharing-fields" id="tx-sharing-fields"><div class="sharing-grid"><div class="form-group tx-payer-field"><span id="transaction-payer-label">Quem pagou?</span><input type="hidden" name="paidBy" value=""><div class="payer-options" role="group" aria-labelledby="transaction-payer-label"><button type="button" class="payer-option" data-paid-by="edu" aria-label="Eduardo pagou" aria-pressed="false"><span class="payer-glyph" aria-hidden="true">👨</span><span>Eduardo</span><span class="payer-check" aria-hidden="true">✓</span></button><button type="button" class="payer-option" data-paid-by="larissa" aria-label="Larissa pagou" aria-pressed="false"><span class="payer-glyph" aria-hidden="true">👩</span><span>Larissa</span><span class="payer-check" aria-hidden="true">✓</span></button></div></div><label class="form-group"><span>Como dividir?</span><select name="splitMode" aria-label="Como dividir a despesa"><option value="equal">Meio a meio · 50/50</option><option value="edu">Só Eduardo</option><option value="larissa">Só Larissa</option><option value="custom">Personalizar</option></select></label></div><label class="form-group custom-split" id="custom-split-field" hidden><span>Parte de Eduardo (%)</span><input type="number" name="eduPercent" min="0" max="100" step="1" inputmode="numeric" value="50"><small>A parte de Larissa completa 100%.</small></label><p class="sharing-preview" id="sharing-preview" aria-live="polite"></p></div>
+      <div class="sharing-fields" id="tx-sharing-fields"><div class="sharing-grid"><div class="form-group tx-payer-field"><span id="transaction-payer-label">Quem pagou?</span><input type="hidden" name="paidBy" value=""><div class="payer-options" role="group" aria-labelledby="transaction-payer-label"><button type="button" class="payer-option" data-paid-by="edu" aria-label="${esc(people.edu)} pagou" aria-pressed="false"><span class="payer-glyph" aria-hidden="true">${esc(Array.from(people.edu)[0])}</span><span>${esc(people.edu)}</span><span class="payer-check" aria-hidden="true">✓</span></button><button type="button" class="payer-option" data-paid-by="larissa" aria-label="${esc(people.larissa)} pagou" aria-pressed="false"><span class="payer-glyph" aria-hidden="true">${esc(Array.from(people.larissa)[0])}</span><span>${esc(people.larissa)}</span><span class="payer-check" aria-hidden="true">✓</span></button></div></div><label class="form-group"><span>Como dividir?</span><select name="splitMode" aria-label="Como dividir a despesa"><option value="equal">Meio a meio · 50/50</option><option value="edu">Só ${esc(people.edu)}</option><option value="larissa">Só ${esc(people.larissa)}</option><option value="custom">Personalizar</option></select></label></div><label class="form-group custom-split" id="custom-split-field" hidden><span>Parte de ${esc(people.edu)} (%)</span><input type="number" name="eduPercent" min="0" max="100" step="1" inputmode="numeric" value="50"><small>A parte de ${esc(people.larissa)} completa 100%.</small></label><p class="sharing-preview" id="sharing-preview" aria-live="polite"></p></div>
       <div class="date-shortcuts" aria-label="Atalhos de data"><button type="button" data-quick-date="today">Hoje</button><button type="button" data-quick-date="yesterday">Ontem</button></div>
       <details class="memo-details" ${memo?'open':''}><summary>Adicionar observação <span>Opcional</span></summary><label class="form-group"><span class="visually-hidden">Observações do lançamento</span><textarea name="memo" maxlength="280" rows="2" placeholder="Ex.: compras da semana, almoço com a família">${esc(memo||'')}</textarea></label></details>
       ${existing&&!existing.payee?'<p class="legacy-transaction-note">A descrição anterior está nas observações. Complete o estabelecimento acima.</p>':''}
@@ -311,7 +321,7 @@ function transactionDialog(type='expense',transactionId=null,options={}){
   function updateType(){
     $$('[data-tx-type]').forEach(b=>{const active=b.dataset.txType===txType;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});
     const income=txType==='income';
-    $('#tx-sharing-fields').hidden=income;['paidBy','splitMode','eduPercent'].forEach(name=>form.elements[name].disabled=income);
+    $('#tx-sharing-fields').hidden=income||!household.enabled;['paidBy','splitMode','eduPercent'].forEach(name=>form.elements[name].disabled=income||!household.enabled);
     $('#tx-category-field').hidden=income;form.elements.categoryId.disabled=income;form.elements.categorySearch.disabled=income;form.elements.categorySearch.required=!income;categoryPicker.close();
     $('#payee-label').textContent=income?'Recebido de':'Estabelecimento';
     form.elements.payee.placeholder=income?'Ex.: empresa, cliente, pessoa':'Ex.: Zaffari, Uber, farmácia';
@@ -337,16 +347,16 @@ function transactionDialog(type='expense',transactionId=null,options={}){
   form.elements.date.onchange=updateDate;
   form.elements.date.onclick=()=>{try{form.elements.date.showPicker?.();}catch{}};
   $$('[data-quick-date]').forEach(b=>b.onclick=()=>{form.elements.date.value=b.dataset.quickDate==='today'?today():dateOffset(today(),-1);updateDate();});
-  form.elements.paidBy.value=existing?.sharing?.paidBy||options.paidBy||'';
+  form.elements.paidBy.value=household.enabled?(existing?.sharing?.paidBy||options.paidBy||household.current||''):'';
   const priorPercent=existing?.sharing?.eduPercent??options.eduPercent??50;
   form.elements.splitMode.value=priorPercent===50?'equal':priorPercent===100?'edu':priorPercent===0?'larissa':'custom';form.elements.eduPercent.value=String(priorPercent);
   const splitPercent=()=>form.elements.splitMode.value==='equal'?50:form.elements.splitMode.value==='edu'?100:form.elements.splitMode.value==='larissa'?0:Number(form.elements.eduPercent.value);
   function updateSharing(){
     $('#custom-split-field').hidden=form.elements.splitMode.value!=='custom';
-    form.elements.eduPercent.disabled=txType==='income'||form.elements.splitMode.value!=='custom'||!form.elements.paidBy.value;form.elements.eduPercent.required=!form.elements.eduPercent.disabled;
+    form.elements.eduPercent.disabled=!household.enabled||txType==='income'||form.elements.splitMode.value!=='custom'||!form.elements.paidBy.value;form.elements.eduPercent.required=!form.elements.eduPercent.disabled;
     const n=parseMoney(form.elements.amount.value),p=splitPercent(),payer=form.elements.paidBy.value;
-    $$('[data-paid-by]').forEach(button=>{const active=button.dataset.paidBy===payer;button.setAttribute('aria-pressed',String(active));button.classList.toggle('selected',active);button.disabled=txType==='income';});
-    $('#sharing-preview').textContent=!payer?'Toque em quem pagou para incluir no acerto.':!Number.isInteger(p)||p<0||p>100?'Informe um percentual inteiro entre 0 e 100.':!n?'O acerto será calculado quando você informar o valor.':(()=>{const parts=expenseShares({type:'expense',amount:n,sharing:{paidBy:payer,eduPercent:p}});return parts.inAcerto?`Eduardo: ${money(parts.edu)} · Larissa: ${money(parts.larissa)}.`:'Despesa pessoal: fica fora do acerto entre vocês.';})();
+    $$('[data-paid-by]').forEach(button=>{const active=button.dataset.paidBy===payer;button.setAttribute('aria-pressed',String(active));button.classList.toggle('selected',active);button.disabled=!household.enabled||txType==='income';});
+    $('#sharing-preview').textContent=!payer?'Toque em quem pagou para incluir no acerto.':!Number.isInteger(p)||p<0||p>100?'Informe um percentual inteiro entre 0 e 100.':!n?'O acerto será calculado quando você informar o valor.':(()=>{const parts=expenseShares({type:'expense',amount:n,sharing:{paidBy:payer,eduPercent:p}});return parts.inAcerto?`${people.edu}: ${money(parts.edu)} · ${people.larissa}: ${money(parts.larissa)}.`:'Despesa pessoal: fica fora do acerto entre vocês.';})();
   }
   $$('[data-paid-by]').forEach(button=>button.onclick=()=>{form.elements.paidBy.value=form.elements.paidBy.value===button.dataset.paidBy?'':button.dataset.paidBy;updateSharing();});
   form.elements.paidBy.onchange=updateSharing;form.elements.splitMode.onchange=updateSharing;form.elements.eduPercent.oninput=updateSharing;form.elements.amount.oninput=updateSharing;
@@ -361,10 +371,11 @@ function transactionDialog(type='expense',transactionId=null,options={}){
     if(txType==='expense'&&!state.categories.some(c=>c.id===categoryId))return formError('Escolha uma categoria válida.');
     const storedName=payeeHistory(state,txType).find(p=>payeeKey(p.name)===payeeKey(payee))?.name||payee;
     const transaction={id:existing?.id||id(),type:txType,description:storedName,payee:storedName,memo,amount,date,categoryId};
-    if(txType==='expense'&&form.elements.paidBy.value){
-      const p=splitPercent();if(!Number.isInteger(p)||p<0||p>100||form.elements.splitMode.value==='custom'&&!form.elements.eduPercent.value.trim())return formError('Informe um percentual inteiro entre 0 e 100 para Edu.');
+    if(txType==='expense'&&household.enabled&&form.elements.paidBy.value){
+      const p=splitPercent();if(!Number.isInteger(p)||p<0||p>100||form.elements.splitMode.value==='custom'&&!form.elements.eduPercent.value.trim())return formError('Informe um percentual inteiro entre 0 e 100 para '+people.edu+'.');
       transaction.sharing={paidBy:form.elements.paidBy.value,eduPercent:p};
     }
+    if(txType==='expense'&&!household.enabled&&existing?.sharing)transaction.sharing={...existing.sharing};
     try{saveTransaction(state,transaction,existing?.id||null);}catch(error){return formError(error.message);}
     selectedMonth=month;persist();closeTransaction();renderAll();toast(existing?'Lançamento atualizado.':txType==='income'?'Entrada salva.':'Saída salva.');
     if(e.submitter?.value==='another')transactionDialog(txType,null,{date,paidBy:transaction.sharing?.paidBy,eduPercent:transaction.sharing?.eduPercent});
@@ -537,6 +548,6 @@ window.addEventListener('online',()=>cloudSync.flush());
 window.addEventListener('focus',()=>{if(!$('#budget-app').hidden)cloudSync.flush();});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&!$('#budget-app').hidden)cloudSync.flush();});
 $('#sync-now').onclick=()=>cloudSync.flush();
-setInterval(()=>{if(view==='settings'&&!$('#budget-app').hidden&&document.visibilityState!=='hidden'&&!dialog.open)sharingUI.refresh();},10000);
+setInterval(()=>{if(!$('#budget-app').hidden&&document.visibilityState!=='hidden'&&!dialog.open&&$('#transaction-composer').hidden)sharingUI.refresh();},10000);
 $('#sync-recoveries').onclick=recoveryDialog;
-renderPreview();route();
+renderPreview();route();if(!$('#budget-app').hidden)sharingUI.refresh();

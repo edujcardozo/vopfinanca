@@ -143,6 +143,16 @@ begin
   if p_path='/api/sharing' and p_method='GET' and (result->>'status')::integer=200 then
     select coalesce(jsonb_agg(p),'[]') into items from jsonb_array_elements(result#>'{body,plans}') p where vpo_private.owner_approved((p->>'id')::uuid);
     result=jsonb_set(result,'{body,plans}',items);
+    -- Only participants of the authorized active plan are returned. Names come
+    -- from confirmed registrations, never editable authorization metadata.
+    select coalesce(jsonb_agg(jsonb_build_object('id',u.id,'name',coalesce(nullif(r.full_name,''),u.email),'email',u.email,
+      'role',case when u.id=(result#>>'{body,scope,id}')::uuid then 'owner' else 'editor' end)
+      order by case when u.id=(result#>>'{body,scope,id}')::uuid then 0 else 1 end),'[]') into items
+      from auth.users u join vpo_private.registrations r on r.user_id=u.id
+      where u.email_confirmed_at is not null and not coalesce((result#>>'{body,scope,revoked}')::boolean,true)
+      and u.id in (select (result#>>'{body,scope,id}')::uuid union all select m.member_id from vpo_private.members m
+        where m.owner_id=(result#>>'{body,scope,id}')::uuid);
+    result=jsonb_set(result,'{body,participants}',items);
   end if;
   return result;
 end $$;

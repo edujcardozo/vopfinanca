@@ -79,3 +79,5 @@
 @media(prefers-reduced-motion:reduce){.payer-option{transition:none}}
 
 @media(max-width:359px){.payer-option{padding-inline:8px;gap:6px;font-size:14px}.payer-check{display:none}}
+
+.payer-option .payer-glyph{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#e8e8ff;color:#4d50ce;font-size:14px;font-weight:750}.payer-option[data-paid-by=larissa] .payer-glyph{background:#e5f2d2;color:#406a22}

@@ -6,7 +6,7 @@ export function expenseShares(tx){
  const {paidBy,eduPercent}=tx.sharing,edu=Math.round(tx.amount*eduPercent/100),larissa=tx.amount-edu;
  return {paidBy,edu,larissa,personal:eduPercent===0||eduPercent===100,inAcerto:eduPercent>0&&eduPercent<100||paidBy==='edu'&&larissa>0||paidBy==='larissa'&&edu>0,balance:(paidBy==='edu'?tx.amount:0)-edu};
 }
-export function sharingLabel(tx){const s=expenseShares(tx);if(!s)return 'Quem pagou não informado';const p=tx.sharing.eduPercent;return `${PERSON_NAMES[s.paidBy]} pagou · ${p===50?'50/50':p===100?'Só Edu':p===0?'Só Larissa':`Edu ${p}% / Larissa ${100-p}%`}`;}
+export function sharingLabel(tx,names=PERSON_NAMES){const s=expenseShares(tx);if(!s)return 'Quem pagou não informado';const p=tx.sharing.eduPercent;return `${names[s.paidBy]} pagou · ${p===50?'50/50':p===100?'Só '+names.edu:p===0?'Só '+names.larissa:`${names.edu} ${p}% / ${names.larissa} ${100-p}%`}`;}
 export function coupleSummary(state,month){
  if(!validMonth(month))throw new Error('Mês inválido.');
  const result={month,eduPaid:0,larissaPaid:0,eduShare:0,larissaShare:0,expenses:0,unknownCount:0,unknownAmount:0,carryover:0,generated:0,settled:0,balance:0,transactions:[],settlements:[]};
