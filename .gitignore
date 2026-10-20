@@ -1,0 +1,10 @@
+
+node_modules/
+dist/
+worker/assets.generated.js
+.sites-runtime/
+dist-independent/
+.env
+.env.local
+standalone/.env
+.netlify/

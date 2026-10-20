@@ -1,0 +1,81 @@
+/* Modal pages preserve all controls and values; no content is cut off to hide a scrollbar. */
+.action-dialog{width:min(560px,calc(100% - 32px));max-width:calc(100% - 32px);max-height:calc(var(--dialog-viewport-height,100dvh) - 32px);padding:22px;overflow:visible;box-sizing:border-box}
+.action-dialog[open]{display:flex;flex-direction:column}
+.action-dialog .dialog-heading{flex:0 0 auto;min-width:0;gap:12px;margin-bottom:16px}.action-dialog .dialog-heading>div{min-width:0}.action-dialog .dialog-heading h2{font-size:24px;line-height:1.2;overflow-wrap:anywhere}.action-dialog .dialog-heading .eyebrow{font-size:9px;line-height:1.4;margin-bottom:6px}.action-dialog .dialog-heading .icon-button{flex:0 0 36px}
+.action-dialog .dialog-handle{flex-shrink:0}
+.action-dialog #dialog-body{min-width:0;min-height:0;max-width:100%;overflow:visible;scrollbar-gutter:auto;padding:0}
+.action-dialog .form-group{min-width:0;max-width:100%;margin-bottom:15px}.action-dialog .form-group input,.action-dialog .form-group select,.action-dialog textarea{max-width:100%;min-width:0;box-sizing:border-box}.action-dialog .form-group small{font-size:11px;line-height:1.5}.action-dialog .dialog-note,.action-dialog .confirm-text,.action-dialog .group-dialog-intro{font-size:12px;line-height:1.6;margin-bottom:16px;overflow-wrap:anywhere}
+.action-dialog .form-group>span,.action-dialog .form-group>label{font-size:12px;line-height:1.4;margin-bottom:6px}.action-dialog .confirm-actions,.action-dialog .sync-conflict-actions{flex-wrap:wrap;min-width:0}.action-dialog .confirm-actions>*{min-width:0;max-width:100%;white-space:normal}.action-dialog .app-options{min-width:0}.action-dialog .app-options button{overflow-wrap:anywhere;white-space:normal}
+.dialog-pages{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:13px;margin-top:10px;border-top:1px solid #e8e5ed;min-width:0}
+.dialog-pages button{font:inherit;font-size:12px;font-weight:650;min-height:42px;border:0;border-radius:9px;padding:9px 12px;background:#efefff;color:#555af5}.dialog-pages [data-dialog-next]{background:#555af5;color:white}.dialog-pages button:disabled{visibility:hidden}.dialog-pages>span{font-size:11px;color:#85808f;font-variant-numeric:tabular-nums;white-space:nowrap}
+[data-dialog-page-hidden]{display:none!important}
+.dialog-paged #dialog-body .dialog-flow-container{display:contents!important}
+.dialog-paged #dialog-body>.dialog-flow-container{display:contents!important}
+.dialog-paged #dialog-body{display:flex;flex-direction:column;gap:10px}
+.dialog-paged .form-group,.dialog-paged .dialog-note,.dialog-paged .confirm-text,.dialog-paged .sharing-preview,.dialog-paged .couple-history-row,.dialog-paged .couple-person-details,.dialog-paged .couple-result,.dialog-paged .couple-detail-toolbar{margin-block:0!important}
+.dialog-paged .transaction-form-actions{margin:0;padding-top:8px}.dialog-paged .transaction-form-actions .tx-save-note{display:none}.dialog-paged .sharing-fields>legend{font-size:12px;font-weight:700;color:#555af5;padding:0}.dialog-paged .memo-details{margin:0}.dialog-paged .memo-details textarea{max-height:90px;min-height:60px;width:100%}
+.dialog-tight .form-group>span,.dialog-tight .form-group>label{font-size:11px}.dialog-tight .form-group input,.dialog-tight .form-group select{min-height:42px;padding-block:8px}.dialog-tight .form-group .amount-input{font-size:25px;padding-block:8px}.dialog-tight .dialog-heading{margin-bottom:10px}.dialog-tight .dialog-heading h2{font-size:21px}.dialog-tight .dialog-heading .eyebrow{display:none}.dialog-tight .dialog-note{font-size:11px;padding:10px}.dialog-tight .form-submit{min-height:42px;margin-top:0}.dialog-tight .tx-type-switch{margin-bottom:10px}.dialog-tight .settlement-note{font-size:11px;padding:10px;margin-bottom:10px}
+.dialog-tight .couple-detail-toolbar{gap:8px}.dialog-tight .couple-result{padding:12px}.dialog-tight .couple-person-details>section{padding:10px}.dialog-tight .couple-person-details h3{margin-bottom:7px}.dialog-tight .couple-view-links button{min-height:40px;padding-block:8px}
+.action-dialog.couple-dialog{width:min(610px,calc(100% - 32px));max-width:calc(100% - 32px);max-height:calc(var(--dialog-viewport-height,100dvh) - 32px);overflow:visible;padding:22px}
+.couple-dialog .dialog-heading{margin-bottom:14px;padding-bottom:12px}.couple-dialog #dialog-body{overflow:visible;padding:0}
+.couple-snapshot .couple-detail-toolbar{margin-bottom:14px}.couple-snapshot .couple-result{margin-bottom:12px;min-width:0}.couple-snapshot .couple-person-details{margin-bottom:12px;gap:10px}.couple-snapshot .couple-person-details>section{padding:12px}.couple-snapshot .couple-person-details h3{margin-bottom:8px}.couple-snapshot .couple-person-details dl>div{margin-top:4px;line-height:1.5}
+.couple-view-links{display:grid;grid-template-columns:minmax(0,1fr);gap:0}
+.couple-view-links button{display:flex;align-items:center;gap:10px;min-height:42px;width:100%;min-width:0;text-align:left;background:none;border:0;border-top:1px solid #eeebf2;font-size:12px;color:#555af5;padding:10px 2px;line-height:1.4}
+.couple-view-links button>span{min-width:0;flex:1;overflow-wrap:anywhere}.couple-view-links button>small{display:grid;place-items:center;min-width:22px;min-height:22px;padding:2px 5px;border-radius:7px;background:#f0eff8;font-size:10px;color:#797183}.couple-view-links button>b{font-size:19px;font-weight:400;color:#aaa2b6}
+.couple-view-heading{font-size:14px;line-height:1.5;margin:0 0 12px}.couple-list-content{min-width:0}.couple-list-view .couple-back{margin:0;min-height:42px}.couple-list-view .couple-history-row{padding:12px 0}.couple-list-view>.couple-register{margin-top:14px}.couple-detail .couple-calculation{margin:0 0 12px}.couple-detail .couple-calculation dd{white-space:normal;overflow-wrap:anywhere}
+.couple-dialog.dialog-paged .couple-view-links button{border:0;border-radius:10px;background:#f8f7fb;padding:10px 12px}.couple-dialog.dialog-paged .couple-person-details{width:100%}
+/* Dropdowns stay attached to their field, outside the modal flow. */
+.action-dialog .payee-panel{max-width:100%;z-index:25}.action-dialog .payee-panel #payee-options,.action-dialog .payee-panel #category-options{max-height:min(210px,30dvh)}
+@media(max-width:719px){
+ .action-dialog,.action-dialog.couple-dialog{width:calc(100% - 20px);max-width:calc(100% - 20px);margin:auto;max-height:calc(var(--dialog-viewport-height,100dvh) - 24px);padding:16px;border-radius:21px;background:#f4f2eb}
+ .action-dialog .dialog-handle{display:none}.action-dialog .dialog-heading{margin:0 0 13px;padding:0 0 11px}.action-dialog .dialog-heading h2{font-size:23px}.action-dialog .dialog-heading .eyebrow{font-size:8px}.action-dialog .dialog-heading .icon-button{width:34px;height:34px;flex-basis:34px}
+ .action-dialog .form-group input,.action-dialog .form-group select{min-height:46px;font-size:16px}.action-dialog .form-group .amount-input{font-size:27px;padding-block:10px}.action-dialog .form-group{margin-bottom:14px}.action-dialog .form-submit{min-height:46px}.dialog-pages{padding-top:10px;margin-top:10px;gap:7px}.dialog-pages button{font-size:12px;min-height:42px;padding-inline:10px}
+ .couple-snapshot .couple-detail-toolbar{flex-wrap:nowrap;align-items:center;gap:10px;margin-bottom:12px}.couple-snapshot .couple-detail-toolbar .couple-period{flex:1 1 auto}.couple-snapshot .couple-detail-toolbar .couple-period>span{display:none}.couple-snapshot .couple-detail-toolbar .couple-period input{max-width:100%;width:100%;font-size:16px;min-height:44px}.couple-snapshot .couple-register{width:auto;flex:0 0 auto;font-size:11px;padding-inline:10px;min-height:44px}
+ .couple-snapshot .couple-result{padding:13px;gap:8px}.couple-snapshot .couple-result>strong{font-size:24px}.couple-snapshot .couple-person-details{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.couple-snapshot .couple-person-details>section{padding:10px}.couple-snapshot .couple-person-details dl>div{font-size:11px}.couple-snapshot .couple-person-details h3{font-size:12px;margin-bottom:8px}.couple-view-links button{min-height:44px;font-size:12px}
+ .dialog-tight .couple-snapshot .couple-result>span{flex-basis:auto}.dialog-tight .couple-result>strong{font-size:23px}.dialog-tight .form-group input,.dialog-tight .form-group select{min-height:42px}.dialog-tight .dialog-heading h2{font-size:20px}
+}
+@media(max-height:500px){.action-dialog,.action-dialog.couple-dialog{padding:12px 16px}.action-dialog .dialog-heading{padding-bottom:8px;margin-bottom:10px}.action-dialog .dialog-heading h2{font-size:20px}.action-dialog .dialog-heading .eyebrow{display:none}.dialog-pages{padding-top:8px;margin-top:8px}.dialog-pages button{min-height:38px}.dialog-paged .memo-details textarea{max-height:65px;min-height:44px}.dialog-paged .transaction-form-actions{gap:6px}.dialog-paged .transaction-form-actions button{min-height:38px;font-size:11px}.dialog-paged .transaction-form-actions .save-another{flex-basis:auto}}
+/* The period calendar also fits short screens without a scrolling preset list. */
+.period-preset-select,.period-endpoint-tabs{display:none}
+.report-period-picker{overflow:visible}
+@media(max-width:719px),(max-height:560px){
+ .report-period-picker{max-height:calc(100dvh - 24px)}.period-picker-layout{display:block}.period-presets{display:none}
+ .period-preset-select{display:flex;align-items:center;gap:12px;padding:10px 15px;border-bottom:1px solid #ebe7f1;font-size:12px}.period-preset-select select{flex:1;min-width:0;max-width:100%;min-height:42px;border:1px solid #e2dce9;border-radius:8px;padding:7px 10px;background:white;color:#555af5;font:inherit;font-size:16px}
+ .period-calendars{padding:12px 15px;gap:14px}.period-month-panel h3{margin-bottom:4px}.period-year{margin-bottom:6px}.period-month-grid button{min-height:36px}.period-picker-heading{padding:9px 15px}.period-picker-heading>button{height:34px;width:34px}.period-picker-footer{padding:10px 15px}.period-picker-footer .period-selection{width:auto;min-width:0;font-size:11px}.period-picker-footer>div{width:auto}.period-picker-footer button{min-height:40px}
+}
+@media(max-height:430px){
+ .report-period-picker{top:12px!important;bottom:auto!important;left:50%!important;right:auto!important;transform:translateX(-50%);width:min(680px,calc(100vw - 24px))!important}
+ .period-picker-heading{padding:5px 12px}.period-picker-heading h2{font-size:13px}.period-picker-heading>button{width:30px;height:30px}.period-preset-select{padding:6px 12px}.period-preset-select select{min-height:36px;font-size:14px}.period-calendars{padding:7px 12px}.period-month-panel h3{display:none}.period-year>button{height:30px}.period-year{margin-bottom:4px}.period-month-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.period-month-grid button{min-height:32px;font-size:11px}.period-picker-footer{padding:6px 12px}.period-picker-footer button{min-height:36px}.period-picker-footer .period-selection{font-size:10px}
+}
+@media(max-height:430px) and (max-width:600px){
+ .period-endpoint-tabs{display:flex;gap:5px;padding:6px 12px 0}.period-endpoint-tabs button{flex:1;border:0;border-radius:7px;min-height:32px;background:#f3effa;color:#81748e;font:inherit;font-size:11px}.period-endpoint-tabs button[aria-pressed=true]{background:#eeecff;color:#555af5;font-weight:650}
+ .period-calendars{grid-template-columns:minmax(0,1fr)}.report-period-picker[data-calendar-endpoint=start] [data-calendar-panel=end],.report-period-picker[data-calendar-endpoint=end] [data-calendar-panel=start]{display:none}
+}
+
+/* Position against the visible viewport, including the space left by a phone keyboard. */
+.action-dialog,.action-dialog.couple-dialog{position:fixed;left:50%;right:auto;top:var(--dialog-center-y,50%);bottom:auto;transform:translate(-50%,-50%);margin:0!important}
+
+/* Payer selection is a regular transaction field, with two quick choices. */
+#tx-sharing-fields{padding:0;border:0;border-radius:0;background:none;margin:0 0 16px;min-width:0}
+#tx-sharing-fields .sharing-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start}
+#tx-sharing-fields .form-group{margin:0;min-width:0}
+#tx-sharing-fields .form-group>span{font-size:12px;font-weight:700;line-height:1.4;margin-bottom:6px}
+.payer-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;min-width:0}
+.payer-option{display:flex;align-items:center;justify-content:center;gap:7px;min-width:0;min-height:49px;padding:9px 10px;border:1px solid #d9dbea;border-radius:8px;background:#fff;color:#464454;font:inherit;font-size:13px;line-height:1.35;text-align:center;transition:background .15s,border-color .15s,box-shadow .15s}
+.payer-option .payer-glyph{font-size:23px;line-height:1;flex-shrink:0}.payer-option>span:nth-child(2){min-width:0;overflow-wrap:anywhere;font-weight:600}.payer-check{font-size:12px;line-height:1;opacity:0;color:#555af5;flex-shrink:0}
+.payer-option:hover{border-color:#b5b2f2;background:#faf9ff}.payer-option.selected{border-color:#555af5;background:#f0efff;color:#4549d0;box-shadow:inset 0 0 0 1px #555af5}.payer-option.selected .payer-check{opacity:1}.payer-option:focus-visible{outline:2px solid #8b7cff;outline-offset:3px}.payer-option:disabled{cursor:default}
+#tx-sharing-fields .sharing-preview{font-size:11px;line-height:1.5;color:#807a89;margin:10px 0 0}
+#tx-sharing-fields .custom-split{margin-top:14px;max-width:100%}
+.transaction-composer #tx-sharing-fields{margin:0}.transaction-composer #tx-sharing-fields .sharing-grid{max-width:none}.transaction-composer .payer-option{min-height:48px;height:48px;font-size:13px}
+.dialog-paged #tx-sharing-fields .form-group{margin:0}.dialog-paged .tx-payer-field{width:100%}
+@media(max-width:719px){
+ #tx-sharing-fields{margin:0 0 14px}
+ #tx-sharing-fields .sharing-grid{grid-template-columns:minmax(0,1fr);gap:15px}
+ #tx-sharing-fields .form-group>span{font-size:12px;margin-bottom:6px}
+ .payer-options{gap:10px}.payer-option{border-color:#ddd7c9;border-radius:13px;min-height:48px;padding:10px 12px;font-size:15px;gap:8px;background:#fff;color:#33312e}
+ .payer-option .payer-glyph{font-size:25px}.payer-check{font-size:13px}.payer-option.selected{color:#4549d0;border-color:#555af5;background:#f0efff}
+ #tx-sharing-fields .sharing-preview{font-size:11px;margin-top:9px}
+}
+@media(prefers-reduced-motion:reduce){.payer-option{transition:none}}
+
+@media(max-width:359px){.payer-option{padding-inline:8px;gap:6px;font-size:14px}.payer-check{display:none}}

@@ -1,0 +1,10 @@
+[build]
+  command = "npm test && npm run build:standalone"
+  publish = "dist-independent"
+
+[build.environment]
+  NODE_VERSION = "24"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"

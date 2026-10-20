@@ -1,0 +1,9 @@
+{
+  "repository": "edujcardozo/vopfinanca",
+  "branch": "main",
+  "netlify": {
+    "siteId": null,
+    "siteUrl": null,
+    "automaticDeploysVerified": false
+  }
+}
