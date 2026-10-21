@@ -1,5 +1,5 @@
 import {HISTORY_METHODS,planningHistory,applyPlanningHistory,undoPlanningHistory} from './planning-history.js';
-import {categoryIcon} from './category-icons.js?v=vpo-34';
+import {categoryIcon} from './category-icons.js?v=vpo-43';
 
 const esc=value=>String(value).replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const monthLabel=key=>new Intl.DateTimeFormat('pt-BR',{month:'short',year:'numeric'}).format(new Date(key+'-15T12:00:00'));

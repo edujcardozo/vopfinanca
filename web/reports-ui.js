@@ -1,6 +1,6 @@
 import {createReportPeriod} from './report-period.js?v=vpo-34';
 import {categoryBudgetDetails} from './budget-progress.js?v=vpo-34';
-import {categoryIcon} from './category-icons.js?v=vpo-34';
+import {categoryIcon} from './category-icons.js?v=vpo-43';
 import {formatMoney,groupsFor,monthlyCategoryTotals} from './core.js?v=vpo-34';
 import {buildReports} from './reports-core.js?v=vpo-34';
 

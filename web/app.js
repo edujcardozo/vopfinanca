@@ -1,23 +1,23 @@
 import {createDialogPages} from './dialog-pages.js?v=vpo-39';
 import {coupleSummary,sharingLabel,expenseShares,saveSettlement} from './couple-core.js?v=vpo-34';
 import {coupleCard,coupleDetail} from './couple-ui.js?v=vpo-40';
-import {mobileHome} from './mobile-home.js?v=vpo-34';
+import {mobileHome} from './mobile-home.js?v=vpo-43';
 import {deleteCategory,categoryHasActivity} from './category-actions.js?v=vpo-34';
-import {matchingCategories} from './category-search.js?v=vpo-34';
+import {matchingCategories} from './category-search.js?v=vpo-43';
 import {categoryBudgetDetails,categorySpendingLabel} from './budget-progress.js?v=vpo-34';
-import {categoryIcon} from './category-icons.js?v=vpo-34';
+import {categoryIcon} from './category-icons.js?v=vpo-43';
 import {mountPayeeAutocomplete} from './payee-autocomplete.js?v=vpo-34';
 import {applyLayout} from './reorder-core.js?v=vpo-34';
 import {createReorder} from './reorder.js?v=vpo-34';
 import {STORAGE_KEY,formatMoney,parseMoney,today,currentMonth,validDate,validMonth,shiftMonth,id,createState,getMonth,ensureMonth,totals,monthlyPlanTotals,monthlyCategoryTotals,validateState,dateOffset,formatTransactionDate,payeeHistory,matchingPayees,payeeKey,searchPayeeKey,saveTransaction,groupsFor,createGroup,renameGroup,moveCategory} from './core.js?v=vpo-34';
-import {createReportsUI} from './reports-ui.js?v=vpo-34';
+import {createReportsUI} from './reports-ui.js?v=vpo-43';
 import {wealthAt} from './reports-core.js?v=vpo-34';
 import {createCloudSync} from './cloud-sync.js?v=vpo-34';
 import {createSharingUI} from './sharing-ui.js?v=vpo-34';
 import {platform} from './platform.js';
 import {householdForSharing,inactiveHousehold} from './household-context.js';
 import {accountUsername} from './account-identity.js';
-import {createPlanningHistoryUI,historyIcon} from './planning-history-ui.js';
+import {createPlanningHistoryUI,historyIcon} from './planning-history-ui.js?v=vpo-43';
 import {createPlanningHistoryIntro} from './planning-history-intro.js';
 
 const $=s=>document.querySelector(s);
@@ -459,7 +459,7 @@ function categoryDialog(categoryId){
   };
 }
 function newCategoryDialog(selectedGroup=groupsFor(state)[0].id){
-  openDialog('Nova categoria',`<form id="new-category-form"><label class="form-group"><span>Nome da categoria</span><span class="new-category-name-control"><span id="suggested-category-icon" aria-hidden="true">📁</span><input name="name" placeholder="Ex.: reforma, estudos, aniversário" required maxlength="70" autocomplete="off"></span></label><div class="new-category-details"><label class="form-group"><span>Grupo</span><select name="group">${groupOptions(selectedGroup)}</select></label><label class="form-group"><span>Planejado</span><input name="assigned" inputmode="decimal" placeholder="0,00" maxlength="20" aria-describedby="new-category-help"></label></div><p class="new-category-help" id="new-category-help">O ícone acompanha o nome. O planejado pode começar em zero.</p><p id="form-error" class="form-error" role="alert" hidden></p><button class="btn btn-blue form-submit" type="submit">Criar categoria ${icon('plus')}</button></form>`,`SEU PLANO · ${esc(monthName(selectedMonth))}`,'new-category-dialog');
+  openDialog('Nova categoria',`<form id="new-category-form"><label class="form-group"><span>Nome da categoria</span><span class="new-category-name-control"><span id="suggested-category-icon" aria-hidden="true">${categoryIcon('')}</span><input name="name" placeholder="Ex.: reforma, estudos, aniversário" required maxlength="70" autocomplete="off"></span></label><div class="new-category-details"><label class="form-group"><span>Grupo</span><select name="group">${groupOptions(selectedGroup)}</select></label><label class="form-group"><span>Planejado</span><input name="assigned" inputmode="decimal" placeholder="0,00" maxlength="20" aria-describedby="new-category-help"></label></div><p class="new-category-help" id="new-category-help">O ícone acompanha o nome. O planejado pode começar em zero.</p><p id="form-error" class="form-error" role="alert" hidden></p><button class="btn btn-blue form-submit" type="submit">Criar categoria ${icon('plus')}</button></form>`,`SEU PLANO · ${esc(monthName(selectedMonth))}`,'new-category-dialog');
   $('#new-category-form').elements.name.oninput=e=>{$('#suggested-category-icon').textContent=categoryIcon(e.target.value);};
   $('#new-category-form').onsubmit=e=>{
     e.preventDefault();const f=new FormData(e.currentTarget),name=String(f.get('name')).trim(),group=String(f.get('group')),assigned=String(f.get('assigned')).trim()?parseMoney(f.get('assigned')):0;
@@ -506,6 +506,15 @@ function renderPreview(){
 }
 let chosenGoal='viagem';
 const goalTexts={viagem:'Uma viagem começa bem antes da mala. Separe um pouco por mês e veja esse plano se aproximar.',reserva:'Imprevistos fazem parte da vida. Uma reserva ajuda você a atravessar cada um deles com mais tranquilidade.',lazer:'Um café, um jantar, um encontro. Quando esses momentos estão no plano, fica mais fácil aproveitar.'};
+document.addEventListener('keydown',e=>{
+  if(e.defaultPrevented||e.repeat||e.isComposing||!e.altKey||e.ctrlKey||e.metaKey||e.shiftKey||e.getModifierState?.('AltGraph')||(e.code!=='KeyN'&&e.key?.toLowerCase()!=='n'))return;
+  if($('#budget-app').hidden||!window.matchMedia('(min-width: 720px)').matches||dialog.open||!$('#transaction-composer').hidden||e.target.closest?.('input,textarea,select,[contenteditable]:not([contenteditable="false"])'))return;
+  const trigger=$('.app-header [data-add-transaction]');
+  if(!trigger||trigger.disabled)return;
+  e.preventDefault();
+  // Use the button so subscription/access checks follow the same path.
+  trigger.click();
+});
 document.addEventListener('click',e=>{
   const open=e.target.closest('[data-open-plan]');if(open){
     const fromGoal=!!open.closest('.goal-answer');goPlan();$('#mobile-menu').hidden=true;$('#menu-toggle').setAttribute('aria-expanded','false');

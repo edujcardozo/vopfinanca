@@ -9,6 +9,8 @@ const rules=[
   ['💧',/\b(agua|aguas|saneamento|esgoto)\b/],
   ['🔥',/\b(gas|botijao)\b/],
   ['📱',/\b(celular|telefone|telefonia|recarga|chip)\b/],
+  ['🛠️',/\b(reforma|reformas|obra|obras|construcao|material de construcao)\b/],
+  ['🛋️',/\b(movel|moveis|mobilia|decoracao|eletrodomestico|eletrodomesticos)\b/],
   ['🏠',/\b(moradia|aluguel|condominio|habitacao|casa|apartamento|prestacao do imovel)\b/],
   ['🏫',/\b(escola|escolar|creche|escolinha|colegio|mensalidade escolar)\b/],
   ['🎓',/\b(faculdade|universidade|curso|cursos|estudos|educacao|pos graduacao)\b/],
@@ -17,21 +19,39 @@ const rules=[
   ['🦷',/\b(dentista|dentario|odontologia|ortodontia)\b/],
   ['🧼',/\b(higiene|fralda|fraldas|sabonete|sabonetes|limpeza)\b/],
   ['👶',/\b(bebe|bebes|baba|enxoval|maternidade)\b/],
+  ['🧸',/\b(brinquedo|brinquedos|crianca|criancas|filho|filhos|filha|filhas)\b/],
   ['🐾',/\b(pet|pets|veterinario|veterinaria|racao|cachorro|cachorros|gato|gatos|animal|animais)\b/],
   ['🛒',/\b(supermercado|supermercados|mercado|mercados|feira|feiras|hortifruti|alimentacao)\b/],
+  ['🍺',/\b(cerveja|cervejas|chopp|chope|cervejaria)\b/],
+  ['🍷',/\b(vinho|vinhos|vinicola|espumante|espumantes)\b/],
+  ['🍻',/\b(bar|bares|pub|pubs|happy hour|boteco|botecos)\b/],
+  ['🥤',/\b(bebida|bebidas|refrigerante|refrigerantes|suco|sucos)\b/],
   ['☕',/\b(cafe|cafes|cafeteria|cafeterias)\b/],
+  ['🥐',/\b(padaria|padarias|pao|paes|confeitaria)\b/],
+  ['🍕',/\b(pizza|pizzas|pizzaria|pizzarias)\b/],
+  ['🍔',/\b(hamburguer|hamburgueres|hamburgueria|fast food)\b/],
   ['🍽️',/\b(restaurante|restaurantes|almoco|jantar|ifood|delivery|lanche|lanches|comer fora)\b/],
   ['🚗',/\b(transporte|carro|carros|uber|taxi|mobilidade|automovel)\b/],
   ['🚌',/\b(onibus|metro|passagem|passagens|transporte publico)\b/],
   ['🅿️',/\b(estacionamento|estacionamentos|pedagio|pedagios)\b/],
+  ['🚲',/\b(bicicleta|bicicletas|bike|ciclismo)\b/],
   ['✈️',/\b(viagem|viagens|ferias|turismo|hotel|hospedagem)\b/],
-  ['💪',/\b(academia|fitness|treino|treinos|esporte|esportes|pilates)\b/],
-  ['🎬',/\b(cinema|filme|filmes)\b/],
+  ['⚽',/\b(futebol|futsal|pelada|gremio|colorado|futebol society)\b/],
+  ['🎾',/\b(beach tennis|padel|aula de tenis|aulas de tenis|clube de tenis)\b/],
+  ['🏊',/\b(natacao|piscina|piscinas)\b/],
+  ['🏃',/\b(corrida|corridas|caminhada|caminhadas)\b/],
+  ['💪',/\b(academia|fitness|treino|treinos|esporte|esportes|pilates|yoga)\b/],
+  ['🎬',/\b(cinema|cinemas|filme|filmes)\b/],
+  ['🎭',/\b(teatro|teatros|museu|museus|cultura|exposicao|exposicoes)\b/],
+  ['🏞️',/\b(parque|parques|trilha|trilhas|natureza|camping|acampamento)\b/],
+  ['🏖️',/\b(praia|praias|litoral)\b/],
+  ['🎡',/\b(passeio|passeios|passear|atracao|atracoes|excursao|excursoes)\b/],
   ['📺',/\b(netflix|streaming|disney|prime video|televisao|tv)\b/],
-  ['🎵',/\b(spotify|musica|musicas|show|shows)\b/],
+  ['🎵',/\b(spotify|musica|musicas|show|shows|concerto|concertos)\b/],
   ['🎮',/\b(jogo|jogos|videogame|playstation|xbox|game|games)\b/],
   ['🎉',/\b(lazer|diversao|festa|festas|aniversario|aniversarios)\b/],
   ['🎁',/\b(presente|presentes|natal)\b/],
+  ['👟',/\b(tenis)\b/],
   ['👕',/\b(roupa|roupas|vestuario|calcado|calcados|sapato|sapatos)\b/],
   ['💇',/\b(beleza|salao|cabelo|cabeleireiro|barbeiro|barbearia|manicure|estetica)\b/],
   ['💻',/\b(computador|notebook|eletronico|eletronicos|tecnologia|software)\b/],
@@ -46,8 +66,10 @@ const rules=[
 ];
 export function categoryIcon(name){
   const text=String(name||'');
-  const explicit=text.match(/\p{Extended_Pictographic}(?:\uFE0F|\p{Emoji_Modifier}|\u200D\p{Extended_Pictographic})*/u)?.[0];
+  // Folder placeholders from older names must not override their meaning.
+  const folders=new Set(['📁','📂','🗂','🗃','🗄']);
+  const explicit=[...text.matchAll(/\p{Extended_Pictographic}(?:\uFE0F|\p{Emoji_Modifier}|\u200D\p{Extended_Pictographic})*/gu)].map(match=>match[0]).find(icon=>!folders.has(icon.replace(/\uFE0F/g,'')));
   if(explicit)return explicit;
   const normalized=text.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('pt-BR').replace(/[^a-z0-9]+/g,' ').trim();
-  return rules.find(([,pattern])=>pattern.test(normalized))?.[0]||'📁';
+  return rules.find(([,pattern])=>pattern.test(normalized))?.[0]||'💰';
 }
