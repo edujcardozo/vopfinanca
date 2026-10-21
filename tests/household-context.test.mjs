@@ -39,7 +39,7 @@ test('legacy Sites responses use the signed-in name and accepted member username
 test('cards, calculations and mobile home use the active people safely and personal home has no settlement',()=>{
   const state=createState(false,'2026-10');saveTransaction(state,{id:'expense',type:'expense',amount:10000,date:'2026-10-19',description:'Mercado',categoryId:'mercado',sharing:{paidBy:'edu',eduPercent:50}});
   const people={edu:'Ana & João',larissa:'<img src=x onerror=alert(1)>'};
-  for(const html of [coupleCard(state,'2026-10',{people}),coupleCard(state,'2026-10',{people,compact:true}),...['summary','expenses','calculation'].map(panel=>coupleDetail(state,'2026-10',{people,panel}))]){
+  for(const html of [coupleCard(state,'2026-10',{people}),coupleCard(state,'2026-10',{people,compact:true}),coupleCard(state,'2026-10',{people,header:true}),...['summary','expenses','calculation'].map(panel=>coupleDetail(state,'2026-10',{people,panel}))]){
     assert.doesNotMatch(html,/Edu|Larissa|<img|&amp;amp;/);assert.match(html,/Ana &amp; João/);assert.match(html,/&lt;img/);
   }
   assert.doesNotMatch(mobileHome(state,'2026-10',{household:{enabled:false}}),/Nosso acerto|data-open-couple/);

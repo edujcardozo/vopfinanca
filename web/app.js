@@ -1,6 +1,6 @@
 import {createDialogPages} from './dialog-pages.js?v=vpo-39';
 import {coupleSummary,sharingLabel,expenseShares,saveSettlement} from './couple-core.js?v=vpo-34';
-import {coupleCard,coupleDetail} from './couple-ui.js?v=vpo-34';
+import {coupleCard,coupleDetail} from './couple-ui.js?v=vpo-40';
 import {mobileHome} from './mobile-home.js?v=vpo-34';
 import {deleteCategory,categoryHasActivity} from './category-actions.js?v=vpo-34';
 import {matchingCategories} from './category-search.js?v=vpo-34';

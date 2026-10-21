@@ -70,46 +70,122 @@
  .budget-active{--planned-column:110px;--available-column:120px}
 }
 
-/* Movimentos: period and actions first, search and compact filters directly below. */
+/* Movimentos: readable controls, consistent sizing and a quiet settlement summary. */
 #transactions-desktop-month-slot:empty{display:none}
+.transactions-active .transaction-tools{min-width:0}
+.transactions-active .transaction-tools .search-box,.transactions-active .transaction-tools .couple-filter select{border:1px solid #dfe1ee;background:#fff;box-shadow:0 1px 2px #20234f03}
+.transactions-active .transaction-tools .search-box{gap:10px;min-width:0}
+.transactions-active .transaction-tools .search-box .icon{width:18px;height:18px;color:#7c8098;flex:0 0 18px}
+.transactions-active .transaction-tools .search-box input{color:#292c55;font-weight:400;line-height:1.4}
+.transactions-active .transaction-tools .search-box input::placeholder{color:#7c7f94;opacity:1}
+.transactions-active .transaction-tools .couple-filter select{color:#444963;font-weight:500;line-height:1.4;text-overflow:ellipsis}
+.transactions-active .transaction-tools .filter-tabs{display:flex;align-items:center;gap:2px;white-space:nowrap;border:1px solid #e5e5f1;background:#edecf6;box-shadow:inset 0 1px 2px #29254b03}
+.transactions-active .transaction-tools .filter-tabs button{flex:1;border:0;color:#6d7088;font-weight:600;line-height:1.3;background:transparent;transition:background .15s,color .15s,box-shadow .15s}
+.transactions-active .transaction-tools .filter-tabs button.active{background:#fff;color:#4d50bc;font-weight:650;box-shadow:0 1px 4px #25214e12,inset 0 0 0 1px #e5e5f0}
+.transactions-active .transaction-tools .filter-tabs button:focus-visible{outline:2px solid #777bf0;outline-offset:1px}
+.transactions-active .couple-header-summary{border-color:#e1e2ef;background:#fff;box-shadow:0 1px 2px #20234f03}
+.transactions-active .couple-header-label{min-width:0}
+.transactions-active .couple-header-label strong{color:#454963;font-weight:650}
+.transactions-active .couple-header-label small{display:block;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;color:#74778d;overflow-wrap:normal}
+.transactions-active .couple-header-label small.couple-header-people{display:flex;align-items:center;gap:4px}
+.transactions-active .couple-header-name{min-width:0;flex:0 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.transactions-active .couple-header-people>span[aria-hidden]{flex:0 0 auto;color:#969ab0;font-size:10px}
+.transactions-active .couple-header-summary>b{font-weight:700;letter-spacing:-.2px;background:#efefff;color:#5356cc;font-variant-numeric:tabular-nums}
+.transactions-active .couple-header-summary.balanced>b{color:#47733b;background:#edf5e6}
+.transactions-active .couple-header-arrow{width:14px;height:14px;flex:0 0 14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;color:#9b9eb5}
+.transactions-active .couple-header-summary:hover{border-color:#c7caf0;background:#fdfdff}
+.transactions-active .tx-date{font-size:12px;line-height:1.5;font-weight:600;letter-spacing:0;color:#6c708a;text-transform:none}
+.transactions-active .tx-date::first-letter{text-transform:uppercase}
 @media(min-width:720px){
- .app-main.transactions-active{padding-top:12px}
- .transactions-active .app-header{min-height:40px;margin-bottom:12px;gap:16px;align-items:center}
+ .app-main.transactions-active{padding-top:16px}
+ .transactions-active .app-header{min-height:44px;margin-bottom:14px;gap:18px;align-items:center}
  .transactions-active .app-header>div:first-child{min-width:0}
  .transactions-active .app-header .app-title-label{display:none}
  .transactions-active .app-header #view-title{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
- #transactions-desktop-month-slot .app-month-row{display:flex;align-items:center;justify-content:flex-start;min-height:40px;gap:12px;margin:0;padding:0}
- #transactions-desktop-month-slot .month-control{gap:5px;min-width:0}
- #transactions-desktop-month-slot .month-title{font-size:17px;font-weight:700;letter-spacing:-.3px;line-height:1.3;white-space:nowrap;min-height:38px;padding:7px 3px}
- #transactions-desktop-month-slot .month-control .icon-button{width:30px;height:34px;min-height:34px;border:1px solid #e1deeb;border-radius:7px;background:white}
- #transactions-desktop-month-slot #today-month{font-size:10px;min-height:32px;padding:5px 0;white-space:nowrap}
- .transactions-active .app-header-actions{gap:9px;margin:0}.transactions-active .app-header .device-label{font-size:10px;gap:5px}.transactions-active .app-header-actions .icon-button{width:34px;height:38px}.transactions-active .app-header .btn{min-height:38px;padding:8px 13px;border-radius:8px;font-size:11px}.transactions-active .app-header .btn .icon{width:16px;height:16px}
- .transactions-active .transaction-tools{display:grid;grid-template-columns:minmax(160px,1fr) minmax(140px,175px) auto minmax(200px,245px);gap:9px;align-items:center;margin:0 0 10px;padding:0}
- .transactions-active .transaction-tools .search-box{min-height:40px;padding:8px 11px;border-radius:8px}.transactions-active .transaction-tools .search-box input{font-size:12px}
- .transactions-active .transaction-tools .couple-filter select{height:40px;min-height:40px;font-size:11px;padding:8px 26px 8px 10px;border-radius:8px}
- .transactions-active .transaction-tools .filter-tabs{min-height:40px;padding:3px;gap:2px;border-radius:8px}.transactions-active .transaction-tools .filter-tabs button{min-height:32px;padding:7px 9px;font-size:10px;border-radius:6px}
+ #transactions-desktop-month-slot .app-month-row{display:flex;align-items:center;justify-content:flex-start;min-height:44px;gap:14px;margin:0;padding:0}
+ #transactions-desktop-month-slot .month-control{gap:6px;min-width:0}
+ #transactions-desktop-month-slot .month-title{display:inline-block;font-size:20px;font-weight:700;letter-spacing:-.35px;line-height:1.3;white-space:nowrap;min-height:42px;padding:8px 5px;text-transform:none;color:#252951}
+ #transactions-desktop-month-slot .month-title::first-letter{text-transform:uppercase}
+ #transactions-desktop-month-slot .month-control .icon-button{width:34px;height:38px;min-height:38px;border:1px solid #dfe1ee;border-radius:10px;background:#fff;color:#80849d}
+ #transactions-desktop-month-slot .month-control .icon-button:hover{border-color:#c6c9e6;background:#fafaff;color:#555af5}
+ #transactions-desktop-month-slot #today-month{display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;min-height:34px;padding:6px 10px;white-space:nowrap;border:1px solid #e1e2ef;border-radius:9px;background:#fff;color:#5b5fbd}
+ .transactions-active .app-header-actions{gap:10px;margin:0;flex-shrink:0}
+ .transactions-active .app-header .device-label{font-size:12px;gap:6px;font-weight:500;line-height:1.4;color:#70758b}
+ .transactions-active .app-header .device-label .icon{width:14px;height:14px}
+ .transactions-active .app-header-actions .icon-button{width:40px;height:42px;border:1px solid #e0e2ee;border-radius:10px;background:#fff;color:#7a7e99}
+ .transactions-active .app-header-actions .icon-button .icon{width:19px;height:19px}
+ .transactions-active .app-header .btn{min-height:42px;padding:10px 15px;border-radius:10px;font-size:13px;font-weight:650;gap:8px;line-height:1.35;box-shadow:0 2px 3px #555af510}
+ .transactions-active .app-header .btn .icon{width:17px;height:17px}
+ .transactions-active .transaction-tools{display:grid;grid-template-columns:minmax(220px,1fr) 180px auto minmax(220px,248px);gap:10px;align-items:center;margin:0 0 16px;padding:0}
+ .transactions-active .transaction-tools .search-box{grid-column:1;grid-row:1;min-height:44px;padding:10px 13px;border-radius:10px;max-width:none}
+ .transactions-active .transaction-tools .search-box input{font-size:14px}
+ .transactions-active .transaction-tools .couple-filter{grid-column:2;grid-row:1}
+ .transactions-active .transaction-tools .couple-filter select{height:44px;min-height:44px;font-size:13px;padding:10px 28px 10px 12px;border-radius:10px}
+ .transactions-active .transaction-tools .filter-tabs{grid-column:3;grid-row:1;min-height:44px;padding:3px;border-radius:10px;justify-self:stretch}
+ .transactions-active .transaction-tools .filter-tabs button{min-height:36px;padding:8px 12px;font-size:12px;border-radius:7px}
  .transactions-active .transaction-tools #couple-transactions-summary{grid-column:4;grid-row:1;min-width:0;padding:0}
- .transactions-active .transaction-tools .couple-header-summary{min-height:40px;height:40px;max-width:none;padding:5px 9px;gap:7px;border-radius:9px;background:#ffffffa6}
- .transactions-active .transaction-tools .couple-avatars{display:none}.transactions-active .transaction-tools .couple-header-label{min-width:0}.transactions-active .transaction-tools .couple-header-label strong{font-size:10px;line-height:1.35}.transactions-active .transaction-tools .couple-header-label small{font-size:9px;line-height:1.35}.transactions-active .transaction-tools .couple-header-summary>b{font-size:12px;line-height:1.4;padding:4px 6px;border-radius:6px}.transactions-active .transaction-tools .couple-header-arrow{font-size:18px}
- .transactions-active .tx-date{margin-top:11px;margin-bottom:8px;font-size:11px;line-height:1.5}.transactions-active #transactions-list>.tx-date:first-child{margin-top:0}
+ .transactions-active .transaction-tools .couple-header-summary{min-height:44px;height:44px;max-width:none;padding:6px 10px;gap:9px;border-radius:10px}
+ .transactions-active .transaction-tools .couple-avatars{display:none}
+ .transactions-active .transaction-tools .couple-header-label strong{font-size:12px;line-height:1.3}
+ .transactions-active .transaction-tools .couple-header-label small{font-size:11px;line-height:1.4;margin-top:1px}
+ .transactions-active .transaction-tools .couple-header-summary>b{font-size:14px;line-height:1.3;padding:5px 7px;border-radius:7px;flex:none}
+ .transactions-active .transaction-tools:has(.couple-filter[hidden]){grid-template-columns:minmax(220px,1fr) auto}
+ .transactions-active .transaction-tools:has(.couple-filter[hidden]) .filter-tabs{grid-column:2;grid-row:1}
+ .transactions-active #transactions-list>.tx-date:first-child{margin-top:0}
+ .transactions-active .tx-date{margin-top:16px;margin-bottom:10px}
 }
-@media(min-width:720px) and (max-width:1100px){
- .transactions-active .app-header .device-label{display:none}
+@media(min-width:720px) and (max-width:1199px){
+ .transactions-active .transaction-tools{grid-template-columns:minmax(0,1fr) 240px;row-gap:10px}
+ .transactions-active .transaction-tools .search-box{grid-column:1;grid-row:1}
+ .transactions-active .transaction-tools .couple-filter{grid-column:2;grid-row:1}
+ .transactions-active .transaction-tools .filter-tabs{grid-column:1;grid-row:2;justify-self:start}
+ .transactions-active .transaction-tools #couple-transactions-summary{grid-column:2;grid-row:2;justify-self:stretch;width:auto}
+}
+@media(min-width:720px) and (max-width:1100px){.transactions-active .app-header .device-label{display:none}}
+@media(min-width:720px) and (max-width:959px){
  #transactions-desktop-month-slot #today-month{display:none}
- #transactions-desktop-month-slot .month-title{font-size:15px}
- .transactions-active .transaction-tools{grid-template-columns:minmax(140px,1fr) minmax(145px,auto) auto;gap:8px}
- .transactions-active .transaction-tools #couple-transactions-summary{grid-column:1/-1;grid-row:2;justify-self:end;width:min(100%,320px)}
+ #transactions-desktop-month-slot .month-title{font-size:18px;letter-spacing:-.25px}
+ #transactions-desktop-month-slot .month-control .icon-button{width:30px}
+ .transactions-active .app-header .btn{font-size:12px;padding-inline:12px}
+ .transactions-active .app-header-actions{gap:8px}
+ .transactions-active .transaction-tools{grid-template-columns:minmax(0,1fr) 216px}
+ .transactions-active .transaction-tools .couple-filter select{font-size:12px}
+ .transactions-active .transaction-tools .filter-tabs button{padding-inline:10px}
+ .transactions-active .transaction-tools .couple-header-summary{gap:6px;padding-inline:9px}
+ .transactions-active .transaction-tools .couple-header-summary>b{font-size:13px;padding-inline:6px}
 }
 @media(max-width:719px){
  #transactions-desktop-month-slot{display:none}
- .transactions-active .app-header{min-height:48px;padding-top:3px;padding-bottom:5px}
- .transactions-active .app-header h1{font-size:24px;line-height:1.2;letter-spacing:-.6px}
+ .transactions-active .mobile-plan-month{display:none}
+ .transactions-active .app-header{min-height:48px;padding-top:3px;padding-bottom:5px;gap:12px}
+ .transactions-active .app-header h1{font-size:25px;line-height:1.2;letter-spacing:-.6px}
  .transactions-active .app-header-actions{margin-top:0}
- .transactions-active #shared-month-slot.transactions-month-header{gap:5px;margin-bottom:4px}
- .transactions-active #shared-month-slot .couple-header-summary{min-height:44px;padding-block:5px}
- .transactions-active .transaction-tools{padding-top:3px;padding-bottom:5px;margin-bottom:3px;gap:6px}
- .transactions-active #transactions-list>.tx-date:first-child{padding-top:10px}
+ .transactions-active #shared-month-slot.transactions-month-header{gap:8px;margin-bottom:6px}
+ .transactions-active #shared-month-slot .month-title{display:inline-block;font-size:18px;letter-spacing:-.25px;text-transform:none}
+ .transactions-active #shared-month-slot .month-title::first-letter{text-transform:uppercase}
+ .transactions-active #shared-month-slot .couple-header-summary{min-height:48px;padding:7px 11px;border-radius:12px}
+ .transactions-active #shared-month-slot .couple-header-label strong{font-size:12px;line-height:1.4}
+ .transactions-active #shared-month-slot .couple-header-label small{font-size:11px;line-height:1.4}
+ .transactions-active #shared-month-slot .couple-header-summary>b{font-size:14px;padding:5px 8px;border-radius:8px}
+ .transactions-active .transaction-tools{grid-template-columns:minmax(0,1fr) auto;padding:4px 16px 8px;margin-bottom:6px;gap:8px}
+ .transactions-active .transaction-tools .search-box{grid-column:1/-1;min-height:46px;padding:10px 13px;border-radius:12px;border-color:#e2dfd6}
+ .transactions-active .transaction-tools .search-box input{font-size:16px}
+ .transactions-active .transaction-tools .couple-filter select{font-size:16px;min-height:44px;height:44px;border:1px solid #e2dfd6;border-radius:10px;padding:9px 24px 9px 10px}
+ .transactions-active .transaction-tools .filter-tabs{min-height:44px;border-radius:10px;padding:3px;background:#ece9e2;border-color:#e3dfd5;gap:1px}
+ .transactions-active .transaction-tools .filter-tabs button{font-size:12px;min-width:44px;min-height:36px;padding:8px 4px;border-radius:7px}
+ .transactions-active .transaction-tools .filter-tabs button.active{color:#fff;background:#555af5;box-shadow:0 1px 3px #555af520}
+ .transactions-active .transaction-tools:has(.couple-filter[hidden]){grid-template-columns:minmax(0,1fr)}
+ .transactions-active .transaction-tools:has(.couple-filter[hidden]) .filter-tabs{grid-column:1;justify-self:start}
+ .transactions-active #transactions-list>.tx-date:first-child{padding-top:8px}
 }
+@media(max-width:359px){
+ .transactions-active .transaction-tools{grid-template-columns:minmax(0,1fr)}
+ .transactions-active .transaction-tools .couple-filter{grid-column:1;grid-row:2}
+ .transactions-active .transaction-tools .filter-tabs{grid-column:1;grid-row:3;justify-self:stretch}
+ .transactions-active .transaction-tools .filter-tabs button{font-size:12px;padding-inline:8px}
+ .transactions-active .transaction-tools:has(.couple-filter[hidden]) .filter-tabs{grid-row:2}
+}
+@media(prefers-reduced-motion:reduce){.transactions-active .transaction-tools .filter-tabs button{transition:none}}
 
 /* All summary figures use only the selected month. */
 .budget-active .budget-heading .summary-card.monthly-plan-card{display:flex;flex-direction:column;align-items:stretch;gap:9px;padding:10px 12px;border:1px solid #e2deec;border-radius:12px;background:#fff;container-type:inline-size}
