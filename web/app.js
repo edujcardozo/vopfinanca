@@ -19,6 +19,7 @@ import {householdForSharing,inactiveHousehold} from './household-context.js';
 import {accountUsername} from './account-identity.js';
 import {createPlanningHistoryUI,historyIcon} from './planning-history-ui.js?v=vpo-43';
 import {createPlanningHistoryIntro} from './planning-history-intro.js';
+import {revealTransactionComposer} from './transaction-focus.js';
 
 const $=s=>document.querySelector(s);
 const $$=s=>[...document.querySelectorAll(s)];
@@ -138,7 +139,7 @@ function route(){
     $$('[data-view]').forEach(el=>{const active=el.dataset.view===view;el.classList.toggle('active',active);if(active)el.setAttribute('aria-current','page');else el.removeAttribute('aria-current');});
     $('.mobile-fab').hidden=['settings','overview'].includes(view);
     document.querySelector('meta[name="theme-color"]').content=window.matchMedia('(max-width:719px)').matches?(view==='home'?'#555af5':'#f4f2eb'):'#f7f7fc';
-    cachePlan();cloudSync.start().then(()=>{sharingUI.handleInvitation();historyIntroReady=true;historyIntro?.maybeShow();});renderAll();window.scrollTo({top:0,behavior:'instant'});
+    cachePlan();cloudSync.start().then(()=>{sharingUI.handleInvitation();historyIntroReady=true;historyIntro?.maybeShow();});renderAll();if(view!=='transactions'||$('#transaction-composer').hidden)window.scrollTo({top:0,behavior:'instant'});
     if(view==='settings')sharingUI.refresh();
     if(loadWarning){toast(platform.independent?'Não foi possível ler a cópia local. Conectando ao plano salvo na conta.':'Não foi possível ler o plano salvo. Um exemplo foi aberto.');loadWarning=false;}
   }else{
@@ -337,7 +338,7 @@ function transactionDialog(type='expense',transactionId=null,options={}){
       <div class="transaction-form-actions"><span class="tx-save-note">${icon('cloud')} Sincronização automática ativada</span><button type="button" class="subtle-button" id="cancel-transaction">Cancelar</button><button class="btn btn-blue" type="submit">${existing?'Salvar alterações':'Salvar'} ${icon('check')}</button>${existing?'':'<button class="subtle-button save-another" type="submit" name="action" value="another">Salvar e adicionar outra</button>'}</div>
     </form>`;
   const closeTransaction=()=>{if(desktop)closeComposer();else closeDialog();};
-  if(desktop){if(dialog.open)closeDialog();$('#dialog-body').replaceChildren();goPlan('transactions');route();const composer=$('#transaction-composer');composer.innerHTML=`<div class="composer-heading"><div><span class="small-label">REGISTRO RÁPIDO</span><h2>${title}</h2></div><button type="button" id="close-composer" class="icon-button" aria-label="Fechar formulário de lançamento">${icon('close')}</button></div>${body}`;composer.hidden=false;$('#close-composer').onclick=closeTransaction;composer.scrollIntoView({block:'nearest',behavior:'smooth'});}
+  if(desktop){if(dialog.open)closeDialog();$('#dialog-body').replaceChildren();goPlan('transactions');route();const composer=$('#transaction-composer');composer.innerHTML=`<div class="composer-heading"><div><span class="small-label">REGISTRO RÁPIDO</span><h2>${title}</h2></div><button type="button" id="close-composer" class="icon-button" aria-label="Fechar formulário de lançamento">${icon('close')}</button></div>${body}`;composer.hidden=false;$('#close-composer').onclick=closeTransaction;}
   else{closeComposer();openDialog(title,body,'CADA MOVIMENTO CONTA');dialog.classList.add('transaction-dialog');}
   $('#cancel-transaction').onclick=closeTransaction;
   const form=$('#transaction-form');
@@ -385,7 +386,6 @@ function transactionDialog(type='expense',transactionId=null,options={}){
   $$('[data-paid-by]').forEach(button=>button.onclick=()=>{form.elements.paidBy.value=form.elements.paidBy.value===button.dataset.paidBy?'':button.dataset.paidBy;updateSharing();});
   form.elements.paidBy.onchange=updateSharing;form.elements.splitMode.onchange=updateSharing;form.elements.eduPercent.oninput=updateSharing;form.elements.amount.oninput=updateSharing;
   updateType();updateDate();updateSharing();
-  if(desktop)form.elements.payee.focus({preventScroll:true});
   form.onsubmit=e=>{
     e.preventDefault();const f=new FormData(e.currentTarget),amount=parseMoney(f.get('amount')),payee=String(f.get('payee')||'').trim(),memo=String(f.get('memo')||'').trim(),date=String(f.get('date'));
     if(!amount)return formError('Informe um valor maior que zero, como 125,50.');
@@ -404,6 +404,7 @@ function transactionDialog(type='expense',transactionId=null,options={}){
     selectedMonth=month;persist();closeTransaction();renderAll();toast(existing?'Lançamento atualizado.':txType==='income'?'Entrada salva.':'Saída salva.');
     if(e.submitter?.value==='another')transactionDialog(txType,null,{date,paidBy:transaction.sharing?.paidBy,eduPercent:transaction.sharing?.eduPercent});
   };
+  if(desktop)revealTransactionComposer($('#transaction-composer'),{focusTarget:form.elements.payee});
 }
 function closeCategoryMenu(restore=true){
   const menu=$('#category-menu');if(!menu)return;

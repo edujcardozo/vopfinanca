@@ -12,7 +12,7 @@ test('desktop transaction composer selects saved payee/category, saves once and 
    const roster={user:{id:'owner'},scope:{id:'owner',role:'owner',ownerEmail:'ana@example.test',revoked:false},participants:[{id:'owner',name:'Ana Cliente',email:'ana@example.test',role:'owner'},...(shared?[{id:'guest',name:'Bruno Convidado',email:'bruno@example.test',role:'editor'}]:[])],members:shared?[{id:'guest',email:'bruno@example.test'}]:[],plans:[],invites:shared?[]:[{id:'pending'}]};
    globalThis.fetch=async url=>String(url)==='/api/sharing'?Response.json(roster):new Response('{}',{status:503});
    const html=await readFile(new URL('../web/index.html',import.meta.url),'utf8'),f=dom(html),{document,window,event}=f;
-   window.matchMedia=query=>({matches:query.includes('min-width')?width>=1000:query.includes('max-width')?width<=719:false,addEventListener(){}});globalThis.matchMedia=window.matchMedia;window.scrollTo=()=>{};
+   window.matchMedia=query=>({matches:query.includes('min-width')?width>=1000:query.includes('max-width')?width<=719:false,addEventListener(){}});globalThis.matchMedia=window.matchMedia;const scrollRequests=[];window.scrollTo=options=>scrollRequests.push(options);
    Object.defineProperty(window.HTMLElement.prototype,'elements',{get(){return Object.fromEntries([...this.querySelectorAll('[name]')].map(el=>[el.getAttribute('name'),el]));},configurable:true});
    Object.defineProperty(window.HTMLElement.prototype,'form',{get(){return this.closest('form');},configurable:true});
    Object.defineProperty(window.HTMLButtonElement.prototype,'value',{get(){return this.getAttribute('value')||'';},configurable:true});
@@ -48,6 +48,7 @@ test('desktop transaction composer selects saved payee/category, saves once and 
    const pressed=shortcut();assert.equal(pressed.defaultPrevented,width>=720);
    if(width<720){assert.equal(document.querySelector('#transaction-form'),null);event(document.querySelector('[data-add-transaction]'),'click');}
    const form=document.querySelector('#transaction-form');assert.ok(form);assert.equal(dialog.open||false,width<1000);assert.equal(document.querySelector('#transaction-composer').hidden,width<1000);assert.equal(document.querySelectorAll('#transaction-form').length,1);
+   if(width>=1000){const scrollCount=scrollRequests.length;event(window,'hashchange');assert.equal(scrollRequests.length,scrollCount,'the transaction route must not undo the centered scroll');assert.equal(document.querySelector('#transaction-form'),form);}
    form.elements.payee.value='Estabelecimento ainda não salvo';shortcut();assert.equal(document.querySelector('#transaction-form'),form);assert.equal(form.elements.payee.value,'Estabelecimento ainda não salvo');
    form.elements.payee.focus();form.elements.payee.value='zaf';event(form.elements.payee,'input');assert.ok(document.querySelector('#payee-options').textContent.includes('Zaffari'));event(document.querySelector('#payee-options [role=option]'),'click');assert.equal(form.elements.payee.value,'Zaffari');assert.equal(form.elements.categoryId.value,'mercado');
    assert.equal(form.elements.categorySearch.value,'Supermercado');
