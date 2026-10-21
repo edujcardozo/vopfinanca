@@ -54,7 +54,7 @@ signIn.href=location.pathname+location.search+location.hash;signIn.removeAttribu
 signIn.textContent='Entrar no VPO';
 
 export const platform={
-  independent:true,example:false,storage,fetcher,
+  independent:true,example:false,accountId:userId,storage,fetcher,
   onSyncStatus(info){if(info.kind==='blocked'){billingUI?.refresh();checkApproval();}},
   onReady(cloud,notify,context){
     sync=cloud;

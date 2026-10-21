@@ -18,6 +18,7 @@ import {platform} from './platform.js';
 import {householdForSharing,inactiveHousehold} from './household-context.js';
 import {accountUsername} from './account-identity.js';
 import {createPlanningHistoryUI,historyIcon} from './planning-history-ui.js';
+import {createPlanningHistoryIntro} from './planning-history-intro.js';
 
 const $=s=>document.querySelector(s);
 const $$=s=>[...document.querySelectorAll(s)];
@@ -31,6 +32,7 @@ const dayName=d=>new Intl.DateTimeFormat('pt-BR',{day:'numeric',month:'long',wee
 const collapsedGroups=new Set();
 let mobileStructure=false;
 let historyPlanning;
+let historyIntro;
 const routes={home:'inicio',budget:'planejar',transactions:'movimentos',overview:'visao',settings:'ajustes'};
 let state,hadStored=false,loadWarning=false,selectedMonth=currentMonth(),view='budget',txFilter='all',personFilter='all',toastTimer,undoAction=null;
 const planStorage=platform.storage;
@@ -65,6 +67,7 @@ function applyCloudPlan(incoming){
 }
 function showSyncStatus(info){
   platform.onSyncStatus?.(info);
+  if(info.kind==='synced')queueMicrotask(()=>historyIntro?.maybeShow());
   const label={connecting:'Conectando à conta…',saving:'Salvando na conta…',pending:'Atualizando o plano…',synced:'Plano sincronizado',offline:'Sem conexão · cópia local',auth:'Entre na conta para sincronizar',conflict:'Conflito: revisão necessária',warning:'Verifique o salvamento',blocked:'Revise o acesso ao plano em Ajustes'}[info.kind]||info.message;
   $('#save-status').textContent=label;
   $('#sync-footer-use').setAttribute('href',info.kind==='synced'?'#i-check':['offline','auth','conflict','warning','blocked'].includes(info.kind)?'#i-warning':'#i-cloud');
@@ -135,7 +138,7 @@ function route(){
     $$('[data-view]').forEach(el=>{const active=el.dataset.view===view;el.classList.toggle('active',active);if(active)el.setAttribute('aria-current','page');else el.removeAttribute('aria-current');});
     $('.mobile-fab').hidden=['settings','overview'].includes(view);
     document.querySelector('meta[name="theme-color"]').content=window.matchMedia('(max-width:719px)').matches?(view==='home'?'#555af5':'#f4f2eb'):'#f7f7fc';
-    cachePlan();cloudSync.start().then(()=>sharingUI.handleInvitation());renderAll();window.scrollTo({top:0,behavior:'instant'});
+    cachePlan();cloudSync.start().then(()=>{sharingUI.handleInvitation();historyIntro?.maybeShow();});renderAll();window.scrollTo({top:0,behavior:'instant'});
     if(view==='settings')sharingUI.refresh();
     if(loadWarning){toast(platform.independent?'Não foi possível ler a cópia local. Conectando ao plano salvo na conta.':'Não foi possível ler o plano salvo. Um exemplo foi aberto.');loadWarning=false;}
   }else{
@@ -281,6 +284,7 @@ function wealthDialog(month=selectedMonth){
 const dialog=$('#action-dialog');
 const dialogPages=createDialogPages(dialog,{body:$('#dialog-body'),heading:$('#dialog-title')});
 historyPlanning=createPlanningHistoryUI({getState:()=>state,getMonth:()=>selectedMonth,money,openDialog,closeDialog,refreshDialog:()=>dialogPages.refresh(),onChange:()=>{persist();renderAll();},notify:toast});
+historyIntro=createPlanningHistoryIntro({storage:globalThis.localStorage,getAccount:()=>platform.accountId||cloudSync.status.ownerId,openDialog,closeDialog,onExplore:()=>historyPlanning.showOptions(),canShow:()=>!$('#budget-app').hidden&&view==='budget'&&!dialog.open&&$('#transaction-composer').hidden&&!cloudSync.status.conflict&&!cloudSync.status.blocked&&!$('#budget-app').hasAttribute('data-subscription-readonly')&&!document.querySelector('[data-assigned-input][data-editing=true],#category-menu')});
 function openDialog(title,body,eyebrow='SEU PLANO'){
   closeCategoryMenu(false);
   historyPlanning?.closeMenu();
@@ -547,7 +551,7 @@ $('#add-category').onclick=()=>newCategoryDialog();
 $('#add-group').onclick=()=>groupDialog();
 $('#categories-list').addEventListener('reorderstart',()=>{closeCategoryMenu(false);collapsedGroups.clear();$$('.category-items').forEach(list=>list.hidden=false);$$('[data-collapse-group]').forEach(b=>b.setAttribute('aria-expanded','true'));});
 $('#close-dialog').onclick=closeDialog;
-dialog.addEventListener('close',()=>{if(!dialog.open)document.body.style.overflow='';});
+dialog.addEventListener('close',()=>{if(!dialog.open)document.body.style.overflow='';queueMicrotask(()=>historyIntro?.maybeShow());});
 dialog.addEventListener('click',e=>{if(e.target===dialog){const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)closeDialog();}});
 $('#start-empty').onclick=$('#reset-empty').onclick=()=>replacePlan(false);
 $('#load-demo').onclick=()=>replacePlan(true);

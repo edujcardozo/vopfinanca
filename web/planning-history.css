@@ -26,3 +26,17 @@
 @media(max-width:719px){.budget-active .mobile-structure-open .budget-toolbar{flex-wrap:wrap;gap:4px}.budget-active .mobile-structure-open .budget-structure-actions{width:100%;justify-content:flex-start;gap:5px}.budget-active .budget-structure-actions .subtle-button{min-height:40px;font-size:10px}.history-review-summary{gap:7px;padding:11px}.history-review-summary>strong{font-size:11px}.history-source{font-size:11px}.history-table-heading,.history-category{grid-template-columns:minmax(0,1fr) minmax(63px,.58fr) minmax(63px,.58fr);gap:6px;padding-inline:9px}.history-category{min-height:52px;font-size:11px}.history-category-emoji{display:none}.history-category-name{gap:6px}.history-category>span:nth-child(2),.history-category>strong{font-size:10px}.history-review-total strong{font-size:12px}.history-review-total{gap:5px}.history-options .history-option{min-height:76px}}
 @media(prefers-reduced-motion:reduce){.history-dropdown{animation:none}.history-chevron{transition:none}}
 @media print{.history-trigger,.history-dropdown{display:none!important}}
+
+/* A brief, once-only introduction uses the same modal and account preferences. */
+.history-welcome{min-width:0;color:#282b55}
+.history-welcome-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid #dedff8;border-radius:10px;background:#f0f0ff;color:#555af5;font-size:12px;font-weight:650}
+.history-welcome-badge .icon{width:17px;height:17px}
+.history-welcome-lead{margin:15px 0;font-size:13px;line-height:1.65;color:#6b6d85}.history-welcome-lead strong{font-weight:600;color:#373b71}
+.history-welcome-methods{list-style:none;padding:0;margin:0;border:1px solid #e7e8f2;border-radius:13px;background:#fff}
+.history-welcome-methods li{display:flex;align-items:center;gap:12px;padding:12px 14px;min-width:0}.history-welcome-methods li+li{border-top:1px solid #eeeff6}
+.history-welcome-methods li>span{display:grid;place-items:center;flex:0 0 32px;height:32px;background:#f2f2ff;color:#5a5dc0;border-radius:9px;font-size:13px;font-weight:650}
+.history-welcome-methods li>div{min-width:0}.history-welcome-methods strong{display:block;font-size:12px;font-weight:650;line-height:1.5}.history-welcome-methods small{display:block;margin-top:2px;font-size:11px;color:#82849a;line-height:1.5}
+.history-welcome-note{display:flex;align-items:flex-start;gap:9px;margin:14px 0 10px;padding:11px 12px;border-radius:10px;background:#edf6e5;color:#426d3c;font-size:11px;line-height:1.55}.history-welcome-note>span:first-child{font-weight:700}
+.history-welcome-empty{margin:0 0 17px;font-size:11px;line-height:1.6;color:#85879a}.history-welcome-mobile{display:none}
+.history-welcome-actions{display:flex;align-items:center;justify-content:space-between;gap:12px}.history-welcome-actions .subtle-button{display:flex;align-items:center;gap:8px;border:0;background:none;color:#555af5;padding:10px 0;font-size:12px;min-height:44px}.history-welcome-actions .btn{font-size:12px;min-height:44px;min-width:116px;padding:11px 22px;border-radius:10px}
+@media(max-width:719px){.history-welcome-lead{font-size:13px;line-height:1.55;margin-block:13px}.history-welcome-methods li{padding:11px 12px;gap:10px}.history-welcome-mobile{display:block;margin-top:4px}.history-welcome-empty{margin-bottom:14px}.history-welcome-actions .btn{flex:0 0 118px}.history-welcome-methods small{color:#777987}}
