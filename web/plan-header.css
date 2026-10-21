@@ -30,9 +30,8 @@
  .budget-active .budget-heading .couple-compact>b{grid-column:1;grid-row:2;font-size:23px;line-height:1.2;letter-spacing:-.6px;font-weight:750;color:#555af5;white-space:normal;overflow-wrap:anywhere}
  .budget-active .budget-heading .couple-compact small{grid-column:1;grid-row:3;font-size:9px;line-height:1.4;margin:1px 0 0;color:#818095;overflow-wrap:anywhere}
  .budget-active .budget-heading .couple-compact>span:last-child{grid-column:2;grid-row:1/4;align-self:center;font-size:21px;color:#9c95ac}
- .budget-active .budget-toolbar{min-height:32px;margin-bottom:12px;gap:16px}
- .budget-active .budget-toolbar h2{font-size:14px;line-height:1.4}
- .budget-active .budget-structure-actions{gap:10px}.budget-active .budget-structure-actions .subtle-button{min-height:32px;padding:6px 10px;font-size:10px;border-radius:7px;gap:6px}.budget-active .budget-structure-actions .icon{width:14px;height:14px}
+ .budget-active .budget-toolbar{min-height:36px;margin-bottom:12px;gap:16px;justify-content:flex-end}
+ .budget-active .budget-structure-actions{gap:8px}
  .budget-active .category-table-head{padding-top:2px;padding-bottom:12px;font-size:9px;line-height:1.4}
 }
 @media(min-width:720px) and (max-width:1000px){
