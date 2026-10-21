@@ -73,6 +73,15 @@ test('all chart types handle negative and missing data, and hiding amounts also 
   const hidden=chartSvg(d.series,{kind:'income',selected:'2026-10',hidden:true});
   assert.ok(!hidden.includes('R$'));assert.ok(hidden.includes('••••'));
 });
+test('wide charts keep a compact height, readable text and bounded bars instead of magnifying the drawing',()=>{
+  const data=buildReports(history(),'2026-10',6);
+  const narrow=chartSvg(data.series,{kind:'spending',dimensions:data.dimensions,width:620,selected:'2026-10'});
+  const wide=chartSvg(data.series,{kind:'spending',dimensions:data.dimensions,width:1500,selected:'2026-10'});
+  assert.ok(narrow.includes('viewBox="0 0 620 256"'));assert.ok(wide.includes('viewBox="0 0 1500 256"'));
+  assert.deepEqual([...wide.matchAll(/font-size="([\d.]+)"/g)].map(match=>match[1]),[...narrow.matchAll(/font-size="([\d.]+)"/g)].map(match=>match[1]));
+  for(const match of wide.matchAll(/<rect [^>]*width="([\d.]+)"[^>]*fill="(#[^"]+)"/g))assert.ok(Number(match[1])<=(match[2]==='#f7f6fc'?100:52));
+  const mobile=chartSvg(data.series,{kind:'spending',dimensions:data.dimensions,width:288,compact:true});assert.ok(mobile.includes('viewBox="0 0 288 232"'));
+});
 test('every report panel renders with empty and populated plans while escaping user-entered labels',()=>{
   globalThis.window={matchMedia:()=>({matches:true,addEventListener(){}})};
   for(const empty of [false,true]){

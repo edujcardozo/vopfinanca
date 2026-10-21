@@ -1,0 +1,45 @@
+/* Keep report typography at the same scale on laptop and wide desktop screens. */
+#overview-content .report-page-heading{margin-bottom:10px}
+#overview-content .report-tabs{scrollbar-width:none}
+#overview-content .report-tabs::-webkit-scrollbar{display:none}
+#overview-content .report-page-heading h2{font-size:20px;font-weight:700;letter-spacing:-.45px;line-height:1.35}
+#overview-content .report-period-note{font-size:11px;color:#727185;margin-block:9px 13px}
+#overview-content .report-card{padding:19px 21px;border-color:#e8e6ef;border-radius:12px;box-shadow:0 2px 8px #27234703}
+#overview-content .report-stat{gap:5px}
+#overview-content .report-stat>span{font-size:11px;font-weight:450;line-height:1.5;color:#77768b}
+#overview-content .report-stat>strong{font-size:24px;font-weight:650;letter-spacing:-.5px;line-height:1.3;font-variant-numeric:tabular-nums}
+#overview-content .report-stat-row{gap:28px;margin-bottom:17px;align-items:center}
+#overview-content .report-stat-row>.report-stat+.report-stat{padding-left:28px;border-left:1px solid #eeedf4}
+#overview-content .report-stat-row .report-stat>strong{font-size:20px;font-weight:600}
+#overview-content .report-stat-row .report-stat:first-child>strong{font-size:24px;font-weight:650}
+#overview-content .report-stat>small{font-size:10px}
+#overview-content .report-legend{gap:7px 13px;margin:4px 0 10px}
+#overview-content .report-legend>span{font-size:10px;color:#77758b}
+#overview-content .report-legend button{min-height:28px;padding:5px 8px;font-size:10px;background:#faf9fc;border:1px solid #eeebf4;border-radius:6px;color:#77728a;font-weight:450}
+#overview-content .report-legend button:hover{background:#f2eefb;border-color:#dfd6f5;color:#6250a0}
+#overview-content .report-legend i,#overview-content .report-legend button i{width:7px;height:7px;border-radius:2px}
+#overview-content .report-chart-scroll{min-width:0}
+#overview-content .report-chart-scroll .report-svg{display:block;width:100%;height:auto;min-height:0;max-height:none;font-family:inherit;overflow:visible}
+#overview-content .report-svg [role=button]:focus-visible{outline:2px solid #8d7afa;outline-offset:-2px;border-radius:5px}
+#overview-content .report-point{display:flex;align-items:center;justify-content:space-between;gap:12px 22px;flex-wrap:wrap;padding:11px 13px;margin-top:6px;background:#faf9fc;border-color:#eeecf5;border-radius:8px}
+#overview-content .report-point>strong{font-size:11px;font-weight:550;color:#77748a;margin:0}
+#overview-content .report-point>div{gap:12px 22px}
+#overview-content .report-point>div>span{flex-direction:row;align-items:baseline;gap:7px;font-size:10px}
+#overview-content .report-point>div>span>strong{font-size:12px;font-weight:600;letter-spacing:-.15px}
+#overview-content .report-table-card{box-shadow:none}
+@media(max-width:719px){
+  #overview-content .report-page-heading h2{font-size:19px}
+  #overview-content .report-card{padding:17px 15px;border-radius:18px}
+  #overview-content .report-stat>strong{font-size:22px}
+  #overview-content .report-stat-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px 13px;margin-bottom:15px;align-items:start}
+  #overview-content .report-stat-row>.report-stat+.report-stat{padding-left:13px}
+  #overview-content .report-stat-row>.report-stat:nth-child(odd){padding-left:0;border-left:0}
+  #overview-content .report-stat-row .report-stat>strong,#overview-content .report-stat-row .report-stat:first-child>strong{font-size:20px;letter-spacing:-.4px}
+  #overview-content .report-stat>span{font-size:10px}
+  #overview-content .report-legend{gap:6px 9px;margin-bottom:8px}
+  #overview-content .report-legend button{min-height:36px;padding:7px 9px}
+  #overview-content .report-point{padding:11px 12px;gap:9px 12px}
+  #overview-content .report-point>div{gap:8px 16px}
+  #overview-content .report-point>div>span{flex-direction:column;gap:2px}
+}
+@media print{#overview-content .report-svg{max-height:280px}#overview-content .report-card{box-shadow:none}}

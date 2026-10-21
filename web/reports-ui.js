@@ -11,26 +11,31 @@ const dateLabel=m=>new Intl.DateTimeFormat('pt-BR',{month:'short',year:'numeric'
 const fullMonth=m=>new Intl.DateTimeFormat('pt-BR',{month:'long',year:'numeric'}).format(new Date(m+'-15T12:00:00'));
 const axisMoney=n=>new Intl.NumberFormat('pt-BR',{notation:'compact',maximumFractionDigits:1}).format(n/100);
 
-export function chartSvg(series,{kind='income',dimensions=[],selected,format=formatMoney,hidden=false,compact=false}={}){
+export function chartSvg(series,{kind='income',dimensions=[],selected,format=formatMoney,hidden=false,compact=false,width=compact?320:620}={}){
   const display=value=>hidden?'••••':format(value);
-  const n=series.length,w=Math.max(compact?320:620,n*(compact?44:52)+70),h=245,left=54,right=14,top=18,bottom=184,slot=(w-left-right)/Math.max(n,1);
+  // Match the drawing coordinates to CSS pixels, so a wide screen adds space
+  // between months instead of enlarging the typography and the bars.
+  const n=series.length,w=Math.max(200,Math.round(width),compact&&n>6?n*44+70:0),h=compact?232:256,left=compact?43:52,right=16,top=14,bottom=h-48,slot=(w-left-right)/Math.max(n,1);
   const values=series.flatMap(r=>kind==='income'?[r.income,r.expense]:kind==='spending'?[r.filteredExpense]:kind==='wealth'?[r.wealth.assets,r.wealth.debt,r.wealth.netWorth]:[r.age.days]).filter(v=>v!==null&&Number.isFinite(v));
-  const min=Math.min(0,...values),max=Math.max(kind==='age'?10:100,...values),pad=(max-min)*.1,lo=min<0?min-pad:0,hi=max+pad;
+  const min=Math.min(0,...values),max=Math.max(kind==='age'?10:100,...values),rough=(max-min)/4,magnitude=10**Math.floor(Math.log10(rough)),fraction=rough/magnitude;
+  const nice=([1,2,2.5,5,10].find(value=>value>=fraction)||10)*magnitude;
+  const step=kind==='age'?Math.max(1,Math.ceil(nice)):Math.max(.01,nice),lo=Math.floor(min/step)*step,hi=Math.ceil(max/step)*step;
   const y=v=>bottom-(v-lo)/(hi-lo)*(bottom-top),zero=y(0),x=i=>left+slot*(i+.5),lineValue=r=>kind==='wealth'?r.wealth.netWorth:r.age.days;
   const label=v=>hidden?'•••':kind==='age'?String(Math.round(v)):axisMoney(v);
-  let svg=`<svg class="report-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" role="group" aria-label="${{income:'Receitas e despesas por mês',spending:'Evolução dos gastos',wealth:'Ativos, dívidas e patrimônio líquido',age:'Estimativa da idade do dinheiro'}[kind]}. Selecione um mês para ver os valores." style="min-width:${compact&&n>6?w:0}px">`;
-  for(let k=0;k<4;k++){const value=lo+(hi-lo)*k/3,yy=y(value);svg+=`<line x1="${left}" x2="${w-right}" y1="${yy}" y2="${yy}" stroke="#e9e9f3"/><text x="${left-8}" y="${yy+4}" text-anchor="end" font-size="10" fill="#7a7d96" font-family="system-ui,sans-serif">${label(value)}</text>`;}
+  let svg=`<svg class="report-svg" xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" role="group" aria-label="${{income:'Receitas e despesas por mês',spending:'Evolução dos gastos',wealth:'Ativos, dívidas e patrimônio líquido',age:'Estimativa da idade do dinheiro'}[kind]}. Selecione um mês para ver os valores." style="min-width:${compact&&n>6?w:0}px">`;
+  for(let k=0;k<=Math.round((hi-lo)/step);k++){const value=lo+step*k,yy=y(value);svg+=`<line x1="${left}" x2="${w-right}" y1="${yy}" y2="${yy}" stroke="#eeedf4"/><text x="${left-9}" y="${yy+3.5}" text-anchor="end" font-size="10.5" fill="#87899c" font-family="inherit">${label(value)}</text>`;}
   svg+=`<line x1="${left}" x2="${w-right}" y1="${zero}" y2="${zero}" stroke="#c9cbdc" stroke-width="1"/>`;
   for(const [i,r] of series.entries()){
-    const xx=x(i),bw=Math.min(n===1?slot*.25:44,slot*.24),isSelected=r.month===selected;
-    if(isSelected)svg+=`<rect x="${xx-slot*.44}" y="${top}" width="${slot*.88}" height="${bottom-top}" fill="#f5f5ff" rx="6"/>`;
+    const xx=x(i),bw=Math.min(32,slot*.24),isSelected=r.month===selected,highlight=Math.min(100,slot*.82);
+    if(isSelected)svg+=`<rect x="${xx-highlight/2}" y="${top}" width="${highlight}" height="${bottom-top}" fill="#f7f6fc" rx="7"/>`;
     if(kind==='income'||kind==='wealth'){
       const pairs=kind==='income'?[[r.income,'#41b98d'],[r.expense,'#545bfe']]:[[r.wealth.assets,'#7446ff'],[r.wealth.debt,'#d85c6a']];
       for(const [j,[value,color]] of pairs.entries())if(value!==null&&value>0)svg+=`<rect x="${xx+(j===0?-bw-2:2)}" y="${y(value)}" width="${bw}" height="${Math.max(0,zero-y(value))}" rx="3" fill="${color}"/>`;
     }else if(kind==='spending'){
-      let running=0;for(const [j,d] of dimensions.entries()){const value=r.stacks[d.id]||0;if(value)svg+=`<rect x="${xx-(n===1?slot*.55:Math.min(72,slot*.65))/2}" y="${y(running+value)}" width="${n===1?slot*.55:Math.min(72,slot*.65)}" height="${y(running)-y(running+value)}" fill="${colors[j%colors.length]}"/>`;running+=value;}
+      const barWidth=Math.min(52,slot*.55);let running=0;for(const [j,d] of dimensions.entries()){const value=r.stacks[d.id]||0;if(value)svg+=`<rect x="${xx-barWidth/2}" y="${y(running+value)}" width="${barWidth}" height="${y(running)-y(running+value)}" fill="${colors[j%colors.length]}"/>`;running+=value;}
     }
-    svg+=`<text x="${xx}" y="209" text-anchor="middle" font-size="11" fill="${isSelected?'#545bfe':'#686b85'}" font-weight="${isSelected?'700':'450'}" font-family="system-ui,sans-serif">${esc(new Intl.DateTimeFormat('pt-BR',{month:'short'}).format(new Date(r.month+'-15T12:00:00')).replace('.',''))}</text><text x="${xx}" y="225" text-anchor="middle" font-size="9" fill="#9698ac" font-family="system-ui,sans-serif">${r.month.slice(0,4)}</text>`;
+    const showLabel=compact||i%Math.max(1,Math.ceil(n/(w/45)))===0||i===n-1;
+    if(showLabel)svg+=`<text x="${xx}" y="${bottom+23}" text-anchor="middle" font-size="11" fill="${isSelected?'#6456c6':'#78798e'}" font-weight="${isSelected?'600':'450'}" font-family="inherit">${esc(new Intl.DateTimeFormat('pt-BR',{month:'short'}).format(new Date(r.month+'-15T12:00:00')).replace('.',''))}</text><text x="${xx}" y="${bottom+38}" text-anchor="middle" font-size="9" fill="#a0a0b0" font-family="inherit">${r.month.slice(0,4)}</text>`;
   }
   if(kind==='wealth'||kind==='age'){
     let path='';let connected=false;
@@ -40,7 +45,7 @@ export function chartSvg(series,{kind='income',dimensions=[],selected,format=for
   }
   for(const [i,r] of series.entries()){
     const detail=kind==='income'?`Receitas ${display(r.income)}, despesas ${display(r.expense)}`:kind==='spending'?`Gastos ${display(r.filteredExpense)}`:kind==='wealth'?r.wealth.known?`Patrimônio ${display(r.wealth.netWorth)}`:'Patrimônio não informado':r.age.days===null?'Histórico insuficiente':`Idade estimada ${hidden?'oculta':r.age.days} dias`;
-    svg+=`<g role="button" tabindex="0" data-report-month="${r.month}" aria-label="${esc(fullMonth(r.month)+': '+detail)}" aria-pressed="${r.month===selected}"><rect x="${x(i)-slot*.45}" y="${top}" width="${slot*.9}" height="${bottom-top+50}" fill="transparent"/><title>${esc(fullMonth(r.month)+': '+detail)}</title></g>`;
+    svg+=`<g role="button" tabindex="0" data-report-month="${r.month}" aria-label="${esc(fullMonth(r.month)+': '+detail)}" aria-pressed="${r.month===selected}"><rect x="${x(i)-slot*.45}" y="${top}" width="${slot*.9}" height="${bottom-top+44}" fill="transparent"/><title>${esc(fullMonth(r.month)+': '+detail)}</title></g>`;
   }
   return svg+'</svg>';
 }
@@ -48,6 +53,21 @@ export function chartSvg(series,{kind='income',dimensions=[],selected,format=for
 export function createReportsUI({root,getState,getEndMonth,onEditWealth,onTogglePrivacy=()=>{},notify}){
   const tabs=[['breakdown','Distribuição dos gastos'],['spending','Evolução dos gastos'],['wealth','Patrimônio'],['income','Receitas × despesas'],['age','Idade do dinheiro']];
   let period={start:getEndMonth(),end:getEndMonth()},group='all',tab='breakdown',picked=null,categoryDetail=null,lastData=null,breakdownMode='categories',categoryFilter='all',incomeDetail=null,mobileDetail=false;
+  const Resize=window.ResizeObserver||globalThis.ResizeObserver;
+  const chartObserver=typeof Resize==='function'?new Resize(entries=>{for(const entry of entries)fitChart(entry.target,entry.contentRect.width);}):null;
+  function fitChart(container,width=container.clientWidth){
+    if(!lastData||!width||Math.abs(Number(container.dataset.chartWidth||0)-width)<1)return;
+    container.dataset.chartWidth=String(width);
+    const kind=container.dataset.chartKind,compact=window.matchMedia('(max-width:719px)').matches;
+    const series=kind==='income'?lastData.series.map(row=>({...row,expense:row.filteredExpense,net:row.income-row.filteredExpense})):lastData.series;
+    const focus=container.contains(document.activeElement)?document.activeElement.dataset.reportMonth:null;
+    container.innerHTML=chartSvg(series,{kind,dimensions:lastData.dimensions,selected:picked,format:m,hidden:getState().hideBalances,compact,width});
+    if(focus)container.querySelector(`[data-report-month="${focus}"]`)?.focus({preventScroll:true});
+  }
+  function fitCharts(){
+    chartObserver?.disconnect();
+    for(const container of root.querySelectorAll?.('[data-chart-kind]')||[]){fitChart(container);chartObserver?.observe(container);}
+  }
   const periodPicker=createReportPeriod({root,getPeriod:()=>period,onApply:next=>{period=next;picked=null;incomeDetail=null;render();},getBounds:()=>{const s=getState(),months=Object.values(s.months).flatMap(m=>m.transactions.map(t=>t.date.slice(0,7))).concat(Object.keys(s.wealth||{})).sort();return {start:months[0]||period.end,end:months.at(-1)||period.end};}});
   const m=n=>getState().hideBalances?'••••':formatMoney(n);
   const pct=n=>getState().hideBalances?'••':n===null?'—':new Intl.NumberFormat('pt-BR',{maximumFractionDigits:1}).format(n)+'%';
@@ -63,7 +83,7 @@ export function createReportsUI({root,getState,getEndMonth,onEditWealth,onToggle
     const svg=chartSvg(data.series,{kind,dimensions:data.dimensions,selected:row.month,format:m,hidden:getState().hideBalances,compact});
     const point=kind==='income'?`<span>Receitas <strong class="positive">${m(row.income)}</strong></span><span>Despesas <strong>${m(row.filteredExpense)}</strong></span><span>Resultado <strong>${m(row.income-row.filteredExpense)}</strong></span>`:kind==='spending'?`<span>Gastos <strong>${m(row.filteredExpense)}</strong></span>`:kind==='wealth'?row.wealth.known?`<span>Ativos <strong>${m(row.wealth.assets)}</strong></span><span>Dívidas <strong>${m(row.wealth.debt)}</strong></span><span>Líquido <strong>${m(row.wealth.netWorth)}</strong></span>`:'<span>Patrimônio não informado neste mês.</span>':`<span>${row.age.days===null?'Histórico insuficiente':`Idade estimada <strong>${getState().hideBalances?'••':row.age.days} dias</strong>`}</span>`;
     const entries=kind==='income'?[['Receitas','#41b98d'],['Despesas','#7446ff']]:kind==='wealth'?[['Ativos','#7446ff'],['Dívidas','#d85c6a'],['Patrimônio líquido','#545bfe']]:kind==='spending'?data.dimensions.map((d,i)=>[d.name,colors[i%colors.length],group==='all'?d.id:null]):[['Dias estimados','#7446ff']];
-    return `${legend(entries)}<div class="report-chart-scroll">${svg}</div>${compact&&data.series.length>6?'<p class="report-scroll-hint">Deslize o gráfico para ver todos os meses.</p>':''}<div class="report-point"><strong>${esc(fullMonth(row.month))}</strong><div>${point}</div></div>`;
+    return `${legend(entries)}<div class="report-chart-scroll" data-chart-kind="${kind}">${svg}</div>${compact&&data.series.length>6?'<p class="report-scroll-hint">Deslize o gráfico para ver todos os meses.</p>':''}<div class="report-point"><strong>${esc(fullMonth(row.month))}</strong><div>${point}</div></div>`;
   }
   function plannedSpending(){
     const s=getState(),month=period.end,cats=s.categories.filter(c=>{const t=categoryTotals(s,month,c.id);return (group==='all'||c.group===group)&&(categoryFilter==='all'||c.id===categoryFilter)&&(t.assigned||t.carryover||t.spent);});
@@ -110,6 +130,7 @@ export function createReportsUI({root,getState,getEndMonth,onEditWealth,onToggle
     const compact=window.matchMedia('(max-width:719px)').matches;
     const summaryData=compact&&!mobileDetail?buildReports(state,period.end,1,'all',{startMonth:period.start}):null;
     root.innerHTML=`${summaryData?mobileSummary(summaryData):''}<div class="report-detail ${mobileDetail?'mobile-detail-open':''}"><button type="button" class="mobile-report-back" data-mobile-report-back>‹ Visão geral</button><div class="report-tabs" role="tablist" aria-label="Relatórios financeiros">${tabs.map(([key,label])=>`<button type="button" id="report-tab-${key}" role="tab" aria-selected="${tab===key}" aria-controls="report-panel" tabindex="${tab===key?'0':'-1'}" data-report-tab="${key}" class="${tab===key?'active':''}">${label}</button>`).join('')}</div><div class="report-page-heading"><h2>${title}</h2><div class="report-heading-actions"><button type="button" class="icon-button" data-report-privacy aria-label="${state.hideBalances?'Mostrar valores':'Ocultar valores'}">${icon(state.hideBalances?'eye-off':'eye')}</button><button class="text-link" data-report-export>${icon('download')} Exportar</button></div></div><div class="reports-toolbar">${periodPicker.renderTrigger()}${filteredTabs()?`<label><span>Grupo</span><select id="report-group"><option value="all">Todos os grupos</option>${groupsFor(state).map(g=>`<option value="${esc(g.id)}" ${group===g.id?'selected':''}>${esc(g.name)}</option>`).join('')}</select></label><label><span>Categoria</span><select id="report-category-filter"><option value="all">Todas as categorias</option>${state.categories.filter(c=>group==='all'||c.group===group).map(c=>`<option value="${esc(c.id)}" ${categoryFilter===c.id?'selected':''}>${esc(c.name)}${c.hidden?' (oculta)':''}</option>`).join('')}</select></label>`:''}</div><div class="report-period-note"><span>${esc(fullMonth(data.start))}${data.start===data.end?'':' a '+esc(fullMonth(data.end))}</span><small>${icon('lock')} Dados do seu plano</small></div>${filteredTabs()&&(group!=='all'||categoryFilter!=='all')?'<p class="report-scope">Filtro aplicado às despesas. As receitas consideram todas as origens do plano.</p>':''}<div id="report-panel" class="report-panels" role="tabpanel" aria-labelledby="report-tab-${tab}">${tab==='breakdown'?breakdown(data):tab==='spending'?spending(data):tab==='wealth'?wealth(data):tab==='income'?income(data):age(data)}</div></div>`;
+    fitCharts();
   }
   function selectTab(key,focus=true){if(!tabs.some(([id])=>id===key))return;tab=key;mobileDetail=true;incomeDetail=null;render();const button=root.querySelector(`#report-tab-${tab}`);if(focus)button?.focus({preventScroll:true});button?.scrollIntoView?.({block:'nearest',inline:'nearest',behavior:'smooth'});}
   function exportData(){

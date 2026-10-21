@@ -40,3 +40,17 @@ test('each tab exports its own filtered CSV, and user-provided spreadsheet formu
 test('mobile report cards open a detail and return to the overview without losing period controls',()=>{
  const f=fixture(390);assert.ok(f.root.querySelector('.mobile-reflect'));assert.equal(f.root.querySelector('.mobile-reflect').textContent.includes('Meta'),false);f.click('[data-mobile-report=income]');assert.equal(f.root.querySelector('.mobile-reflect'),null);assert.ok(f.root.querySelector('.report-detail.mobile-detail-open'));assert.ok(f.root.querySelector('.income-matrix'));f.click('[data-mobile-report-back]');assert.ok(f.root.querySelector('.mobile-reflect'));f.click('[data-mobile-report=wealth]');assert.ok(f.root.querySelector('[data-report-wealth]'));assert.ok(f.root.querySelector('[data-period-toggle]'));f.ui.resetMobile();f.ui.render();assert.ok(f.root.querySelector('.mobile-reflect'));
 });
+test('report charts fit their container initially and after resizing without changing the selected data',()=>{
+ const f=fixture(1440),originalResize=globalThis.ResizeObserver;let observer,width=940;
+ try{
+  globalThis.ResizeObserver=class{constructor(callback){this.callback=callback;observer=this;}observe(){}disconnect(){}};
+  Object.defineProperty(f.window.HTMLElement.prototype,'clientWidth',{get(){return this.matches('[data-chart-kind]')?width:0;},configurable:true});
+  // Use a fresh root to avoid sharing event handlers with the fixture's UI.
+  const root=f.document.createElement('div');f.document.body.append(root);
+  const fresh=createReportsUI({root,getState:()=>f.state,getEndMonth:()=>'2026-10',onEditWealth(){},notify(){}});fresh.render();
+  f.event(root.querySelector('#report-tab-spending'),'click');const container=root.querySelector('[data-chart-kind]');
+  assert.equal(container.querySelector('svg').getAttribute('viewBox'),'0 0 940 256');const values=root.querySelector('.report-stat-row').textContent;
+  width=1500;observer.callback([{target:container,contentRect:{width}}]);
+  assert.equal(container.querySelector('svg').getAttribute('viewBox'),'0 0 1500 256');assert.equal(root.querySelector('.report-stat-row').textContent,values);assert.equal(container.querySelector('[aria-pressed=true]').dataset.reportMonth,'2026-10');
+ }finally{delete f.window.HTMLElement.prototype.clientWidth;if(originalResize===undefined)delete globalThis.ResizeObserver;else globalThis.ResizeObserver=originalResize;}
+});
