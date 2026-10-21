@@ -47,6 +47,29 @@
 }
 @media(max-width:719px){#budget-desktop-month-slot{display:none}}
 
+/* Group subtotals use the same columns and text edges as their categories. */
+@media(min-width:720px){
+ .budget-active{--planned-column:145px;--available-column:150px;--category-column-gap:12px}
+ .budget-active .category-row,.budget-active .category-table-head,.budget-active .group-header{grid-template-columns:minmax(0,1fr) var(--planned-column) var(--available-column);column-gap:var(--category-column-gap);padding-right:16px}
+ .budget-active .category-table-head>span:nth-child(2){padding-right:8px}
+ .budget-active .category-table-head>span:nth-child(3){padding-right:9px}
+ .budget-active .group-header{display:grid;position:relative;padding-left:62px}
+ .budget-active .group-header>.sort-handle{position:absolute;left:3px;top:50%;transform:translateY(-50%)}
+ .budget-active .group-header>.group-collapse{position:absolute;left:35px;top:50%;transform:translateY(-50%)}
+ .budget-active .group-header>h3{grid-column:1;grid-row:1;padding-right:76px}
+ .budget-active .group-header .group-name{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ .budget-active .group-header-actions{display:contents}
+ .budget-active .group-header .group-total{display:block;grid-row:1;min-width:0;margin:0;text-align:right;white-space:nowrap;font-size:13px;font-weight:650;font-variant-numeric:tabular-nums;color:#555876}
+ .budget-active .group-header .group-total{grid-column:3;padding-right:9px}
+ .budget-active .group-header .group-total>strong{font:inherit;color:inherit}
+ .budget-active .group-header .group-total>small{display:block;position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+ .budget-active .group-header-actions>.icon-button{grid-column:1;grid-row:1;justify-self:end;width:30px;height:32px;min-height:32px}
+ .budget-active .group-header-actions>[data-add-category-group]{margin-right:36px}
+}
+@media(min-width:720px) and (max-width:1100px){
+ .budget-active{--planned-column:110px;--available-column:120px}
+}
+
 /* Movimentos: period and actions first, search and compact filters directly below. */
 #transactions-desktop-month-slot:empty{display:none}
 @media(min-width:720px){
