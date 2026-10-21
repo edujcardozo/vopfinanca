@@ -35,7 +35,9 @@ export async function handleAPI(request,env,ctx={waitUntil(){}}){
   const authenticatedId=request.headers.get('oai-authenticated-user-id');
   if(!authenticatedId||authenticatedId.length>256)return json({error:'Entre na sua conta para sincronizar.',code:'AUTH_REQUIRED'},401);
   if(!env.DB)return json({error:'A sincronização está temporariamente indisponível.',code:'STORAGE_UNAVAILABLE'},503);
-  const user={id:authenticatedId,email:request.headers.get('oai-authenticated-user-email')||null};
+  let name=request.headers.get('oai-authenticated-user-full-name');
+  if(name&&request.headers.get('oai-authenticated-user-full-name-encoding')==='percent-encoded-utf-8')try{name=decodeURIComponent(name);}catch{name=null;}
+  const user={id:authenticatedId,email:request.headers.get('oai-authenticated-user-email')||null,...(name?.trim()?{name:name.trim().slice(0,100)}:{})};
   try{
     if(request.method!=='GET'){
       const origin=request.headers.get('Origin'),site=request.headers.get('Sec-Fetch-Site');

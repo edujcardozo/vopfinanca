@@ -17,6 +17,25 @@ test('both clients use the same plan-relative people while each defaults to thei
   assert.deepEqual(householdForSharing(other).people,{edu:'Carla',larissa:'Davi'});assert.equal(householdForSharing(owner).people.edu,'Ana Cliente');
   assert.equal(householdForSharing({...owner,user:{id:'outsider'}}).enabled,false);
 });
+test('email-only rosters display usernames and preserve names across refreshes for the same identities',()=>{
+  const initial=info();initial.participants[0].name='Edu';initial.participants[1].name='Larissa';
+  const previous=householdForSharing(initial);
+  const emails={...initial,participants:initial.participants.map((p,i)=>({...p,name:i?'larissa@example.test':'edu@example.test',email:i?'larissa@example.test':'edu@example.test'}))};
+  assert.deepEqual(householdForSharing(emails).people,{edu:'edu',larissa:'larissa'});
+  for(let i=0;i<4;i++)assert.deepEqual(householdForSharing(emails,previous).people,{edu:'Edu',larissa:'Larissa'});
+  emails.participants[1].id='replacement';emails.participants[1].email=emails.participants[1].name='carla@example.test';
+  assert.deepEqual(householdForSharing(emails,previous).people,{edu:'Edu',larissa:'carla'});
+  const other=info('another-owner','another-guest');other.participants.forEach((p,i)=>p.name=i?'davi@example.test':'carla@example.test');
+  assert.deepEqual(householdForSharing(other,previous).people,{edu:'carla',larissa:'davi'});
+  assert.equal(householdForSharing({...emails,scope:{...emails.scope,revoked:true}},previous).enabled,false);
+});
+test('legacy Sites responses use the signed-in name and accepted member usernames on both accounts',()=>{
+  const owner={user:{id:'owner',name:'João da Silva',email:'joao@example.test'},scope:{id:'owner',role:'owner',ownerEmail:'joao@example.test'},members:[{id:'guest',email:'ana@example.test'}]};
+  assert.deepEqual(householdForSharing(owner).people,{edu:'João da Silva',larissa:'ana'});
+  const guest={...owner,user:{id:'guest',name:'Ana',email:'ana@example.test'},scope:{...owner.scope,role:'editor'}};
+  assert.deepEqual(householdForSharing(guest).people,{edu:'joao',larissa:'Ana'});
+  assert.equal(householdForSharing({...owner,members:[]}).enabled,false);
+});
 test('cards, calculations and mobile home use the active people safely and personal home has no settlement',()=>{
   const state=createState(false,'2026-10');saveTransaction(state,{id:'expense',type:'expense',amount:10000,date:'2026-10-19',description:'Mercado',categoryId:'mercado',sharing:{paidBy:'edu',eduPercent:50}});
   const people={edu:'Ana & João',larissa:'<img src=x onerror=alert(1)>'};

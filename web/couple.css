@@ -1,19 +1,24 @@
 /* Shared expenses use the same cream, violet and lime as the mobile plan. */
 .budget-heading>#couple-budget-summary{grid-column:1/-1;min-width:0}.budget-heading .couple-compact{margin-bottom:0}
 .couple-card,.couple-compact{color:#222222;font-variant-numeric:tabular-nums}
-.couple-card{background:#fff;border:1px solid #e5e2ed;border-radius:20px;padding:24px;margin:0 0 24px;box-shadow:0 3px 14px #24203e04}
+.couple-card{background:#fff;border:1px solid #e5e2ed;border-radius:20px;padding:24px;margin:0 0 24px;box-shadow:0 3px 14px #24203e04;min-width:0;max-width:100%;box-sizing:border-box}
 .couple-card header,.couple-history>header{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .couple-card h2{font-size:21px;font-weight:750;letter-spacing:-.6px;margin:3px 0 0;line-height:1.2}
-.couple-kicker{font-size:10px;font-weight:750;letter-spacing:.09em;color:#67687c}
+.couple-card header>div{flex:1;min-width:0}.couple-card header>.couple-link{flex-shrink:0}
+.couple-kicker{display:flex;align-items:center;gap:4px;min-width:0;max-width:100%;font-size:10px;font-weight:750;letter-spacing:.09em;color:#67687c}
+.couple-person-name{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.couple-kicker>.couple-person-name{flex:0 1 auto}.couple-kicker>span:not(.couple-person-name){flex-shrink:0}
 .couple-link{border:0;background:none;color:#555af5;font-size:13px;font-weight:700;padding:8px 0;min-height:40px;text-align:left;white-space:nowrap}
 .couple-link>span{margin-left:5px}.couple-month{font-size:12px;color:#737378;margin:8px 0 22px;text-transform:capitalize}
-.couple-paid{display:grid;grid-template-columns:1fr 1fr;gap:20px}.couple-paid>div:last-child{text-align:right}
+.couple-paid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.couple-paid>div{min-width:0}.couple-paid>div:last-child{text-align:right}
 .couple-paid>div>span{font-size:13px;display:flex;align-items:center;gap:7px;color:#66666c}.couple-paid>div:last-child>span{justify-content:flex-end}
+.couple-paid-label{display:flex;align-items:center;gap:4px;min-width:0}.couple-paid-label>span:last-child{flex-shrink:0}
+.couple-compact small,.couple-header-label small{overflow-wrap:anywhere}
 .couple-paid strong{display:block;font-size:24px;letter-spacing:-.7px;margin:8px 0 16px;font-weight:750;overflow-wrap:anywhere}
 .couple-avatar{display:inline-grid;place-items:center;border-radius:50%;width:26px;height:26px;font-size:12px;font-style:normal;font-weight:750;flex-shrink:0}
 .couple-avatar.edu{background:#e8e8ff;color:#4d50ce}.couple-avatar.larissa{background:#e5f2d2;color:#406a22}
 .couple-bar{height:8px;border-radius:6px;overflow:hidden;background:#bae677;display:flex;margin-bottom:20px}.couple-bar i{background:#555af5;display:block;height:100%;border-radius:6px;transition:width .25s ease}.couple-bar[data-muted]{background:#eeece5}.couple-bar[data-muted] i{background:#d9d7d0}
-.couple-result{background:#efefff;border-radius:12px;padding:16px;display:flex;gap:14px;align-items:center;justify-content:space-between}.couple-result span{font-size:13px;line-height:1.45;font-weight:600}.couple-result strong{color:#4549d8;font-size:23px;letter-spacing:-.6px;white-space:nowrap}.couple-result.balanced{background:#edf6e2}.couple-result.balanced strong{color:#3e6228}
+.couple-result{background:#efefff;border-radius:12px;padding:16px;display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;min-width:0}.couple-result span{font-size:13px;line-height:1.45;font-weight:600;min-width:0;overflow-wrap:anywhere}.couple-result>span{flex:1 1 145px}.couple-result strong{color:#4549d8;font-size:23px;letter-spacing:-.6px;white-space:normal;max-width:100%;overflow-wrap:anywhere}.couple-result.balanced{background:#edf6e2}.couple-result.balanced strong{color:#3e6228}
 .couple-card footer{display:flex;align-items:center;gap:12px;justify-content:space-between;margin-top:10px}.couple-card footer>span{font-size:11px;color:#74747a;line-height:1.5;max-width:58%}
 .couple-pending{background:#f7f5f0;border:0;border-radius:9px;min-height:42px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;width:100%;text-align:left;gap:10px;font-size:12px;color:#696050;margin-top:8px;line-height:1.5}
 .couple-compact{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #e7e3ef;border-radius:12px;padding:12px 15px;width:100%;text-align:left;margin:0 0 18px;min-height:62px}

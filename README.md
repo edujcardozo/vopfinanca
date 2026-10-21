@@ -82,6 +82,8 @@ The transaction category field is an editable combobox on desktop and mobile. It
 
 ## Nosso acerto
 
+Os nomes no plano vêm dos participantes confirmados. A tela espera essa consulta antes de mostrar o acerto, usa o nome cadastrado quando disponível e somente o texto anterior ao `@` como alternativa. Uma atualização sem nome preserva o nome já resolvido apenas para a mesma identidade no mesmo plano. Os textos e valores do cartão se ajustam à largura disponível, inclusive com nomes extensos.
+
 Despesas podem registrar `sharing: {paidBy: "edu" | "larissa", eduPercent: 0..100}`. Lançamentos antigos ficam sem pagador; receitas não têm divisão. Os percentuais são inteiros, e a parte de Edu é arredondada ao centavo; a parte de Larissa é o restante, conservando o total. Despesas pessoais pagas pela própria pessoa ficam fora do acerto.
 
 As transferências efetivamente feitas ficam em `household: {version: 1, settlements: [{id, from, amount, date, memo}]}` e não são receitas ou despesas no orçamento. Saldo positivo significa que Larissa transfere para Edu; negativo significa o inverso. A pendência de meses anteriores é recalculada a partir das despesas e transferências, incluindo meses sem movimentos. Acertos parciais, edições, exclusões e pagamentos a maior preservam o histórico do orçamento.

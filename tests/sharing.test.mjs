@@ -9,6 +9,14 @@ async function seed(api,user='owner',state=createState(false,'2026-10')){const r
 async function invite(api){const response=await post(api,'/invites',{});assert.equal(response.status,201);return response.json();}
 async function join(api,user='wife'){const link=await invite(api);const response=await post(api,'/accept',{token:link.token},user);assert.equal(response.status,200);return link;}
 const add=(state,label)=>saveTransaction(state,{id:id(),type:'expense',amount:1000,date:'2026-10-19',categoryId:'mercado',description:label,payee:label,memo:'',sharing:{paidBy:label==='Larissa'?'larissa':'edu',eduPercent:50}});
+test('Sites sharing returns the decoded display name without using it for authorization',async()=>{
+  const api=server();
+  const headers={'oai-authenticated-user-full-name':encodeURIComponent('João da Silva'),'oai-authenticated-user-full-name-encoding':'percent-encoded-utf-8'};
+  const data=await(await api.request('/api/sharing',{headers})).json();
+  assert.equal(data.user.name,'João da Silva');assert.equal(data.user.id,'owner');assert.equal(data.scope.id,'owner');
+  headers['oai-authenticated-user-full-name']='%ZZ';
+  const invalid=await api.request('/api/sharing',{headers});assert.equal(invalid.status,200);assert.equal((await invalid.json()).user.name,undefined);
+});
 function device(api,user,state=createState(false,'2026-10'),options={}){
   let current=structuredClone(state);const statuses=[],storage=options.storage||new MemoryStorage();
   const sync=createCloudSync({getState:()=>current,onApply:s=>current=s,onStatus:s=>statuses.push(s),onConflict:()=>{},storage,fetcher:api.fetcher(user),autoSchedule:false,autoPoll:false,...options});
