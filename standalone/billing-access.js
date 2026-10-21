@@ -1,6 +1,6 @@
 // This improves the read-only experience. The database independently rejects
 // unauthorized writes; editing this code cannot grant a subscription.
-const editing='[data-add-transaction],[data-edit-tx],[data-delete-tx],[data-assigned-input],[data-category-menu],[data-edit-group],[data-add-category-group],[data-options-group],[data-options-category],#add-category,#add-group,#reset-empty,#start-empty,#load-demo,#import-trigger,[data-new-settlement],[data-edit-settlement],[data-delete-settlement]';
+const editing='[data-options-history],[data-history-method],[data-history-apply],#planning-history,[data-add-transaction],[data-edit-tx],[data-delete-tx],[data-assigned-input],[data-category-menu],[data-edit-group],[data-add-category-group],[data-options-group],[data-options-category],#add-category,#add-group,#reset-empty,#start-empty,#load-demo,#import-trigger,[data-new-settlement],[data-edit-settlement],[data-delete-settlement]';
 export function mountBillingAccess({root,showBilling,documentObject=document}){
   let allowed=true;
   const banner=documentObject.createElement('div');banner.className='vpo-readonly-banner';banner.hidden=true;

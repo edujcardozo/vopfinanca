@@ -36,3 +36,9 @@ test('read-only UI protects edits while leaving navigation and backup available;
   event(document.querySelector('#export-data'),'click');event(document.querySelector('[data-view]'),'click');assert.equal(shown,1);
   guard.update({enabled:true,canUse:true});event(document.querySelector('[data-add-transaction]'),'click');assert.equal(shown,1);assert.equal(document.querySelector('[data-assigned-input]').readOnly,false);guard.destroy();
 });
+test('historical planning actions are protected by the read-only subscription guard, including modal actions',()=>{
+  const {document,event}=dom('<section id="app"><main id="app-main"><button id="planning-history">Histórico</button><button data-options-history>Menu mobile</button></main></section><dialog><button data-history-method="year">Ano</button><button data-history-apply>Aplicar</button></dialog>');
+  let shown=0;const guard=mountBillingAccess({root:document.querySelector('#app'),showBilling:()=>shown++,documentObject:document});guard.update({enabled:true,canUse:false});
+  for(const selector of ['#planning-history','[data-options-history]','[data-history-method]','[data-history-apply]'])assert.equal(event(document.querySelector(selector),'click').defaultPrevented,true);
+  assert.equal(shown,4);guard.destroy();
+});
