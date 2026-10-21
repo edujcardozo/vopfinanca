@@ -5,7 +5,7 @@ import {dom} from './helpers/dom.mjs';
 import {createState,currentMonth,shiftMonth,ensureMonth,saveTransaction,formatMoney,STORAGE_KEY} from '../web/core.js';
 import {MemoryStorage} from './helpers/sync-env.mjs';
 
-test('the plan caption compares only the selected month and respects hidden balances',async()=>{
+test('monthly planned and spent figures remain distinct from cumulative funding and respect hidden balances',async()=>{
   const saved=Object.fromEntries(['setTimeout','clearTimeout','setInterval','clearInterval','fetch'].map(key=>[key,globalThis[key]]));
   try{
     globalThis.setTimeout=()=>0;globalThis.clearTimeout=()=>{};globalThis.setInterval=()=>0;globalThis.clearInterval=()=>{};
@@ -18,16 +18,20 @@ test('the plan caption compares only the selected month and respects hidden bala
       ensureMonth(state,key).assigned.moradia=planned;
       saveTransaction(state,{id:key,type:'expense',amount:spent,categoryId:'moradia',date:key+'-10',payee:'Mercado',description:'Compra'});
     }
+    saveTransaction(state,{id:'income',type:'income',amount:9500,categoryId:null,date:month+'-01',payee:'Entrada',description:'Entrada'});
     globalThis.location={hash:'#plano/planejar'};globalThis.localStorage=new MemoryStorage();localStorage.setItem(STORAGE_KEY,JSON.stringify(state));
     await import('../web/app.js?monthly-budget-summary');await new Promise(setImmediate);
-    const caption=()=>document.querySelector('.assign-card>div>small').textContent;
-    const expected=(planned,spent)=>`Você planejou ${formatMoney(planned)} para este mês e já gastou ${formatMoney(spent)}.`;
-    assert.equal(caption(),expected(50000,12500));
-    event(document.querySelector('#privacy-toggle'),'click');assert.equal(caption(),'Você planejou •••• para este mês e já gastou ••••.');
+    const amounts=()=>[...document.querySelectorAll('.monthly-plan-summary strong')].map(node=>node.textContent);
+    const expected=(planned,spent)=>[formatMoney(planned),formatMoney(spent)];
+    assert.deepEqual(amounts(),expected(50000,12500));
+    assert.equal(document.querySelector('[data-funding-amount]').textContent,formatMoney(110500));
+    assert.equal(document.querySelector('.plan-funding-copy>span').textContent,'Falta cobrir o plano');
+    assert.equal(document.querySelectorAll('[data-monthly-planned]').length,1);assert.equal(document.querySelectorAll('[data-monthly-spent]').length,1);
+    event(document.querySelector('#privacy-toggle'),'click');assert.deepEqual(amounts(),['••••','••••']);assert.equal(document.querySelector('[data-funding-amount]').textContent,'••••');
     event(document.querySelector('#privacy-toggle'),'click');
-    event(document.querySelector('#prev-month'),'click');assert.equal(caption(),expected(70000,100000));
-    event(document.querySelector('#next-month'),'click');assert.equal(caption(),expected(50000,12500));
-    event(document.querySelector('#next-month'),'click');assert.equal(caption(),expected(30000,99999));
-    event(document.querySelector('#next-month'),'click');assert.equal(caption(),expected(0,0));
+    event(document.querySelector('#prev-month'),'click');assert.deepEqual(amounts(),expected(70000,100000));
+    event(document.querySelector('#next-month'),'click');assert.deepEqual(amounts(),expected(50000,12500));
+    event(document.querySelector('#next-month'),'click');assert.deepEqual(amounts(),expected(30000,99999));
+    event(document.querySelector('#next-month'),'click');assert.deepEqual(amounts(),expected(0,0));
   }finally{await new Promise(setImmediate);Object.assign(globalThis,saved);}
 });

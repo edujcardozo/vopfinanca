@@ -143,8 +143,18 @@ function route(){
 }
 function renderBudgetSummary(){
   const t=totals(state,selectedMonth),negative=t.toAssign<0,planned=Object.values(getMonth(state,selectedMonth).assigned).reduce((sum,amount)=>sum+amount,0);
-  const monthlySummary=`Você planejou ${money(planned)} para este mês e já gastou ${money(t.spent)}.`;
-  $('#budget-summary').innerHTML=`<article class="summary-card assign-card ${negative?'negative':''}"><button type="button" class="mobile-assignment-pill" ${negative?'data-fix-budget':'data-view="home"'}><strong>${money(t.toAssign)}</strong><span>${negative?'Planejado a mais':t.toAssign?'Para distribuir':'Tudo distribuído'}</span>${icon('chevron')}</button><div><span class="summary-label">${icon(negative?'wallet':t.toAssign?'wallet':'check')} ${negative?'Ajuste seu plano':'Para distribuir'}</span><strong>${money(t.toAssign)}</strong><small>${monthlySummary}</small></div>${negative?'<button class="subtle-button" data-fix-budget>Como ajustar</button>':''}</article><article class="summary-card"><span class="summary-label">${icon('wallet')} O que entra e o que sai</span><strong>${money(t.balance)}</strong><small>Saldo acumulado até este mês.</small></article>`;
+  const fundingLabel=negative?'Falta cobrir o plano':t.toAssign?'Para distribuir':'Tudo distribuído';
+  const fundingHelp='Compara as entradas e os valores planejados, acumulados até o mês selecionado.';
+  $('#budget-summary').innerHTML=`<article class="summary-card assign-card monthly-plan-card">
+    <div class="monthly-plan-summary" aria-label="Resumo do mês selecionado">
+      <div class="plan-metric plan-metric-planned"><span class="summary-label">Planejado no mês</span><strong data-monthly-planned>${money(planned)}</strong></div>
+      <div class="plan-metric plan-metric-spent"><span class="summary-label">Gasto no mês</span><strong data-monthly-spent>${money(t.spent)}</strong></div>
+    </div>
+    <button type="button" class="plan-funding-summary ${negative?'is-negative':t.toAssign?'is-positive':'is-balanced'}" ${negative?'data-fix-budget':'data-view="home"'} title="${fundingHelp}" aria-label="${fundingLabel}${t.toAssign?' '+money(Math.abs(t.toAssign)):''}. ${negative?'Como ajustar.':'Abrir início.'} ${fundingHelp}">
+      <span class="plan-funding-copy"><span>${fundingLabel}</span>${t.toAssign?`<b data-funding-amount>${money(Math.abs(t.toAssign))}</b>`:''}</span>
+      ${negative?'<span class="plan-funding-action">Como ajustar</span>':''}${icon('chevron')}
+    </button>
+  </article><article class="summary-card"><span class="summary-label">${icon('wallet')} O que entra e o que sai</span><strong>${money(t.balance)}</strong><small>Saldo acumulado até este mês.</small></article>`;
 }
 function renderBudget(){
   closeCategoryMenu(false);
@@ -513,7 +523,7 @@ document.addEventListener('click',e=>{
   const edit=e.target.closest('[data-edit-tx]');if(edit){transactionDialog('expense',edit.dataset.editTx);return;}
   const remove=e.target.closest('[data-delete-tx]');if(remove){removeTransaction(remove.dataset.deleteTx);return;}
   const filter=e.target.closest('[data-tx-filter]');if(filter){txFilter=filter.dataset.txFilter;$$('[data-tx-filter]').forEach(b=>{const active=b===filter;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});renderTransactions();return;}
-  if(e.target.closest('[data-fix-budget]')){openDialog('Vamos equilibrar o plano.',`<p class="confirm-text">Você distribuiu mais dinheiro do que registrou em entradas. Reduza o valor planejado em alguma categoria ou registre uma entrada que ainda não está no plano.</p><button class="btn btn-blue form-submit" id="fix-add-income">Registrar uma entrada ${icon('plus')}</button>`);$('#fix-add-income').onclick=()=>transactionDialog('income');return;}
+  if(e.target.closest('[data-fix-budget]')){openDialog('Vamos equilibrar o plano.',`<p class="confirm-text">O planejado acumulado até o mês selecionado supera as entradas registradas até esse mês. Para cobrir a diferença, reveja os valores planejados ou registre uma entrada que ainda não está no plano.</p><button class="btn btn-blue form-submit" id="fix-add-income">Registrar uma entrada ${icon('plus')}</button>`);$('#fix-add-income').onclick=()=>transactionDialog('income');return;}
   const preview=e.target.closest('[data-preview]');if(preview){previewSelected=preview.dataset.preview;renderPreview();return;}
   if(e.target.closest('#preview-add')){const p=previews.find(c=>c.id===previewSelected);p.amount=Math.min(p.target,p.amount+10000);renderPreview();return;}
   const goal=e.target.closest('[data-goal]');if(goal){chosenGoal=goal.dataset.goal;$$('[data-goal]').forEach(b=>{const selected=b===goal;b.classList.toggle('selected',selected);b.setAttribute('aria-pressed',String(selected));});$('#goal-answer').textContent=goalTexts[chosenGoal];return;}

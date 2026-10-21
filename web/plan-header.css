@@ -1,4 +1,5 @@
 /* The period and actions share one row; the three balances share the next. */
+/* Monthly spending and funding are separate indicators. */
 #budget-desktop-month-slot:empty{display:none}
 @media(min-width:720px){
  .app-main.budget-active{padding-top:10px}
@@ -86,4 +87,42 @@
  .transactions-active #shared-month-slot .couple-header-summary{min-height:44px;padding-block:5px}
  .transactions-active .transaction-tools{padding-top:3px;padding-bottom:5px;margin-bottom:3px;gap:6px}
  .transactions-active #transactions-list>.tx-date:first-child{padding-top:10px}
+}
+
+/* Clear monthly figures, with the cumulative funding adjustment kept secondary. */
+.budget-active .budget-heading .summary-card.monthly-plan-card{display:flex;flex-direction:column;align-items:stretch;gap:9px;padding:10px 12px;border:1px solid #e2deec;border-radius:12px;background:#fff;container-type:inline-size}
+.budget-active .budget-heading .monthly-plan-card>.monthly-plan-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:center;gap:12px;min-width:0}
+.budget-active .budget-heading .monthly-plan-card .plan-metric{min-width:0}
+.budget-active .budget-heading .monthly-plan-card .plan-metric-spent{padding-left:12px;border-left:1px solid #e6e1ef}
+.budget-active .budget-heading .monthly-plan-card .summary-label{padding:0;margin:0 0 4px;min-height:0;color:#777287;font-size:10px;font-weight:600;line-height:1.35;white-space:normal}
+.budget-active .budget-heading .monthly-plan-card .plan-metric strong{color:#242254;font-size:23px;font-weight:750;line-height:1.2;letter-spacing:-.6px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.budget-active .budget-heading .monthly-plan-card .plan-metric-spent .summary-label{color:#6258ad}
+.budget-active .budget-heading .monthly-plan-card .plan-metric-spent strong{color:#5550bd}
+.plan-funding-summary{display:flex;align-items:center;gap:7px;min-width:0;width:100%;min-height:31px;padding:7px 0 0;border:0;border-top:1px solid #ece9f3;background:transparent;color:#757082;text-align:left;font:inherit;font-size:10px;line-height:1.4;cursor:pointer}
+.plan-funding-copy{display:flex;align-items:baseline;flex-wrap:wrap;gap:2px 7px;flex:1;min-width:0}
+.plan-funding-copy>span{min-width:0;overflow-wrap:anywhere}
+.plan-funding-copy>b{min-width:0;font-size:12px;font-weight:700;line-height:1.4;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.plan-funding-summary.is-negative{color:#a74356}
+.plan-funding-summary.is-positive{color:#487032}
+.plan-funding-summary.is-balanced{color:#6c745e}
+.plan-funding-action{font-size:9px;font-weight:600;flex:none}
+.plan-funding-summary>.icon{width:13px;height:13px;margin-left:auto;flex:none;opacity:.75}
+.plan-funding-summary:focus-visible{outline:2px solid #8a70ff;outline-offset:3px;border-radius:4px}
+@media(hover:hover){.plan-funding-summary:hover .plan-funding-copy>span{text-decoration:underline;text-underline-offset:3px}}
+@container(max-width:260px){
+ .budget-active .budget-heading .monthly-plan-card>.monthly-plan-summary{grid-template-columns:minmax(0,1fr);gap:9px}
+ .budget-active .budget-heading .monthly-plan-card .plan-metric{display:flex;align-items:center;justify-content:space-between;gap:8px}
+ .budget-active .budget-heading .monthly-plan-card .summary-label{max-width:82px;margin:0;flex:1}
+ .budget-active .budget-heading .monthly-plan-card .plan-metric strong{min-width:0;font-size:18px;letter-spacing:-.4px;text-align:right}
+ .budget-active .budget-heading .monthly-plan-card .plan-metric-spent{padding:9px 0 0;border:0;border-top:1px solid #eeebf5}
+ .plan-funding-action{display:none}
+}
+@media(max-width:719px){
+ .budget-active .budget-heading .summary-card.monthly-plan-card{padding:12px 14px 3px;gap:9px;border-color:#e3ddce;border-radius:21px}
+ .budget-active .budget-heading .monthly-plan-card .summary-label{font-size:11px}
+ .budget-active .budget-heading .monthly-plan-card .plan-metric strong{font-size:20px}
+ .budget-active .budget-heading .monthly-plan-card .plan-metric-spent{border-color:#ebe6dc}
+ .plan-funding-summary{min-height:44px;padding:7px 0;font-size:11px;border-color:#eee9df}
+ .plan-funding-copy>b{font-size:12px}
+ .plan-funding-action{display:none}
 }
