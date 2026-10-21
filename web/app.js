@@ -142,8 +142,9 @@ function route(){
   }
 }
 function renderBudgetSummary(){
-  const t=totals(state,selectedMonth),negative=t.toAssign<0;
-  $('#budget-summary').innerHTML=`<article class="summary-card assign-card ${negative?'negative':''}"><button type="button" class="mobile-assignment-pill" ${negative?'data-fix-budget':'data-view="home"'}><strong>${money(t.toAssign)}</strong><span>${negative?'Planejado a mais':t.toAssign?'Para distribuir':'Tudo distribuído'}</span>${icon('chevron')}</button><div><span class="summary-label">${icon(negative?'wallet':t.toAssign?'wallet':'check')} ${negative?'Ajuste seu plano':'Para distribuir'}</span><strong>${money(t.toAssign)}</strong><small>${negative?'Você planejou mais do que tem.':t.toAssign?'Dê um destino a esse dinheiro.':'Cada real já tem um propósito.'}</small></div>${negative?'<button class="subtle-button" data-fix-budget>Como ajustar</button>':''}</article><article class="summary-card"><span class="summary-label">${icon('wallet')} O que entra e o que sai</span><strong>${money(t.balance)}</strong><small>Saldo acumulado até este mês.</small></article>`;
+  const t=totals(state,selectedMonth),negative=t.toAssign<0,planned=Object.values(getMonth(state,selectedMonth).assigned).reduce((sum,amount)=>sum+amount,0);
+  const monthlySummary=`Você planejou ${money(planned)} para este mês e já gastou ${money(t.spent)}.`;
+  $('#budget-summary').innerHTML=`<article class="summary-card assign-card ${negative?'negative':''}"><button type="button" class="mobile-assignment-pill" ${negative?'data-fix-budget':'data-view="home"'}><strong>${money(t.toAssign)}</strong><span>${negative?'Planejado a mais':t.toAssign?'Para distribuir':'Tudo distribuído'}</span>${icon('chevron')}</button><div><span class="summary-label">${icon(negative?'wallet':t.toAssign?'wallet':'check')} ${negative?'Ajuste seu plano':'Para distribuir'}</span><strong>${money(t.toAssign)}</strong><small>${monthlySummary}</small></div>${negative?'<button class="subtle-button" data-fix-budget>Como ajustar</button>':''}</article><article class="summary-card"><span class="summary-label">${icon('wallet')} O que entra e o que sai</span><strong>${money(t.balance)}</strong><small>Saldo acumulado até este mês.</small></article>`;
 }
 function renderBudget(){
   closeCategoryMenu(false);
