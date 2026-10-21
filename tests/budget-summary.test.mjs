@@ -25,7 +25,9 @@ test('the header uses only monthly planned, spent and remaining amounts, removes
     const amounts=()=>[...document.querySelectorAll('.monthly-plan-summary strong')].map(node=>node.textContent);
     const remaining=()=>document.querySelector('[data-monthly-remaining]').textContent;
     const expected=(planned,spent)=>[formatMoney(planned),formatMoney(spent)];
+    const categoryAvailable=()=>document.querySelector('[data-category="moradia"] .amount-badge').textContent;
     assert.deepEqual(amounts(),expected(50000,12500));assert.equal(remaining(),formatMoney(37500));
+    assert.equal(categoryAvailable(),formatMoney(37500));
     assert.equal(document.querySelector('.monthly-balance-copy>span').textContent,'Restante do planejado');
     assert.equal(document.querySelectorAll('#budget-summary>.summary-card').length,1);
     assert.doesNotMatch(document.querySelector('#budget-summary').textContent,/O que entra e o que sai|acumulad/);
@@ -39,6 +41,14 @@ test('the header uses only monthly planned, spent and remaining amounts, removes
     event(document.querySelector('#close-dialog'),'click');
     event(document.querySelector('#next-month'),'click');assert.deepEqual(amounts(),expected(50000,12500));assert.equal(remaining(),formatMoney(37500));
     event(document.querySelector('#next-month'),'click');assert.deepEqual(amounts(),expected(30000,99999));assert.equal(remaining(),formatMoney(69999));
+    assert.equal(categoryAvailable(),formatMoney(-69999));
     event(document.querySelector('#next-month'),'click');assert.deepEqual(amounts(),expected(0,0));assert.equal(remaining(),formatMoney(0));
+    assert.ok([...document.querySelectorAll('#categories-list .amount-badge')].every(node=>node.textContent===formatMoney(0)));
+    assert.ok([...document.querySelectorAll('#categories-list .spending-progress')].every(node=>node.classList.contains('empty')));
+    const emptyMonth=shiftMonth(next,1);assert.equal(JSON.parse(localStorage.getItem(STORAGE_KEY)).months[emptyMonth],undefined);
+    const assigned=document.querySelector('[data-assigned-input="moradia"]');event(assigned,'focus');assigned.value='120,00';event(assigned,'input');event(assigned,'blur');
+    assert.equal(categoryAvailable(),formatMoney(12000));assert.deepEqual(amounts(),expected(12000,0));
+    const stored=JSON.parse(localStorage.getItem(STORAGE_KEY));assert.equal(stored.months[emptyMonth].assigned.moradia,12000);assert.equal(stored.months[next].assigned.moradia,30000);assert.equal(stored.months[month].assigned.moradia,50000);
+    event(document.querySelector('#next-month'),'click');assert.equal(categoryAvailable(),formatMoney(0));
   }finally{await new Promise(setImmediate);Object.assign(globalThis,saved);}
 });

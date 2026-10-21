@@ -17,6 +17,6 @@ export function categoryBudgetDetails(category,t,hidden=false){
 export function categorySpendingLabel(t,hidden=false){
   if(hidden)return '<span class="category-spending-summary">Valores ocultos</span>';
   const p=categorySpendingProgress(t),label=`Gasto ${formatMoney(t.spent)} de ${formatMoney(p.funded)}`;
-  const details=`Valor para usar no mês: planejado ${formatMoney(t.assigned)}, saldo anterior ${formatMoney(t.carryover)}.${p.overspent?' Falta cobrir '+formatMoney(p.overspent)+'.':''}`;
+  const details=`Planejado no mês: ${formatMoney(t.assigned)}${t.carryover?', saldo anterior '+formatMoney(t.carryover):''}.${p.overspent?' Falta cobrir '+formatMoney(p.overspent)+'.':''}`;
   return `<span class="category-spending-summary ${p.overspent?'is-overspent':''}" title="${esc(details)}">${esc(label)}</span>`;
 }

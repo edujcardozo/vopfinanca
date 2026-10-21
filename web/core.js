@@ -125,6 +125,13 @@ export function monthlyPlanTotals(state,key){
   const spent=month.transactions.reduce((sum,transaction)=>sum+(transaction.type==='expense'?transaction.amount:0),0);
   return {planned,spent,remaining:planned-spent};
 }
+// Monthly planning is independent from the cumulative cash ledger. Opening a
+// month never funds its categories or carries another month's surplus/deficit.
+export function monthlyCategoryTotals(state,key,categoryId){
+  const month=getMonth(state,key),assigned=month.assigned[categoryId]||0;
+  const spent=month.transactions.reduce((sum,transaction)=>sum+(transaction.type==='expense'&&transaction.categoryId===categoryId?transaction.amount:0),0);
+  return {assigned,spent,carryover:0,available:assigned-spent};
+}
 export function categoryTotals(state,key,categoryId){
   let carryover=0,spent=0;
   for(const [ym,data] of Object.entries(state.months)){

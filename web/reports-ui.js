@@ -1,7 +1,7 @@
 import {createReportPeriod} from './report-period.js?v=vpo-34';
 import {categoryBudgetDetails} from './budget-progress.js?v=vpo-34';
 import {categoryIcon} from './category-icons.js?v=vpo-34';
-import {formatMoney,groupsFor,categoryTotals} from './core.js?v=vpo-34';
+import {formatMoney,groupsFor,monthlyCategoryTotals} from './core.js?v=vpo-34';
 import {buildReports} from './reports-core.js?v=vpo-34';
 
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -86,8 +86,8 @@ export function createReportsUI({root,getState,getEndMonth,onEditWealth,onToggle
     return `${legend(entries)}<div class="report-chart-scroll" data-chart-kind="${kind}">${svg}</div>${compact&&data.series.length>6?'<p class="report-scroll-hint">Deslize o gráfico para ver todos os meses.</p>':''}<div class="report-point"><strong>${esc(fullMonth(row.month))}</strong><div>${point}</div></div>`;
   }
   function plannedSpending(){
-    const s=getState(),month=period.end,cats=s.categories.filter(c=>{const t=categoryTotals(s,month,c.id);return (group==='all'||c.group===group)&&(categoryFilter==='all'||c.id===categoryFilter)&&(t.assigned||t.carryover||t.spent);});
-    return `<details class="report-planned"><summary>Consumo do planejado</summary><p class="report-note">${esc(fullMonth(month))}: planejado, gasto e saldo das categorias. Inclui o saldo anterior.</p>${cats.length?cats.map(c=>`<div class="planned-spending-row"><strong>${esc(categoryIcon(c.name))} ${esc(c.name)}</strong>${categoryBudgetDetails(c,categoryTotals(s,month,c.id),s.hideBalances)}</div>`).join(''):empty('Nenhum valor neste mês.','Defina o planejado nas categorias para acompanhar o consumo.')}</details>`;
+    const s=getState(),month=period.end,cats=s.categories.filter(c=>{const t=monthlyCategoryTotals(s,month,c.id);return (group==='all'||c.group===group)&&(categoryFilter==='all'||c.id===categoryFilter)&&(t.assigned||t.spent);});
+    return `<details class="report-planned"><summary>Consumo do planejado</summary><p class="report-note">${esc(fullMonth(month))}: planejado, gasto e restante das categorias, somente deste mês.</p>${cats.length?cats.map(c=>`<div class="planned-spending-row"><strong>${esc(categoryIcon(c.name))} ${esc(c.name)}</strong>${categoryBudgetDetails(c,monthlyCategoryTotals(s,month,c.id),s.hideBalances)}</div>`).join(''):empty('Nenhum valor neste mês.','Defina o planejado nas categorias para acompanhar o consumo.')}</details>`;
   }
   function breakdown(data){
     const entries=breakdownMode==='groups'?data.groupSpending:data.spending;
