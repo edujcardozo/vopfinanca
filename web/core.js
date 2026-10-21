@@ -120,6 +120,11 @@ export function totals(state,key){
   }
   return {income,spent,balance:allIncome-allSpent,toAssign:allIncome-allAssigned,categoryAvailable:allAssigned-allSpent};
 }
+export function monthlyPlanTotals(state,key){
+  const month=getMonth(state,key),planned=Object.values(month.assigned).reduce((sum,amount)=>sum+amount,0);
+  const spent=month.transactions.reduce((sum,transaction)=>sum+(transaction.type==='expense'?transaction.amount:0),0);
+  return {planned,spent,remaining:planned-spent};
+}
 export function categoryTotals(state,key,categoryId){
   let carryover=0,spent=0;
   for(const [ym,data] of Object.entries(state.months)){

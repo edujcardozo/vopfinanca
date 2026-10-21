@@ -9,7 +9,7 @@ import {categoryIcon} from './category-icons.js?v=vpo-34';
 import {mountPayeeAutocomplete} from './payee-autocomplete.js?v=vpo-34';
 import {applyLayout} from './reorder-core.js?v=vpo-34';
 import {createReorder} from './reorder.js?v=vpo-34';
-import {STORAGE_KEY,formatMoney,parseMoney,today,currentMonth,validDate,validMonth,shiftMonth,id,createState,getMonth,ensureMonth,totals,categoryTotals,validateState,dateOffset,formatTransactionDate,payeeHistory,matchingPayees,payeeKey,searchPayeeKey,saveTransaction,groupsFor,createGroup,renameGroup,moveCategory} from './core.js?v=vpo-34';
+import {STORAGE_KEY,formatMoney,parseMoney,today,currentMonth,validDate,validMonth,shiftMonth,id,createState,getMonth,ensureMonth,totals,monthlyPlanTotals,categoryTotals,validateState,dateOffset,formatTransactionDate,payeeHistory,matchingPayees,payeeKey,searchPayeeKey,saveTransaction,groupsFor,createGroup,renameGroup,moveCategory} from './core.js?v=vpo-34';
 import {createReportsUI} from './reports-ui.js?v=vpo-34';
 import {wealthAt} from './reports-core.js?v=vpo-34';
 import {createCloudSync} from './cloud-sync.js?v=vpo-34';
@@ -142,19 +142,19 @@ function route(){
   }
 }
 function renderBudgetSummary(){
-  const t=totals(state,selectedMonth),negative=t.toAssign<0,planned=Object.values(getMonth(state,selectedMonth).assigned).reduce((sum,amount)=>sum+amount,0);
-  const fundingLabel=negative?'Falta cobrir o plano':t.toAssign?'Para distribuir':'Tudo distribuído';
-  const fundingHelp='Compara as entradas e os valores planejados, acumulados até o mês selecionado.';
+  const t=monthlyPlanTotals(state,selectedMonth),overspent=t.remaining<0;
+  const remainingLabel=overspent?'Acima do planejado':'Restante do planejado';
+  const remainingHelp='Planejado menos gastos, somente do mês selecionado.';
+  const remainingContent=`<span class="monthly-balance-copy"><span>${remainingLabel}</span><b data-monthly-remaining>${money(Math.abs(t.remaining))}</b></span>${overspent?'<span class="monthly-balance-action">Como ajustar</span>'+icon('chevron'):''}`;
+  const remainingClass='monthly-plan-balance '+(overspent?'is-negative':t.remaining?'is-positive':'is-balanced');
+  const remainingHTML=overspent?`<button type="button" class="${remainingClass}" data-fix-monthly-spending title="${remainingHelp}" aria-label="${remainingLabel} ${money(-t.remaining)} no mês selecionado. Como ajustar.">${remainingContent}</button>`:`<div class="${remainingClass}" title="${remainingHelp}">${remainingContent}</div>`;
   $('#budget-summary').innerHTML=`<article class="summary-card assign-card monthly-plan-card">
     <div class="monthly-plan-summary" aria-label="Resumo do mês selecionado">
-      <div class="plan-metric plan-metric-planned"><span class="summary-label">Planejado no mês</span><strong data-monthly-planned>${money(planned)}</strong></div>
+      <div class="plan-metric plan-metric-planned"><span class="summary-label">Planejado no mês</span><strong data-monthly-planned>${money(t.planned)}</strong></div>
       <div class="plan-metric plan-metric-spent"><span class="summary-label">Gasto no mês</span><strong data-monthly-spent>${money(t.spent)}</strong></div>
     </div>
-    <button type="button" class="plan-funding-summary ${negative?'is-negative':t.toAssign?'is-positive':'is-balanced'}" ${negative?'data-fix-budget':'data-view="home"'} title="${fundingHelp}" aria-label="${fundingLabel}${t.toAssign?' '+money(Math.abs(t.toAssign)):''}. ${negative?'Como ajustar.':'Abrir início.'} ${fundingHelp}">
-      <span class="plan-funding-copy"><span>${fundingLabel}</span>${t.toAssign?`<b data-funding-amount>${money(Math.abs(t.toAssign))}</b>`:''}</span>
-      ${negative?'<span class="plan-funding-action">Como ajustar</span>':''}${icon('chevron')}
-    </button>
-  </article><article class="summary-card"><span class="summary-label">${icon('wallet')} O que entra e o que sai</span><strong>${money(t.balance)}</strong><small>Saldo acumulado até este mês.</small></article>`;
+    ${remainingHTML}
+  </article>`;
 }
 function renderBudget(){
   closeCategoryMenu(false);
@@ -523,6 +523,7 @@ document.addEventListener('click',e=>{
   const edit=e.target.closest('[data-edit-tx]');if(edit){transactionDialog('expense',edit.dataset.editTx);return;}
   const remove=e.target.closest('[data-delete-tx]');if(remove){removeTransaction(remove.dataset.deleteTx);return;}
   const filter=e.target.closest('[data-tx-filter]');if(filter){txFilter=filter.dataset.txFilter;$$('[data-tx-filter]').forEach(b=>{const active=b===filter;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});renderTransactions();return;}
+  if(e.target.closest('[data-fix-monthly-spending]')){const t=monthlyPlanTotals(state,selectedMonth);openDialog('Gastos acima do planejado.',`<p class="confirm-text">Você gastou <strong>${money(Math.max(0,-t.remaining))}</strong> além do planejado em ${esc(monthName(selectedMonth))}. Confira os lançamentos ou ajuste o planejado das categorias desse mês.</p>`);return;}
   if(e.target.closest('[data-fix-budget]')){openDialog('Vamos equilibrar o plano.',`<p class="confirm-text">O planejado acumulado até o mês selecionado supera as entradas registradas até esse mês. Para cobrir a diferença, reveja os valores planejados ou registre uma entrada que ainda não está no plano.</p><button class="btn btn-blue form-submit" id="fix-add-income">Registrar uma entrada ${icon('plus')}</button>`);$('#fix-add-income').onclick=()=>transactionDialog('income');return;}
   const preview=e.target.closest('[data-preview]');if(preview){previewSelected=preview.dataset.preview;renderPreview();return;}
   if(e.target.closest('#preview-add')){const p=previews.find(c=>c.id===previewSelected);p.amount=Math.min(p.target,p.amount+10000);renderPreview();return;}
