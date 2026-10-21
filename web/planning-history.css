@@ -27,16 +27,13 @@
 @media(prefers-reduced-motion:reduce){.history-dropdown{animation:none}.history-chevron{transition:none}}
 @media print{.history-trigger,.history-dropdown{display:none!important}}
 
-/* A brief, once-only introduction uses the same modal and account preferences. */
-.history-welcome{min-width:0;color:#282b55}
-.history-welcome-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid #dedff8;border-radius:10px;background:#f0f0ff;color:#555af5;font-size:12px;font-weight:650}
-.history-welcome-badge .icon{width:17px;height:17px}
-.history-welcome-lead{margin:15px 0;font-size:13px;line-height:1.65;color:#6b6d85}.history-welcome-lead strong{font-weight:600;color:#373b71}
-.history-welcome-methods{list-style:none;padding:0;margin:0;border:1px solid #e7e8f2;border-radius:13px;background:#fff}
-.history-welcome-methods li{display:flex;align-items:center;gap:12px;padding:12px 14px;min-width:0}.history-welcome-methods li+li{border-top:1px solid #eeeff6}
-.history-welcome-methods li>span{display:grid;place-items:center;flex:0 0 32px;height:32px;background:#f2f2ff;color:#5a5dc0;border-radius:9px;font-size:13px;font-weight:650}
-.history-welcome-methods li>div{min-width:0}.history-welcome-methods strong{display:block;font-size:12px;font-weight:650;line-height:1.5}.history-welcome-methods small{display:block;margin-top:2px;font-size:11px;color:#82849a;line-height:1.5}
-.history-welcome-note{display:flex;align-items:flex-start;gap:9px;margin:14px 0 10px;padding:11px 12px;border-radius:10px;background:#edf6e5;color:#426d3c;font-size:11px;line-height:1.55}.history-welcome-note>span:first-child{font-weight:700}
-.history-welcome-empty{margin:0 0 17px;font-size:11px;line-height:1.6;color:#85879a}.history-welcome-mobile{display:none}
-.history-welcome-actions{display:flex;align-items:center;justify-content:space-between;gap:12px}.history-welcome-actions .subtle-button{display:flex;align-items:center;gap:8px;border:0;background:none;color:#555af5;padding:10px 0;font-size:12px;min-height:44px}.history-welcome-actions .btn{font-size:12px;min-height:44px;min-width:116px;padding:11px 22px;border-radius:10px}
-@media(max-width:719px){.history-welcome-lead{font-size:13px;line-height:1.55;margin-block:13px}.history-welcome-methods li{padding:11px 12px;gap:10px}.history-welcome-mobile{display:block;margin-top:4px}.history-welcome-empty{margin-bottom:14px}.history-welcome-actions .btn{flex:0 0 118px}.history-welcome-methods small{color:#777987}}
+/* A small first-use note sits above the button without blocking the page. */
+.history-tip{position:fixed;z-index:85;box-sizing:border-box;max-width:calc(100vw - 24px);padding:15px 16px 10px;border:1px solid #dadcf3;border-radius:12px;background:#fff;color:#333765;box-shadow:0 8px 28px #2526531c,0 2px 6px #25265308;font-family:inherit;animation:history-appear .15s ease-out}
+.history-tip::after{content:"";position:absolute;bottom:-6px;left:calc(var(--history-tip-arrow) - 6px);width:10px;height:10px;border-right:1px solid #dadcf3;border-bottom:1px solid #dadcf3;background:#fff;transform:rotate(45deg)}
+.history-tip[data-side=below]::after{top:-6px;bottom:auto;transform:rotate(225deg)}
+.history-tip>strong{display:block;margin:0 20px 7px 0;font-size:12px;line-height:1.5;font-weight:700;color:#4549c0}.history-tip>p{margin:0;font-size:11px;line-height:1.65;color:#73768d}
+.history-tip-close{position:absolute;right:6px;top:6px;display:grid;place-items:center;width:28px;height:28px;padding:6px;border:0;border-radius:7px;background:transparent;color:#9395b0;cursor:pointer}.history-tip-close svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round}.history-tip-close:hover{background:#f1f1ff;color:#555af5}
+.history-tip-done{display:flex;align-items:center;gap:7px;min-height:32px;padding:6px 0 3px;margin-top:4px;border:0;background:none;color:#555af5;font:inherit;font-size:11px;font-weight:650;cursor:pointer}.history-tip-done>span{font-size:11px}.history-tip button:focus-visible{outline:2px solid #7e83f5;outline-offset:2px}
+@media(max-width:719px){.history-tip{padding:14px 15px 9px}.history-tip-close{width:32px;height:32px;top:4px;right:4px}.history-tip-done{min-height:36px}.history-tip>p{font-size:11px}}
+@media(prefers-reduced-motion:reduce){.history-tip{animation:none}}
+@media print{.history-tip{display:none!important}}

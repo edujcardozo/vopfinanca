@@ -17,11 +17,12 @@ test('historical planning dropdown, review, partial selection, apply, undo, priv
     state.months[month].assigned={mercado:3000,reserva:5000};
     for(const [index,category] of state.categories.entries())saveTransaction(state,{id:'expense-'+index,type:'expense',amount:10000+index*100,categoryId:category.id,date:previous+'-10',description:'Compra'});
     globalThis.location={hash:'#plano/planejar'};globalThis.localStorage=new MemoryStorage();localStorage.setItem(STORAGE_KEY,JSON.stringify(state));
+    document.querySelector('#planning-history').getBoundingClientRect=()=>({left:900,right:1030,top:320,bottom:360,width:130,height:40});
     await import('../web/app.js?history-ui');await new Promise(setImmediate);
-    assert.equal(dialog.open,true);assert.ok(document.querySelector('.history-welcome'));
+    assert.equal(dialog.open||false,false);assert.ok(document.querySelector('.history-tip'));
     const planBeforeIntro=localStorage.getItem(STORAGE_KEY);
-    event(document.querySelector('[data-history-intro-dismiss]'),'click');await new Promise(setImmediate);
-    assert.equal(dialog.open,false);assert.equal(localStorage.getItem(STORAGE_KEY),planBeforeIntro);
+    event(document.querySelector('[data-history-tip-done]'),'click');await new Promise(setImmediate);
+    assert.equal(dialog.open||false,false);assert.equal(localStorage.getItem(STORAGE_KEY),planBeforeIntro);
     const trigger=document.querySelector('#planning-history'),click=selector=>event(document.querySelector(selector),'click');
     click('#planning-history');assert.equal(trigger.getAttribute('aria-expanded'),'true');assert.equal(document.querySelectorAll('#planning-history-menu [role=menuitem]').length,3);
     click('[data-history-method="last-month"]');assert.equal(dialog.open,true);assert.equal(document.querySelector('#planning-history-menu'),null);

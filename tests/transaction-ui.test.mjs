@@ -22,7 +22,6 @@ test('desktop transaction composer selects saved payee/category, saves once and 
    const state=createState(false,'2026-10');state.categories.find(c=>c.id==='mercado').target=100000;state.categories.find(c=>c.id==='moradia').name='Luz';state.categories.find(c=>c.id==='transporte').name='Internet';rememberPayee(state,'Panvel');saveTransaction(state,{id:'previous',type:'expense',description:'Zaffari',payee:'Zaffari',memo:'',amount:1000,date:'2026-10-01',categoryId:'mercado'});if(!shared)state.months['2026-10'].transactions[0].sharing={paidBy:'larissa',eduPercent:60};localStorage.setItem(STORAGE_KEY,JSON.stringify(state));
    globalThis.FormData=class{constructor(form){this.entries=new Map([...form.querySelectorAll('[name]')].filter(el=>!el.disabled).map(el=>[el.getAttribute('name'),el.value]));}get(name){return this.entries.get(name)??null;}};
    await import('../web/app.js?ui-test='+width+'-'+shared);await new Promise(setImmediate);
-   if(document.querySelector('[data-history-intro-dismiss]'))event(document.querySelector('[data-history-intro-dismiss]'),'click');
    if(!shared){
     assert.equal(document.querySelector('#couple-budget-summary').hidden,true);assert.equal(document.querySelector('#transaction-person-filter').closest('label').hidden,true);
     globalThis.location.hash='#plano/inicio';event(window,'hashchange');assert.equal(document.querySelectorAll('#mobile-home-content [data-open-couple]').length,0);

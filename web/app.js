@@ -32,7 +32,7 @@ const dayName=d=>new Intl.DateTimeFormat('pt-BR',{day:'numeric',month:'long',wee
 const collapsedGroups=new Set();
 let mobileStructure=false;
 let historyPlanning;
-let historyIntro;
+let historyIntro,historyIntroReady=false;
 const routes={home:'inicio',budget:'planejar',transactions:'movimentos',overview:'visao',settings:'ajustes'};
 let state,hadStored=false,loadWarning=false,selectedMonth=currentMonth(),view='budget',txFilter='all',personFilter='all',toastTimer,undoAction=null;
 const planStorage=platform.storage;
@@ -138,7 +138,7 @@ function route(){
     $$('[data-view]').forEach(el=>{const active=el.dataset.view===view;el.classList.toggle('active',active);if(active)el.setAttribute('aria-current','page');else el.removeAttribute('aria-current');});
     $('.mobile-fab').hidden=['settings','overview'].includes(view);
     document.querySelector('meta[name="theme-color"]').content=window.matchMedia('(max-width:719px)').matches?(view==='home'?'#555af5':'#f4f2eb'):'#f7f7fc';
-    cachePlan();cloudSync.start().then(()=>{sharingUI.handleInvitation();historyIntro?.maybeShow();});renderAll();window.scrollTo({top:0,behavior:'instant'});
+    cachePlan();cloudSync.start().then(()=>{sharingUI.handleInvitation();historyIntroReady=true;historyIntro?.maybeShow();});renderAll();window.scrollTo({top:0,behavior:'instant'});
     if(view==='settings')sharingUI.refresh();
     if(loadWarning){toast(platform.independent?'Não foi possível ler a cópia local. Conectando ao plano salvo na conta.':'Não foi possível ler o plano salvo. Um exemplo foi aberto.');loadWarning=false;}
   }else{
@@ -177,6 +177,7 @@ function renderBudget(){
     }).join('')}</div>${!cats.length&&!folded?`<div class="empty-group"><p>Seu grupo está pronto. Qual categoria vem primeiro?</p><button type="button" class="text-link" data-add-category-group="${esc(key)}">${icon('plus')} Adicionar categoria</button></div>`:''}</section>`;
   }).join('')+hiddenCategoriesHTML();
   bindAssignedInputs();
+  queueMicrotask(()=>historyIntro?.refresh());
 }
 function refreshBudgetAmounts(){
   renderBudgetSummary();
@@ -284,8 +285,9 @@ function wealthDialog(month=selectedMonth){
 const dialog=$('#action-dialog');
 const dialogPages=createDialogPages(dialog,{body:$('#dialog-body'),heading:$('#dialog-title')});
 historyPlanning=createPlanningHistoryUI({getState:()=>state,getMonth:()=>selectedMonth,money,openDialog,closeDialog,refreshDialog:()=>dialogPages.refresh(),onChange:()=>{persist();renderAll();},notify:toast});
-historyIntro=createPlanningHistoryIntro({storage:globalThis.localStorage,getAccount:()=>platform.accountId||cloudSync.status.ownerId,openDialog,closeDialog,onExplore:()=>historyPlanning.showOptions(),canShow:()=>!$('#budget-app').hidden&&view==='budget'&&!dialog.open&&$('#transaction-composer').hidden&&!cloudSync.status.conflict&&!cloudSync.status.blocked&&!$('#budget-app').hasAttribute('data-subscription-readonly')&&!document.querySelector('[data-assigned-input][data-editing=true],#category-menu')});
+historyIntro=createPlanningHistoryIntro({storage:globalThis.localStorage,getAccount:()=>platform.accountId||cloudSync.status.ownerId,canShow:()=>historyIntroReady&&!$('#budget-app').hidden&&view==='budget'&&!dialog.open&&$('#transaction-composer').hidden&&!cloudSync.status.conflict&&!cloudSync.status.blocked&&!$('#budget-app').hasAttribute('data-subscription-readonly')&&!document.querySelector('[data-assigned-input][data-editing=true],#category-menu')});
 function openDialog(title,body,eyebrow='SEU PLANO'){
+  historyIntro?.close();
   closeCategoryMenu(false);
   historyPlanning?.closeMenu();
   if(dialog.open)dialog.close();dialog.classList.remove('transaction-dialog','couple-dialog');
