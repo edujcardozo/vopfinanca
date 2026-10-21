@@ -1,4 +1,4 @@
-import {createDialogPages} from './dialog-pages.js?v=vpo-34';
+import {createDialogPages} from './dialog-pages.js?v=vpo-39';
 import {coupleSummary,sharingLabel,expenseShares,saveSettlement} from './couple-core.js?v=vpo-34';
 import {coupleCard,coupleDetail} from './couple-ui.js?v=vpo-34';
 import {mobileHome} from './mobile-home.js?v=vpo-34';
@@ -286,11 +286,12 @@ const dialog=$('#action-dialog');
 const dialogPages=createDialogPages(dialog,{body:$('#dialog-body'),heading:$('#dialog-title')});
 historyPlanning=createPlanningHistoryUI({getState:()=>state,getMonth:()=>selectedMonth,money,openDialog,closeDialog,refreshDialog:()=>dialogPages.refresh(),onChange:()=>{persist();renderAll();},notify:toast});
 historyIntro=createPlanningHistoryIntro({storage:globalThis.localStorage,getAccount:()=>platform.accountId||cloudSync.status.ownerId,canShow:()=>historyIntroReady&&!$('#budget-app').hidden&&view==='budget'&&!dialog.open&&$('#transaction-composer').hidden&&!cloudSync.status.conflict&&!cloudSync.status.blocked&&!$('#budget-app').hasAttribute('data-subscription-readonly')&&!document.querySelector('[data-assigned-input][data-editing=true],#category-menu')});
-function openDialog(title,body,eyebrow='SEU PLANO'){
+function openDialog(title,body,eyebrow='SEU PLANO',variant=''){
   historyIntro?.close();
   closeCategoryMenu(false);
   historyPlanning?.closeMenu();
-  if(dialog.open)dialog.close();dialog.classList.remove('transaction-dialog','couple-dialog');
+  if(dialog.open)dialog.close();dialog.classList.remove('transaction-dialog','couple-dialog','new-category-dialog');
+  if(variant)dialog.classList.add(variant);
   $('#dialog-title').textContent=title;$('#dialog-eyebrow').textContent=eyebrow;$('#dialog-body').innerHTML=body;
   dialog.showModal();document.body.style.overflow='hidden';$('#dialog-title').tabIndex=-1;$('#dialog-title').focus({preventScroll:true});dialogPages.reset();
 }
@@ -458,7 +459,7 @@ function categoryDialog(categoryId){
   };
 }
 function newCategoryDialog(selectedGroup=groupsFor(state)[0].id){
-  openDialog('Abra espaço no seu plano.',`<form id="new-category-form"><p class="category-icon-preview"><span id="suggested-category-icon" aria-hidden="true">📁</span><small>O ícone acompanha o nome da categoria.</small></p><label class="form-group"><span>O que você quer planejar?</span><input name="name" placeholder="Ex.: reforma, estudos, aniversário" required maxlength="70"></label><label class="form-group"><span>Em qual grupo?</span><select name="group">${groupOptions(selectedGroup)}</select></label><label class="form-group"><span>Planejado em ${esc(monthName(selectedMonth))}</span><input name="assigned" inputmode="decimal" placeholder="0,00" maxlength="20"><small>Valor reservado para esta categoria neste mês. Você pode começar com zero.</small></label><p id="form-error" class="form-error" role="alert" hidden></p><button class="btn btn-blue form-submit" type="submit">Criar categoria ${icon('plus')}</button></form>`,'TEM ESPAÇO PARA O QUE IMPORTA');
+  openDialog('Nova categoria',`<form id="new-category-form"><label class="form-group"><span>Nome da categoria</span><span class="new-category-name-control"><span id="suggested-category-icon" aria-hidden="true">📁</span><input name="name" placeholder="Ex.: reforma, estudos, aniversário" required maxlength="70" autocomplete="off"></span></label><div class="new-category-details"><label class="form-group"><span>Grupo</span><select name="group">${groupOptions(selectedGroup)}</select></label><label class="form-group"><span>Planejado</span><input name="assigned" inputmode="decimal" placeholder="0,00" maxlength="20" aria-describedby="new-category-help"></label></div><p class="new-category-help" id="new-category-help">O ícone acompanha o nome. O planejado pode começar em zero.</p><p id="form-error" class="form-error" role="alert" hidden></p><button class="btn btn-blue form-submit" type="submit">Criar categoria ${icon('plus')}</button></form>`,`SEU PLANO · ${esc(monthName(selectedMonth))}`,'new-category-dialog');
   $('#new-category-form').elements.name.oninput=e=>{$('#suggested-category-icon').textContent=categoryIcon(e.target.value);};
   $('#new-category-form').onsubmit=e=>{
     e.preventDefault();const f=new FormData(e.currentTarget),name=String(f.get('name')).trim(),group=String(f.get('group')),assigned=String(f.get('assigned')).trim()?parseMoney(f.get('assigned')):0;

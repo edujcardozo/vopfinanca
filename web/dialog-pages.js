@@ -28,11 +28,13 @@ export function createDialogPages(dialog,{body,heading}){
   const viewport=window.visualViewport?.height||window.innerHeight||0;if(!viewport)return;
   dialog.style.setProperty('--dialog-viewport-height',viewport+'px');dialog.style.setProperty('--dialog-center-y',((window.visualViewport?.offsetTop||0)+viewport/2)+'px');
   const css=style(dialog),padding=(parseFloat(css?.paddingTop)||16)+(parseFloat(css?.paddingBottom)||16),handle=dialog.querySelector('.dialog-handle');
-  const available=Math.floor(viewport-32-padding-height(dialog.querySelector('.dialog-heading'))-(handle?height(handle):0)-60);
+  const fullAvailable=Math.floor(viewport-32-padding-height(dialog.querySelector('.dialog-heading'))-(handle&&!hidden(handle)?height(handle):0));
+  const available=fullAvailable-60;
   dialog.classList.toggle('dialog-tight',available<300);dialog.style.setProperty('--dialog-body-height',Math.max(80,available)+'px');
   // A layout-less DOM (unit tests) deliberately leaves the regular view intact.
   const natural=body.scrollHeight||height(body);if(!natural){footer.hidden=true;return;}
-  if(natural<=available){units=[];pages=[];current=0;footer.hidden=true;return;}
+  // Reserve navigation space only if the content actually needs multiple pages.
+  if(natural<=fullAvailable){units=[];pages=[];current=0;footer.hidden=true;return;}
   const flatSelector='form,[data-dialog-flow],.transaction-fields,.sharing-fields,.sharing-grid,.form-row,.app-options,.hidden-category-list,.recovery-list,.sync-conflict-copies';
   units=[];
   function collect(el){

@@ -80,4 +80,15 @@
 
 @media(max-width:359px){.payer-option{padding-inline:8px;gap:6px;font-size:14px}.payer-check{display:none}}
 
+/* Creating a category stays compact enough for one view on short screens. */
+.action-dialog.new-category-dialog{width:min(480px,calc(100% - 32px))}
+.new-category-dialog .dialog-heading{margin-bottom:16px;padding-bottom:0}.new-category-dialog .dialog-heading h2{font-size:23px;line-height:1.2}.new-category-dialog .dialog-heading .eyebrow{display:block;font-size:8px;line-height:1.4;margin-bottom:5px}
+.new-category-dialog #new-category-form{display:grid;gap:14px;min-width:0}.new-category-dialog .form-group{margin:0;min-width:0}.new-category-dialog .form-group>span{font-size:12px;line-height:1.4;margin-bottom:6px}
+.new-category-dialog .new-category-name-control{display:block;position:relative;min-width:0;margin:0!important}.new-category-dialog .new-category-name-control>span{position:absolute;top:50%;left:12px;transform:translateY(-50%);width:24px;text-align:center;font-size:22px;line-height:1;pointer-events:none}
+.new-category-dialog .form-group input,.new-category-dialog .form-group select{width:100%;min-width:0;min-height:46px;padding:10px 12px;font-size:16px;font-weight:400}.new-category-dialog .new-category-name-control input{padding-left:46px}
+.new-category-details{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:12px;min-width:0}.new-category-dialog .form-group select{padding-right:28px;text-overflow:ellipsis}
+.new-category-dialog .new-category-help{margin:0;color:#838093;font-size:11px;line-height:1.5}.new-category-dialog .form-submit{margin:0;min-height:44px;padding:10px 14px;font-size:13px}.new-category-dialog .form-error{margin:0;padding:9px 11px;font-size:11px;line-height:1.4}
+@media(max-width:719px){.action-dialog.new-category-dialog{width:calc(100% - 20px)}.new-category-details{gap:10px}.new-category-dialog .dialog-heading{margin-bottom:14px}.new-category-dialog .dialog-heading h2{font-size:22px}}
+@media(max-height:480px){.action-dialog.new-category-dialog{padding:14px 16px}.new-category-dialog #new-category-form{gap:10px}.new-category-dialog .dialog-heading{margin-bottom:12px}.new-category-dialog .dialog-heading h2{font-size:20px}.new-category-dialog .form-group input,.new-category-dialog .form-group select{min-height:42px;padding-block:8px}.new-category-dialog .new-category-help{display:none}.new-category-dialog .form-submit{min-height:42px}}
+
 .payer-option .payer-glyph{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#e8e8ff;color:#4d50ce;font-size:14px;font-weight:750}.payer-option[data-paid-by=larissa] .payer-glyph{background:#e5f2d2;color:#406a22}
