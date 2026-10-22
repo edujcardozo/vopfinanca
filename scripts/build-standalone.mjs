@@ -1,4 +1,4 @@
-import {cp,readFile,writeFile,mkdir,rm} from 'node:fs/promises';
+import {cp,readFile,writeFile,mkdir,rm,readdir} from 'node:fs/promises';
 import {build} from 'esbuild';
 import {createHash} from 'node:crypto';
 import path from 'node:path';
@@ -8,7 +8,9 @@ const project=JSON.parse(await readFile('standalone/project.json','utf8'));
 const config=publicConfig({VPO_SUPABASE_URL:project.url,VPO_SUPABASE_PUBLISHABLE_KEY:project.publishableKey,...process.env}),output='dist-independent';
 await rm(output,{recursive:true,force:true});await mkdir(output,{recursive:true});
 await cp('web/assets',`${output}/assets`,{recursive:true});
-for(const file of ['styles.css','mobile.css','couple.css','dialogs.css','plan-header.css','planning-history.css','reports-polish.css','sharing.css','manifest.webmanifest'])await cp('web/'+file,output+'/'+file);
+// Include new stylesheets automatically so source and Netlify stay consistent.
+for(const file of await readdir('web',{withFileTypes:true}))if(file.isFile()&&file.name.endsWith('.css'))await cp('web/'+file.name,output+'/'+file.name);
+await cp('web/manifest.webmanifest',output+'/manifest.webmanifest');
 await cp('standalone/auth.css',output+'/auth.css');
 await cp('standalone/billing.css',output+'/billing.css');
 const result=await build({entryPoints:['web/app.js'],bundle:true,format:'esm',platform:'browser',target:['es2022','safari16'],minify:true,write:false,define:{__VPO_CONFIG__:JSON.stringify(config)},plugins:[{name:'independent-identity',setup(build){build.onResolve({filter:/^\.\/platform\.js$/},()=>({path:path.resolve('standalone/platform.js')}));}}]});
