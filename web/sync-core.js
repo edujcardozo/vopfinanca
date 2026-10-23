@@ -1,4 +1,4 @@
-import {validateState,createState,ensureMonth,payeeKey} from './core.js?v=vpo-34';
+import {validateState,createState,ensureMonth,payeeKey} from './core.js?v=vpo-73';
 const missing=Symbol('missing');
 const clone=v=>v===missing?missing:structuredClone(v);
 const plain=v=>v!==null&&typeof v==='object'&&!Array.isArray(v)&&v!==missing;
@@ -13,11 +13,11 @@ export function cloudPlan(raw){const plan=validateState(raw);plan.hideBalances=f
 export function normalizePlan(raw){
   const p=cloudPlan(raw),transactions={};
   for(const month of Object.values(p.months))for(const tx of month.transactions)transactions[tx.id]=tx;
-  return {version:p.version,planId:p.planId,example:p.example,groups:Object.fromEntries(p.groups.map(g=>[g.id,g])),groupOrder:p.groups.map(g=>g.id),categories:Object.fromEntries(p.categories.map(c=>[c.id,c])),categoryOrder:p.categories.map(c=>c.id),allocations:Object.fromEntries(Object.entries(p.months).map(([m,d])=>[m,d.assigned])),transactions,payees:Object.fromEntries(p.payees.map(name=>['payee:'+payeeKey(name),name])),wealth:p.wealth,settlements:Object.fromEntries(p.household.settlements.map(r=>[r.id,r]))};
+  return {version:p.version,planId:p.planId,example:p.example,groups:Object.fromEntries(p.groups.map(g=>[g.id,g])),groupOrder:p.groups.map(g=>g.id),categories:Object.fromEntries(p.categories.map(c=>[c.id,c])),categoryOrder:p.categories.map(c=>c.id),allocations:Object.fromEntries(Object.entries(p.months).map(([m,d])=>[m,d.assigned])),transactions,payees:Object.fromEntries(p.payees.map(name=>['payee:'+payeeKey(name),name])),wealth:p.wealth,settlements:Object.fromEntries(p.household.settlements.map(r=>[r.id,r])),savingsGoals:Object.fromEntries(p.savingsGoals.map(g=>[g.id,g])),savingsGoalOrder:p.savingsGoals.map(g=>g.id)};
 }
 function restorePlan(n){
   const ordered=(order,items)=>[...new Set([...order,...Object.keys(items)])].filter(id=>Object.hasOwn(items,id)).map(id=>items[id]);
-  const p={version:1,planId:n.planId,example:n.example,hideBalances:false,groups:ordered(n.groupOrder,n.groups),categories:ordered(n.categoryOrder,n.categories),months:{},payees:Object.values(n.payees||{}),wealth:n.wealth,household:{version:1,settlements:Object.values(n.settlements||{})}};
+  const p={version:1,planId:n.planId,example:n.example,hideBalances:false,groups:ordered(n.groupOrder,n.groups),categories:ordered(n.categoryOrder,n.categories),months:{},payees:Object.values(n.payees||{}),wealth:n.wealth,household:{version:1,settlements:Object.values(n.settlements||{})},savingsGoals:ordered(n.savingsGoalOrder||[],n.savingsGoals||{})};
   for(const [month,assigned] of Object.entries(n.allocations))p.months[month]={assigned,transactions:[]};
   for(const tx of Object.values(n.transactions))ensureMonth(p,tx.date.slice(0,7)).transactions.push(tx);
   return validateState(p);

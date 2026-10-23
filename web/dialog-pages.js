@@ -70,6 +70,6 @@ export function createDialogPages(dialog,{body,heading}){
  // Reflow when conditional fields, errors, expanded notes or the keyboard change space.
  ['change','toggle','input','click'].forEach(type=>body.addEventListener(type,refresh,true));
  window.addEventListener('resize',refresh);window.visualViewport?.addEventListener('resize',refresh);
- dialog.addEventListener('close',()=>{window.cancelAnimationFrame?.(frame);frame=null;clearLayout();footer.hidden=true;dialog.classList.remove('dialog-paged','dialog-tight');units=[];pages=[];anchor=null;});
+ dialog.addEventListener('close',()=>{if(dialog.open){refresh();return;}window.cancelAnimationFrame?.(frame);frame=null;clearLayout();footer.hidden=true;dialog.classList.remove('dialog-paged','dialog-tight');units=[];pages=[];anchor=null;});
  return {refresh,reveal,reset(){clearLayout();units=[];pages=[];current=0;anchor=null;footer.hidden=true;refresh();},get page(){return current;},get count(){return pages.length;},next(){if(validPage())show(current+1);},previous(){show(current-1);}};
 }

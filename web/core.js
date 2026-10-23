@@ -1,3 +1,4 @@
+import {checkedSavingsGoals} from './savings-goals.js';
 // All monetary values are integer centavos. No floating-point ledger arithmetic.
 export const STORAGE_KEY = 'ynab-edu-plan-v1';
 export const GROUPS = {essentials:'Contas essenciais',daily:'O dia a dia',dreams:'Planos e sonhos'};
@@ -92,7 +93,7 @@ const baseCategories=()=>[
   {id:'viagem',name:'Próxima viagem',group:'dreams',icon:'✈️',target:0}
 ];
 export function createState(example=true,month=currentMonth()){
-  const state={version:1,planId:id(),example,hideBalances:false,groups:defaultGroups(),categories:baseCategories(),months:{},wealth:{},payees:[],household:{version:1,settlements:[]}};
+  const state={version:1,planId:id(),example,hideBalances:false,groups:defaultGroups(),categories:baseCategories(),months:{},wealth:{},payees:[],household:{version:1,settlements:[]},savingsGoals:[]};
   state.months[month]={assigned:{},transactions:[]};
   if(example){
     state.months[month].assigned={moradia:200000,mercado:80000,transporte:35000,lazer:30000,reserva:120000,viagem:85000};
@@ -212,5 +213,6 @@ export function validateState(raw){
     if(!plain(r)||!safeId(r.id)||settlementIds.has(r.id)||!['edu','larissa'].includes(r.from)||!cents(r.amount)||r.amount===0||!validDate(r.date)||typeof r.memo!=='string'||r.memo.length>280)fail();
     settlementIds.add(r.id);return {id:r.id,from:r.from,amount:r.amount,date:r.date,memo:r.memo.trim()};
   });
-  return {household:{version:1,settlements},version:1,planId:raw.planId||id(),example:raw.example===true,hideBalances:raw.hideBalances===true,groups,categories,months,wealth,payees};
+  const savingsGoals=checkedSavingsGoals(raw.savingsGoals);
+  return {household:{version:1,settlements},version:1,planId:raw.planId||id(),example:raw.example===true,hideBalances:raw.hideBalances===true,groups,categories,months,wealth,payees,savingsGoals};
 }

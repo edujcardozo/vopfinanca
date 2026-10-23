@@ -70,6 +70,7 @@ export async function handleAPI(request,env,ctx={waitUntil(){}}){
     if(body.scopeId&&body.scopeId!==scope.id)return json({error:'O plano ativo mudou. Reabra o app antes de continuar.',code:'PLAN_SCOPE_CHANGED'},409);
     if(!body.scopeId&&(scope.role!=='owner'||await env.DB.prepare('SELECT 1 FROM plan_preferences WHERE user_id = ?').bind(user.id).first()))return json({error:'Atualize a página para usar o compartilhamento com segurança.',code:'CLIENT_UPDATE_REQUIRED'},426);
     if(!Number.isSafeInteger(body.revision)||body.revision<0||!uuid.test(body.mutationId||''))return json({error:'Revisão inválida.'},400);
+    if(body.state.savingsGoals===undefined){const previous=await readPlan(env.DB,userId);if(previous.state?.savingsGoals.length)return json({error:'Atualize a página para preservar seus objetivos.',code:'CLIENT_UPDATE_REQUIRED'},426);}
     if(body.state.payees===undefined){const previous=await readPlan(env.DB,userId);if(previous.state?.planId===state.planId)for(const name of previous.state.payees)rememberPayee(state,name);}
     // Older open tabs strip unknown fields. Refuse their writes once the plan uses sharing.
     if(body.state.household===undefined){

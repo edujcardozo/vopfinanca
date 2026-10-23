@@ -34,3 +34,10 @@ test('long lists use bounded pages and keep hidden business fields out of the fl
  const f=setup(`<div data-dialog-flow><button hidden data-height="1000">Não mostrar</button>${Array.from({length:45},(_,i)=>`<button data-height="70" data-item="${i}">Despesa ${i}</button>`).join('')}</div>`),{document,pager}=f;
  pager.refresh();assert.ok(pager.count>1);const seen=new Set();for(let i=0;i<pager.count;i++){const visible=[...document.querySelectorAll('[data-item]')].filter(el=>!el.hasAttribute('data-dialog-page-hidden'));assert.ok(visible.length<=4);for(const el of visible)seen.add(el.dataset.item);pager.next();}assert.equal(seen.size,45);assert.equal(document.querySelector('[hidden]').hidden,true);
 });
+test('a queued close from the previous popup preserves the reopened popup reflow',()=>{
+ const {window,dialog,pager,event}=setup('<button data-height="40">Novo objetivo</button>',40);
+ let pending=null,cancelled=false;window.requestAnimationFrame=fn=>{pending=fn;return 17;};window.cancelAnimationFrame=()=>{cancelled=true;};
+ pager.reset();window.innerHeight=390;event(dialog,'close');assert.equal(cancelled,false);assert.equal(typeof pending,'function');
+ pending();assert.equal(dialog.style.getPropertyValue('--dialog-center-y'),'195px');assert.equal(dialog.style.getPropertyValue('--dialog-viewport-height'),'390px');
+ dialog.open=false;event(dialog,'close');assert.equal(cancelled,true);
+});

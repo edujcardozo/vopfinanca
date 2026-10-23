@@ -1,4 +1,4 @@
-import {groupsFor,searchPayeeKey} from './core.js?v=vpo-34';
+import {groupsFor,searchPayeeKey} from './core.js?v=vpo-73';
 import {categoryIcon} from './category-icons.js?v=vpo-43';
 export function matchingCategories(state,query,limit=50){
   const q=searchPayeeKey(query),words=q.split(' ').filter(Boolean);

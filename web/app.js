@@ -1,5 +1,5 @@
-import {createDialogPages} from './dialog-pages.js?v=vpo-39';
-import {coupleSummary,sharingLabel,expenseShares,saveSettlement} from './couple-core.js?v=vpo-34';
+import {createDialogPages} from './dialog-pages.js?v=vpo-73';
+import {coupleSummary,sharingLabel,expenseShares,saveSettlement} from './couple-core.js?v=vpo-73';
 import {coupleCard,coupleDetail} from './couple-ui.js?v=vpo-40';
 import {mobileHome} from './mobile-home.js?v=vpo-43';
 import {deleteCategory,categoryHasActivity} from './category-actions.js?v=vpo-34';
@@ -7,18 +7,19 @@ import {matchingCategories} from './category-search.js?v=vpo-43';
 import {categoryBudgetDetails,categorySpendingLabel} from './budget-progress.js?v=vpo-34';
 import {categoryIcon} from './category-icons.js?v=vpo-43';
 import {mountPayeeAutocomplete} from './payee-autocomplete.js?v=vpo-34';
-import {applyLayout} from './reorder-core.js?v=vpo-34';
+import {applyLayout} from './reorder-core.js?v=vpo-73';
 import {createReorder} from './reorder.js?v=vpo-34';
-import {STORAGE_KEY,formatMoney,parseMoney,today,currentMonth,validDate,validMonth,shiftMonth,id,createState,getMonth,ensureMonth,totals,monthlyPlanTotals,monthlyCategoryTotals,validateState,dateOffset,formatTransactionDate,payeeHistory,matchingPayees,payeeKey,searchPayeeKey,saveTransaction,groupsFor,createGroup,renameGroup,moveCategory} from './core.js?v=vpo-34';
+import {STORAGE_KEY,formatMoney,parseMoney,today,currentMonth,validDate,validMonth,shiftMonth,id,createState,getMonth,ensureMonth,totals,monthlyPlanTotals,monthlyCategoryTotals,validateState,dateOffset,formatTransactionDate,payeeHistory,matchingPayees,payeeKey,searchPayeeKey,saveTransaction,groupsFor,createGroup,renameGroup,moveCategory} from './core.js?v=vpo-73';
 import {createReportsUI} from './reports-ui.js?v=vpo-43';
-import {wealthAt} from './reports-core.js?v=vpo-34';
-import {createCloudSync} from './cloud-sync.js?v=vpo-34';
+import {wealthAt} from './reports-core.js?v=vpo-73';
+import {createCloudSync} from './cloud-sync.js?v=vpo-73';
 import {createSharingUI} from './sharing-ui.js?v=vpo-34';
 import {platform} from './platform.js';
 import {householdForSharing,inactiveHousehold} from './household-context.js';
 import {accountUsername} from './account-identity.js';
 import {createPlanningHistoryUI,historyIcon} from './planning-history-ui.js?v=vpo-43';
 import {createPlanningHistoryIntro} from './planning-history-intro.js';
+import {createSavingsGoalsUI} from './savings-goals-ui.js?v=vpo-73';
 import {revealTransactionComposer} from './transaction-focus.js';
 
 const $=s=>document.querySelector(s);
@@ -32,7 +33,7 @@ const monthName=k=>new Intl.DateTimeFormat('pt-BR',{month:'long',year:'numeric'}
 const dayName=d=>new Intl.DateTimeFormat('pt-BR',{day:'numeric',month:'long',weekday:'long'}).format(new Date(d+'T12:00:00'));
 const collapsedGroups=new Set();
 let mobileStructure=false;
-let historyPlanning;
+let historyPlanning,savingsGoals;
 let historyIntro,historyIntroReady=false;
 const routes={home:'inicio',budget:'planejar',transactions:'movimentos',overview:'visao',settings:'ajustes'};
 let state,hadStored=false,loadWarning=false,selectedMonth=currentMonth(),view='budget',txFilter='all',personFilter='all',toastTimer,undoAction=null;
@@ -121,7 +122,7 @@ function renderAll(){
   $('#privacy-toggle').innerHTML=icon(state.hideBalances?'eye-off':'eye');
   $('#privacy-toggle').setAttribute('aria-label',state.hideBalances?'Mostrar valores':'Ocultar valores');
   $('#privacy-toggle').setAttribute('aria-pressed',String(state.hideBalances));
-  renderBudget();renderTransactions();renderOverview();renderHome();renderCouple();
+  renderBudget();renderTransactions();renderOverview();renderHome();renderCouple();savingsGoals?.render();
 }
 function route(){
   const isPlan=location.hash.startsWith('#plano');
@@ -270,7 +271,7 @@ function removeSettlement(recordId){
   const record=state.household?.settlements.find(r=>r.id===recordId);if(!record)return;
   confirmAction('Excluir este acerto?','A transferência será removida do histórico e o saldo entre vocês será recalculado. As despesas da casa permanecem no plano.','Excluir acerto',()=>{state.household.settlements=state.household.settlements.filter(r=>r.id!==recordId);persist();renderAll();coupleDialog();toast('Acerto excluído.',()=>{if(!state.household.settlements.some(r=>r.id===record.id))state.household.settlements.push(record);persist();renderAll();if(dialog.open)coupleDialog();});});
 }
-function appOptions(){openDialog('Seu plano',`<div class="app-options">${household.enabled?`<button type="button" data-options-couple>${icon('home')} Nosso acerto</button>`:''}<button type="button" data-options-privacy>${icon(state.hideBalances?'eye-off':'eye')} ${state.hideBalances?'Mostrar':'Ocultar'} valores</button>${view==='budget'?`<button type="button" data-options-history>${historyIcon} Planejar com histórico</button>`:''}<button type="button" data-options-group>${icon('plus')} Novo grupo</button><button type="button" data-options-category>${icon('plus')} Nova categoria</button><button type="button" data-options-settings>${icon('gear')} Ajustes e sincronização</button></div>`);if($('[data-options-couple]'))$('[data-options-couple]').onclick=()=>coupleDialog();$('[data-options-privacy]').onclick=()=>{closeDialog();$('#privacy-toggle').click();};if($('[data-options-history]'))$('[data-options-history]').onclick=()=>historyPlanning.showOptions();$('[data-options-group]').onclick=()=>groupDialog();$('[data-options-category]').onclick=()=>newCategoryDialog();$('[data-options-settings]').onclick=()=>{closeDialog();goPlan('settings');};}
+function appOptions(){openDialog('Seu plano',`<div class="app-options">${household.enabled?`<button type="button" data-options-couple>${icon('home')} Nosso acerto</button>`:''}<button type="button" data-savings-open>${icon('sparkle')} Objetivos</button><button type="button" data-options-privacy>${icon(state.hideBalances?'eye-off':'eye')} ${state.hideBalances?'Mostrar':'Ocultar'} valores</button>${view==='budget'?`<button type="button" data-options-history>${historyIcon} Planejar com histórico</button>`:''}<button type="button" data-options-group>${icon('plus')} Novo grupo</button><button type="button" data-options-category>${icon('plus')} Nova categoria</button><button type="button" data-options-settings>${icon('gear')} Ajustes e sincronização</button></div>`);if($('[data-options-couple]'))$('[data-options-couple]').onclick=()=>coupleDialog();$('[data-options-privacy]').onclick=()=>{closeDialog();$('#privacy-toggle').click();};if($('[data-options-history]'))$('[data-options-history]').onclick=()=>historyPlanning.showOptions();$('[data-options-group]').onclick=()=>groupDialog();$('[data-options-category]').onclick=()=>newCategoryDialog();$('[data-options-settings]').onclick=()=>{closeDialog();goPlan('settings');};}
 
 function wealthDialog(month=selectedMonth){
   const wealth=wealthAt(state,month),snapshot=state.wealth?.[month];
@@ -285,13 +286,14 @@ function wealthDialog(month=selectedMonth){
 }
 const dialog=$('#action-dialog');
 const dialogPages=createDialogPages(dialog,{body:$('#dialog-body'),heading:$('#dialog-title')});
+savingsGoals=createSavingsGoalsUI({root:$('#sidebar-goals'),getState:()=>state,openDialog,closeDialog,onChange:()=>{persist();renderAll();},notify:toast});
 historyPlanning=createPlanningHistoryUI({getState:()=>state,getMonth:()=>selectedMonth,money,openDialog,closeDialog,refreshDialog:()=>dialogPages.refresh(),onChange:()=>{persist();renderAll();},notify:toast});
 historyIntro=createPlanningHistoryIntro({storage:globalThis.localStorage,getAccount:()=>platform.accountId||cloudSync.status.ownerId,canShow:()=>historyIntroReady&&!$('#budget-app').hidden&&view==='budget'&&!dialog.open&&$('#transaction-composer').hidden&&!cloudSync.status.conflict&&!cloudSync.status.blocked&&!$('#budget-app').hasAttribute('data-subscription-readonly')&&!document.querySelector('[data-assigned-input][data-editing=true],#category-menu')});
 function openDialog(title,body,eyebrow='SEU PLANO',variant=''){
   historyIntro?.close();
   closeCategoryMenu(false);
   historyPlanning?.closeMenu();
-  if(dialog.open)dialog.close();dialog.classList.remove('transaction-dialog','couple-dialog','new-category-dialog');
+  if(dialog.open)dialog.close();dialog.classList.remove('transaction-dialog','couple-dialog','new-category-dialog','savings-dialog','savings-form-dialog');
   if(variant)dialog.classList.add(variant);
   $('#dialog-title').textContent=title;$('#dialog-eyebrow').textContent=eyebrow;$('#dialog-body').innerHTML=body;
   dialog.showModal();document.body.style.overflow='hidden';$('#dialog-title').tabIndex=-1;$('#dialog-title').focus({preventScroll:true});dialogPages.reset();

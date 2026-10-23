@@ -1,4 +1,4 @@
-import {currentMonth,validMonth,shiftMonth,getMonth,ensureMonth} from './core.js?v=vpo-34';
+import {currentMonth,validMonth,shiftMonth,getMonth,ensureMonth} from './core.js?v=vpo-73';
 
 export const HISTORY_METHODS=[
   {id:'last-month',title:'Gastos do mês passado',description:'Use o que você realmente gastou em cada categoria.'},
