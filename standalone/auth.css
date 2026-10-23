@@ -46,6 +46,60 @@ html[data-auth-required] #landing,html[data-auth-required] #budget-app{display:n
 .vpo-admin-note{font-size:12px!important;line-height:1.6!important;color:#77778c!important}.vpo-admin-filters{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0 16px}.vpo-admin-filters button[aria-pressed=true]{background:#eeedff;color:#4c50c8}
 .vpo-admin-list{display:grid;gap:12px;margin:16px 0}.vpo-admin-request{padding:16px;border:1px solid #e6e6ef;border-radius:14px;min-width:0}.vpo-admin-request strong{font-size:15px;display:block;color:#202052;overflow-wrap:anywhere}.vpo-admin-request p{margin:4px 0!important;font-size:13px!important;line-height:1.5!important;overflow-wrap:anywhere}.vpo-admin-request small{font-size:11px;color:#818197;display:block;margin-top:6px}
 .vpo-admin-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:13px}.vpo-admin-actions button{min-height:40px;padding:8px 14px}.vpo-admin-pages{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12px}.vpo-admin-status{font-size:13px;line-height:1.5;min-height:20px;overflow-wrap:anywhere}
+.vpo-admin-card .vpo-admin-filters{gap:6px;margin:4px 0 0}
+.vpo-admin-card .vpo-admin-filters button{min-height:40px;padding:9px 13px;font-size:12px}
+.vpo-admin-card .vpo-admin-list{width:100%;margin:0;gap:10px}
+.vpo-admin-card .vpo-admin-heading{width:100%;flex-wrap:nowrap}
+.vpo-admin-heading>div{min-width:0;flex:1}
+.vpo-admin-heading>button{flex:none;min-height:40px;font-size:11px;padding:8px 10px}
+.vpo-admin-request{padding:16px 18px;background:#fff}
+.vpo-admin-user{display:flex;align-items:center;gap:12px;min-width:0}
+.vpo-admin-avatar{display:grid;place-items:center;flex:0 0 36px;width:36px;height:36px;border-radius:12px;background:#eeedff;color:#555af5;font-size:14px;font-weight:750}
+.vpo-admin-identity{flex:1;min-width:0}
+.vpo-admin-identity strong{font-size:14px;line-height:1.4}
+.vpo-admin-identity p{color:#77778c;font-size:12px!important;line-height:1.4!important}
+.vpo-user-badge{display:inline-flex;align-items:center;flex:none;max-width:100%;border-radius:20px;padding:6px 9px;background:#eeedff;color:#555af5;font-size:10px;font-weight:700;line-height:1.4;overflow-wrap:anywhere}
+.vpo-user-badge[data-tone=success]{background:#e9f3df;color:#446534}
+.vpo-user-badge[data-tone=attention]{background:#fff2dd;color:#85632a}
+.vpo-user-badge[data-tone=shared]{background:#eef3fa;color:#476380}
+.vpo-admin-more{display:grid;place-items:center;flex:0 0 36px;width:36px;height:36px;border:1px solid #e8e6f1;border-radius:10px;color:#77718f;background:#faf9fd;cursor:pointer}
+.vpo-admin-more:hover,.vpo-admin-more[aria-expanded=true]{background:#eeedff;color:#555af5}
+.vpo-admin-more:focus-visible,.vpo-admin-card button:focus-visible{outline:3px solid #afa6fd;outline-offset:3px}
+.vpo-admin-meta{display:flex;flex-wrap:wrap;gap:8px 24px;margin-top:12px;font-size:11px;line-height:1.5;color:#858198}
+.vpo-admin-meta>span{min-width:0;overflow-wrap:anywhere}
+.vpo-admin-meta b{font-weight:550;color:#5c5873;margin-left:5px}
+.vpo-admin-card .vpo-admin-actions button,.vpo-admin-options button{min-height:44px;font-size:12px;line-height:1.4;white-space:normal}
+.vpo-admin-options{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px;border-top:1px solid #efedf5;padding-top:12px;margin-top:12px}
+.vpo-admin-confirm{padding:14px;background:#f8f7fd;border:1px solid #e9e5f3;border-radius:11px;margin-top:14px;min-width:0}
+.vpo-admin-confirm>strong{font-size:13px;line-height:1.45}
+.vpo-admin-confirm>p{font-size:12px!important;line-height:1.65!important;color:#77718b;margin-top:7px!important;max-width:620px}
+.vpo-admin-card button.vpo-admin-danger{color:#ab415b;border-color:#efdce3;background:#fff8fa}
+.vpo-admin-status:empty{display:none}
+.vpo-account-access{display:block;width:fit-content;max-width:100%;margin-top:4px;font-size:10px;font-weight:600;line-height:1.45;overflow-wrap:anywhere;color:#d0d1ff}
+.vpo-account-access[hidden]{display:none}
+.vpo-account-access[data-tone=success]{color:#bae677}
+.vpo-account-access[data-tone=attention]{color:#ffdaa4}
+.vpo-account-settings .vpo-account-access{color:#555af5;font-size:11px}
+.vpo-account-settings .vpo-account-access[data-tone=success]{color:#4b7137}
+.vpo-account-settings .vpo-account-access[data-tone=attention]{color:#956e27}
+@media(max-width:600px){
+ .vpo-admin-card .vpo-admin-heading h2{font-size:20px}
+ .vpo-admin-card .vpo-admin-filters{display:grid;width:100%;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}
+ .vpo-admin-card .vpo-admin-filters button{min-height:44px;padding:8px 4px;font-size:11px}
+ .vpo-admin-request{padding:14px}
+ .vpo-admin-user{display:grid;grid-template-columns:32px minmax(0,1fr) 36px;gap:5px 9px;align-items:center}
+ .vpo-admin-avatar{width:32px;height:32px;grid-row:1/3;font-size:12px;border-radius:10px}
+ .vpo-admin-identity{grid-column:2;grid-row:1}
+ .vpo-user-badge{grid-column:2;grid-row:2;justify-self:start;font-size:10px;padding:4px 7px}
+ .vpo-admin-more{grid-column:3;grid-row:1/3;width:36px;min-height:44px;height:44px}
+ .vpo-admin-meta{gap:7px 14px;font-size:10px;margin-top:12px}
+ .vpo-admin-meta b{display:block;margin:2px 0 0}
+ .vpo-admin-card .vpo-admin-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+ .vpo-admin-actions [data-approve]{grid-column:1/-1}
+ .vpo-admin-card .vpo-admin-actions button,.vpo-admin-options button{padding:9px 10px;font-size:11px}
+ .vpo-admin-options{justify-content:start}
+ .vpo-admin-confirm{padding:12px}
+}
 @media(max-width:760px){.vpo-access-modes{margin-bottom:26px}.vpo-access-card .vpo-access-modes button{min-height:44px;font-size:12px}.vpo-access-card:has(#vpo-signup-fields:not([hidden])){max-width:400px}.vpo-access-card:has(#vpo-signup-fields:not([hidden])) .vpo-access-mobile-logo{margin-bottom:22px}.vpo-admin-heading{flex-wrap:wrap}}
 
 /* Height matters as much as width: keep the complete access form in view. */

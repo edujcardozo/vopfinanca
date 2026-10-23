@@ -35,7 +35,7 @@ export function createCloudSync({getState,onApply,onStatus,onConflict,canApplyRe
       const response=await fetcher(path,{method,credentials:'same-origin',cache:'no-store',redirect:'manual',headers:body?{'Content-Type':'application/json'}:{},body:body?JSON.stringify(body):undefined,signal:controller.signal});
       if(response.status===401||response.type==='opaqueredirect'||response.status>=300&&response.status<400||!response.headers.get('Content-Type')?.includes('application/json'))throw Object.assign(new Error('Entre na sua conta para sincronizar.'),{auth:true});
       const data=await response.json();
-      if(!response.ok&&!(response.status===409&&data.code==='REVISION_CONFLICT'))throw Object.assign(new Error(data.error||'A sincronização está indisponível.'),{blocked:['PLAN_SCOPE_CHANGED','PLAN_ACCESS_REVOKED','CLIENT_UPDATE_REQUIRED','BILLING_REQUIRED','ACCESS_PENDING','ACCESS_REJECTED','ACCESS_PROFILE_REQUIRED'].includes(data.code),billing:data.billing});
+      if(!response.ok&&!(response.status===409&&data.code==='REVISION_CONFLICT'))throw Object.assign(new Error(data.error||'A sincronização está indisponível.'),{blocked:['PLAN_SCOPE_CHANGED','PLAN_ACCESS_REVOKED','CLIENT_UPDATE_REQUIRED','BILLING_REQUIRED','ACCESS_PENDING','ACCESS_REJECTED','ACCESS_REVOKED','ACCESS_PROFILE_REQUIRED'].includes(data.code),billing:data.billing});
       return {response,data};
     }finally{clearTimeout(timeout);}
   }

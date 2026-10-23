@@ -5,12 +5,14 @@
 - Recebimento em CPF, com conta Asaas de pessoa física sujeita à aprovação do provedor.
 - Clientes pessoa física; conta própria VPO por e-mail, sem ChatGPT.
 - Mensalidade de **R$ 12,90**, em reais, com renovação mensal no cartão.
-- Autorização no início; primeira cobrança somente após pelo menos **15 dias completos grátis**.
+- Teste de **15 dias completos** contado da aprovação administrativa; eventual primeira cobrança apenas após o prazo original e autorização explícita do cliente.
 - Uma assinatura cobre o proprietário e uma pessoa convidada no mesmo orçamento.
 
 **Pix Automático exige pessoa jurídica no Asaas.** A configuração para CPF oferece somente cartão. Pix comum mensal exige pagamento a cada ciclo; ele não substitui silenciosamente a autorização automática solicitada e não foi implementado neste fluxo.
 
 ## Estado da implantação
+
+O administrador pode aprovar 15 dias grátis, conceder acesso permanente e remover/restaurar acessos em Ajustes. O teste é contado no servidor, com consulta e backup após o vencimento. Veja [CADASTROS.md](CADASTROS.md).
 
 O código inclui checkout recorrente hospedado no Asaas, confirmação de autorização/pagamentos por API, receptor de Webhooks, consulta e cancelamento. A recorrência e os débitos são agendados pelo Asaas.
 
@@ -21,10 +23,10 @@ O app atual no ChatGPT mantém a experiência existente. As funções financeira
 ## Fluxo do cliente
 
 1. Entra com e-mail e o código completo recebido.
-2. Confere R$ 0,00 hoje, 15 dias grátis e R$ 12,90/mês após o teste. O consentimento não vem marcado.
-3. A cotação fixa preço e datas no servidor, sem reiniciar em outro aparelho. A primeira data é arredondada para o próximo início de dia em São Paulo para preservar 15 dias completos.
+2. Após a aprovação, vê o início, o fim e os dias restantes do teste. Com o Asaas habilitado, confere R$ 12,90/mês e a data da primeira cobrança antes de autorizar; o consentimento não vem marcado.
+3. A cotação usa o prazo original da aprovação, sem conceder outros 15 dias ao cadastrar cartão ou trocar de aparelho. A primeira data é arredondada para o próximo início de dia em São Paulo, nunca antes do fim do teste; se ele já terminou, a edição aguarda pagamento confirmado.
 4. A função cria um checkout com CREDIT_CARD, RECURRENT, MONTHLY e primeira cobrança futura. CPF, cartão e CVV são preenchidos no Asaas e não passam pelo orçamento do VPO.
-5. Retornar à URL de sucesso não libera acesso. O servidor busca a cobrança ligada ao checkout conhecido e confirma a assinatura/cartão na API Asaas. A autorização libera o teste sem registrar receita.
+5. Retornar à URL de sucesso não libera acesso. O servidor busca a cobrança ligada ao checkout conhecido e confirma a assinatura/cartão na API Asaas. A autorização não reinicia o teste e não registra receita. O prazo original continua valendo; pagamentos confirmados liberam seus períodos.
 6. Pagamentos confirmados liberam seus ciclos. Valores, assinatura, cliente e datas precisam coincidir. Períodos futuros não antecipam o acesso; reembolsos e contestações revogam o período correspondente.
 7. Cancelar renovação encerra a assinatura e cobranças pendentes no Asaas antes da confirmação no VPO. O período já pago permanece disponível até o fim. Consulta e backup continuam acessíveis.
 
@@ -35,12 +37,13 @@ O app atual no ChatGPT mantém a experiência existente. As funções financeira
 | database.sql | Orçamentos, usuários e convites |
 | billing.sql | Teste, autorização, pagamentos e acesso |
 | asaas.sql | Preço de 1290 centavos, cartão, reservas e operações de servidor |
+| access-management.sql | Modalidade permanente, teste desde a aprovação, revogação e auditoria |
 | server/asaas.mjs | Checkout, conciliação, cancelamento e períodos mensais |
 | server/http.mjs | Identidade, origem e autenticação de Webhook |
 | ../netlify/functions/vpo-billing.mjs | Função HTTP do Netlify |
 | billing-client.js | Chamadas autenticadas sem dados de cartão, preço ou ID de outro cliente |
 
-No projeto Supabase VPO existente, as três etapas de esquema estão aplicadas. Em outro projeto dedicado, execute os SQLs uma vez nessa ordem. Nunca exponha vpo_private na Data API.
+No projeto Supabase VPO existente, as etapas estão aplicadas, inclusive o gerenciamento de acesso. Em outro projeto dedicado, siga a ordem completa do README, terminando em access-management.sql. Nunca exponha vpo_private na Data API.
 
 ## Publicação completa no Netlify
 

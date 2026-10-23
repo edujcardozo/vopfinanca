@@ -3,3 +3,12 @@
 .vpo-readonly-banner{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 14px;margin-bottom:14px;border-radius:9px;background:#fff4d9;color:#765e29;font-size:12px;line-height:1.5}.vpo-readonly-banner[hidden]{display:none}.vpo-readonly-banner button{font-size:11px;min-height:40px;flex-shrink:0}.vpo-readonly-banner+*{min-width:0}[data-subscription-readonly] [data-assigned-input]{cursor:default}@media(max-width:719px){.vpo-readonly-banner{flex-wrap:wrap;margin:0 0 12px;padding:10px 14px}}
 .vpo-billing-continue{white-space:normal;line-height:1.4;overflow-wrap:anywhere}.vpo-price-card strong{min-width:0;overflow-wrap:anywhere}.vpo-price-card>div{flex-wrap:wrap}.vpo-billing-timeline dt{min-width:0;max-width:45%}
 .vpo-billing-cancel{border-top:1px solid #efedf5;margin:16px 0 5px;padding-top:12px}.vpo-billing-cancel p{font-size:12px;line-height:1.5;color:#8c6e32}.vpo-billing-cancel button{font-size:12px;min-height:44px;color:#a04e64}.vpo-cancel-actions{display:grid;gap:10px}.vpo-cancel-actions button{min-height:46px;white-space:normal;line-height:1.4}.vpo-cancel-actions .subtle-button{color:#a04e64}
+.vpo-trial-details{min-width:0;margin:3px 0 5px}
+.vpo-trial-details dl{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:0 0 14px}
+.vpo-trial-details dt{font-size:10px;line-height:1.5;color:#8b859a;margin:0 0 4px}
+.vpo-trial-details dd{font-size:12px;line-height:1.5;font-weight:650;color:#3f3a60;margin:0;overflow-wrap:anywhere}
+.vpo-trial-progress{height:5px;background:#eeedf6;border-radius:10px;margin-bottom:8px;overflow:hidden}
+.vpo-trial-progress>span{display:block;height:100%;border-radius:inherit;background:#9392ed}
+.vpo-trial-details>small{display:block;font-size:10px;line-height:1.5;color:#827a94}
+.vpo-contact-access{font-size:12px;min-height:44px;margin:6px 0 10px;white-space:normal;line-height:1.5}
+.vpo-access-details .vpo-trial-details{margin-bottom:18px}

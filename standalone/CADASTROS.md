@@ -8,17 +8,24 @@ O VPO independente oferece três caminhos na mesma tela, preservando o layout no
 
 O convite autoriza o orçamento compartilhado; não libera automaticamente um plano pessoal separado nem exige uma segunda assinatura. A pessoa convidada pode solicitar seu próprio plano posteriormente. Remover a participação bloqueia novas leituras e gravações no orçamento compartilhado. Uma cópia já armazenada no aparelho não pode ser apagada à distância.
 
-## Aprovar em Ajustes
+## Administrar em Ajustes
 
-1. Entre no VPO independente com **edujcardozo@gmail.com**, confirme o código e complete seu cadastro.
-2. O servidor vincula esse e-mail confirmado ao identificador imutável da sua conta. Alterar nome, metadados ou JavaScript do navegador não concede administração.
-3. Abra **Ajustes → Novos cadastros**. A fila mostra nome, e-mail, telefone opcional, data e estado do aviso. Há filtros de pendentes, aprovados e recusados, com dez registros por página.
-4. Clique em **Aprovar acesso** ou confirme **Recusar**. A decisão registra autor e horário e é idempotente. Um cadastro recusado não pode se liberar por um novo envio do formulário.
-5. A tela de quem aguarda consulta o servidor a cada 15 segundos, enquanto estiver visível. Também é possível clicar em **Verificar liberação** ou entrar novamente depois.
+Abra **Ajustes → Usuários e acessos**, usando a conta administradora. A administração está vinculada ao identificador imutável da conta confirmada; nomes, e-mails editáveis ou campos enviados pelo navegador não concedem administração.
 
-O controle acontece em cada chamada do banco, inclusive leitura e gravação de orçamento. Tabelas e rotinas anteriores não podem ser acessadas diretamente para contornar a aprovação. Os dados financeiros não aparecem na administração de cadastros.
+- **Pendentes:** aprove com **15 dias grátis**, libere como **permanente** ou recuse o pedido. A contagem começa na aprovação, não durante a espera pelo cadastro.
+- **Usuários:** veja o tipo de acesso e o fim do teste. O botão de três pontos permite tornar um plano pessoal permanente, voltar ao teste/assinatura ou remover o acesso. Pessoas convidadas também aparecem, com remoção independente do titular.
+- **Removidos:** restaure o acesso anterior. Remover é uma revogação reversível: não apaga a conta, o orçamento ou os registros de pagamento. Restaurar ou trocar de modalidade não reinicia o teste original.
+- **Recusados:** mantenha o histórico das decisões de cadastro.
 
-Cobranças continuam desativadas. Aprovar uma conta não inicia um teste ou assinatura Asaas. Uma futura mudança para liberação comercial automática exige configurar explicitamente essa política, além de homologar a cobrança.
+**Permanente** significa acesso pessoal sem mensalidade e sem prazo; não concede administração. A conta administradora mantém esse acesso e não pode ser removida por esses controles. Uma assinatura ou contratação ativa no Asaas precisa ter o cancelamento confirmado antes de remover o acesso ou liberá-lo sem mensalidade. A alteração de acesso não cancela uma cobrança no provedor.
+
+O cliente vê os dias restantes e as datas em **Ajustes → Meu acesso**, com um indicador discreto junto da sua identidade na conta. Ao fim dos 15 dias, a edição é bloqueada no servidor; consulta e backup continuam disponíveis. Um pagamento confirmado pode liberar a assinatura. O Asaas continua desligado até sua configuração explícita: não há débito automático pelo simples fim do teste.
+
+Contas aprovadas antes desta atualização usam a data de aprovação já registrada. O teste e os pagamentos do titular cobrem o mesmo orçamento compartilhado; aceitar um convite não cria outro teste nem libera um plano pessoal.
+
+Cada mudança registra administrador, horário e os estados anterior e posterior. A remoção bloqueia novas operações online, inclusive com uma sessão já aberta. O app verifica a autorização a cada 15 segundos enquanto visível e ao recuperar foco/conexão. Uma cópia já baixada em um aparelho offline não pode ser apagada remotamente; ela não permite novas leituras/gravações na nuvem após a revogação.
+
+Aplique **access-management.sql** uma vez depois de **participants.sql** no projeto Supabase dedicado. Mantenha `vpo_private` fora dos esquemas expostos. As tabelas e rotinas anteriores não podem ser chamadas diretamente pelos clientes.
 
 ## Ativar os e-mails
 

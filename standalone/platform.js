@@ -3,7 +3,7 @@ import {mountLogin} from './auth.js';
 import {accountStorage} from './storage.js';
 import {createSupabaseTransport} from './api.js';
 import {restoreSession} from './session.js';
-import {mountAccountUI,mountAccountSettings} from './account-ui.js';
+import {mountAccountUI,mountAccountSettings,updateAccountAccess} from './account-ui.js';
 import {createBillingUI} from './billing-ui.js';
 import {mountBillingAccess} from './billing-access.js';
 import {createBillingClient} from './billing-client.js';
@@ -47,7 +47,7 @@ const gate=mountAccessGate({root:access,api:registrationAPI,intent,email:session
 const accountAccess=await gate.ready;gate.destroy();
 async function checkApproval(){
   if(!navigator.onLine||leaving)return;
-  try{const next=await registrationAPI();if(!next.canUse){leaving=true;conceal();location.reload();}else rememberAccess(next);}catch{/* Server checks still run for every budget request. */}
+  try{const next=await registrationAPI();if(!next.canUse){try{storage.removeItem('vpo-verified-access-v1');}catch{}leaving=true;conceal();location.reload();}else{rememberAccess(next);if(next.billing){updateAccountAccess(document,next.billing);const old=billingUI?.info;if(old&&(old.phase!==next.billing.phase||old.canUse!==next.billing.canUse||old.scopeId!==next.billing.scopeId))billingUI.refresh();}}}catch{/* Server checks still run for every budget request. */}
 }
 const signIn=document.getElementById('sync-signin');
 signIn.href=location.pathname+location.search+location.hash;signIn.removeAttribute('target');
@@ -63,9 +63,11 @@ export const platform={
     let wasAllowed=null;
     const accessGuard=mountBillingAccess({root:document.querySelector('#budget-app'),showBilling:()=>billingUI.show()});
     const billingClient=createBillingClient({auth:client.auth,refresh:()=>billingUI.refresh(true)});
-    billingUI=createBillingUI({root:subscription,fetcher:platform.fetcher,openDialog:context.openDialog,notify,checkout:()=>billingClient.checkout(),cancel:()=>billingClient.cancel(),reconcile:()=>billingClient.reconcile(),onAccess(info){accessGuard.update(info);if(wasAllowed===false&&info.canUse&&sync.status.blocked)location.reload();wasAllowed=info.canUse;}});
-    billingUI.refresh().then(info=>{if(info?.enabled&&info.isOwner&&info.trialStartedAt)billingUI.refresh(false,true);});
-    setInterval(()=>{if(document.visibilityState!=='hidden'){billingUI.refresh();checkApproval();}},60000);
+    billingUI=createBillingUI({root:subscription,fetcher:platform.fetcher,openDialog:context.openDialog,notify,checkout:()=>billingClient.checkout(),cancel:()=>billingClient.cancel(),reconcile:()=>billingClient.reconcile(),onAccess(info){accessGuard.update(info);updateAccountAccess(document,info);if(wasAllowed===false&&info.canUse&&sync.status.blocked)location.reload();wasAllowed=info.canUse;}});
+    billingUI.refresh().then(info=>{if(info?.enabled&&info.isOwner&&info.trialStartedAt&&info.hasBillingAccount!==false)billingUI.refresh(false,true);});
+    setInterval(()=>{if(document.visibilityState!=='hidden')billingUI.refresh();},60000);
+    setInterval(()=>{if(document.visibilityState!=='hidden')checkApproval();},15000);
+    window.addEventListener('focus',checkApproval);
     window.addEventListener('online',checkApproval);
     if(accountAccess.isAdmin){const admin=document.createElement('article');admin.className='settings-card';document.querySelector('.settings-grid').append(admin);mountRegistrationAdmin({root:admin,api:registrationAPI,notifier:registrationNotifier,notify});}
     const card=document.createElement('article');card.className='settings-card';

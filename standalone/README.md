@@ -6,7 +6,7 @@ Versão com conta própria por e-mail e código de acesso, preparada para o Netl
 
 - Acessos separados para **Entrar**, **Criar conta** e **Tenho um convite**, com Supabase Auth, confirmação de e-mail, renovação de sessão e saída deste aparelho.
 - Cadastro com nome completo, e-mail confirmado e celular opcional. Novas contas pessoais aguardam aprovação; a tela verifica a liberação automaticamente.
-- Administração de cadastros em Ajustes, restrita ao usuário verificado de `edujcardozo@gmail.com`, vinculado ao UUID uma única vez. Aprovar e recusar são decisões registradas no servidor.
+- Administração de cadastros em Ajustes, restrita ao usuário verificado de `edujcardozo@gmail.com`, vinculado ao UUID uma única vez. Aprovar testes de 15 dias, liberar acesso permanente, recusar e remover/restaurar acessos são decisões registradas no servidor.
 - Fila persistente e funções Netlify para avisos de novos cadastros a `edujcardozo@gmail.com`, via Gmail SMTP (sem domínio próprio) ou Resend. O envio depende da configuração privada do provedor; não é simulado como concluído. Veja [GMAIL.md](GMAIL.md) para a opção inicial com a conta Google.
 - Cada nova conta começa com categorias iniciais e sem gastos, entradas ou valores planejados de exemplo.
 - Convites por link em Ajustes: validade de 24 horas, uso único e aceite explícito. O proprietário pode cancelar convites e remover o acesso da pessoa convidada.
@@ -21,7 +21,7 @@ O projeto dedicado **VPO**, região São Paulo (`sa-east-1`), foi criado no Supa
 
 `project.json` contém somente a URL e a chave **publishable**, destinadas ao navegador. As tabelas não podem ser acessadas diretamente; as funções do banco verificam o e-mail confirmado, a identidade e o acesso ao orçamento. Nunca use uma chave `secret` ou `service_role` no frontend.
 
-`database.sql` é o esquema inicial, seguido por `billing.sql`, `asaas.sql` e `registration.sql`. Os três últimos preparam as assinaturas e a aprovação manual sem ativar cobranças. Para instalar em outro projeto dedicado, execute os quatro arquivos uma vez, nessa ordem, no SQL Editor e substitua a configuração pública em `project.json`. Antes de instalar a aprovação em outro produto, substitua o e-mail administrador pelo seu endereço verificado.
+`database.sql` é o esquema inicial, seguido por `billing.sql`, `asaas.sql`, `registration.sql`, `participants.sql` e `access-management.sql`. Os arquivos seguintes preparam assinaturas, aprovação, participantes e gerenciamento de acesso sem ativar cobranças. Para instalar em outro projeto dedicado, execute os seis arquivos uma vez, nessa ordem, no SQL Editor e substitua a configuração pública em `project.json`. Antes de instalar a aprovação em outro produto, substitua o e-mail administrador pelo seu endereço verificado.
 
 O fluxo de cadastro, convite, aprovação e ativação dos avisos está documentado em [CADASTROS.md](CADASTROS.md). O recebimento real dos avisos ainda depende da configuração do serviço de envio e da publicação das funções no Netlify.
 

@@ -18,5 +18,5 @@ export function mountBillingAccess({root,showBilling,documentObject=document}){
   for(const type of ['click','submit','pointerdown'])documentObject.addEventListener(type,guard,true);
   const observer=globalThis.MutationObserver?new MutationObserver(fields):null;
   observer?.observe(root,{subtree:true,childList:true});
-  return {update(info){allowed=!info?.enabled||info.canUse===true;banner.hidden=allowed;root.toggleAttribute('data-subscription-readonly',!allowed);fields();},destroy(){observer?.disconnect();for(const type of ['click','submit','pointerdown'])documentObject.removeEventListener(type,guard,true);banner.remove();}};
+  return {update(info){allowed=info?.accessEnforced?info.canUse===true:!info?.enabled||info.canUse===true;banner.hidden=allowed;root.toggleAttribute('data-subscription-readonly',!allowed);banner.querySelector('button').textContent=info?.accessEnforced?'Conferir meu acesso →':'Conferir assinatura →';fields();},destroy(){observer?.disconnect();for(const type of ['click','submit','pointerdown'])documentObject.removeEventListener(type,guard,true);banner.remove();}};
 }

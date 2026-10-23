@@ -28,8 +28,8 @@ export function mountAccessGate({root,api,intent={},email='',notifyRegistration=
       $('#gate-name').value=draft?.fullName||'';$('#gate-phone').value=draft?.phone||'';
       $('#gate-profile').onsubmit=async e=>{e.preventDefault();await register({fullName:$('#gate-name').value,phone:$('#gate-phone').value},token||intent?.mode==='invite'?'guest':'personal');};return;
     }
-    if(info.status==='rejected'){
-      shell('Cadastro não autorizado.','Seu pedido foi analisado e não foi liberado neste momento.','<p class="vpo-gate-message">Se precisar de ajuda, entre em contato com <a href="mailto:edujcardozo@gmail.com">edujcardozo@gmail.com</a>.</p>','–');return;
+    if(info.status==='rejected'||info.status==='revoked'){
+      shell(info.status==='revoked'?'Seu acesso foi removido.':'Cadastro não autorizado.',info.status==='revoked'?'O administrador removeu seu acesso ao VPO. Entre em contato para saber como continuar.':'Seu pedido foi analisado e não foi liberado neste momento.','<p class="vpo-gate-message">Se precisar de ajuda, entre em contato com <a href="mailto:edujcardozo@gmail.com">edujcardozo@gmail.com</a>.</p>','–');return;
     }
     if(token||enterInvite){
       if(!token){
@@ -53,7 +53,7 @@ export function mountAccessGate({root,api,intent={},email='',notifyRegistration=
     try{await action();}catch(error){message(error.message,true);}finally{busy=false;root.removeAttribute('aria-busy');for(const b of root.querySelectorAll('button'))b.disabled=false;}
   }
   async function register(profile,purpose){await act(async()=>{info=await api('/register',{...profile,purpose});draft=null;intent={...intent,profile:null};render();if(info.status==='pending')notifyRegistration().catch(()=>{});if(info.canUse&&!token&&!enterInvite)finish(info);else await loadPreview();});}
-  async function loadPreview(){if(!token||!info?.hasProfile||info.status==='rejected'||preview||inviteError)return;
+  async function loadPreview(){if(!token||!info?.hasProfile||['rejected','revoked'].includes(info.status)||preview||inviteError)return;
     try{preview=await apiSharing('/preview',{token});}catch(error){inviteError=error.message;}render();
   }
   async function refresh(){if(busy||done)return;await act(async()=>{
@@ -69,23 +69,4 @@ export function mountAccessGate({root,api,intent={},email='',notifyRegistration=
   return {ready,refresh,destroy(){windowObject.clearInterval(timer);done=true;}};
 }
 
-export function mountRegistrationAdmin({root,api,notifier=async()=>{},notify=()=>{}}){
-  let current=null,busy=false,status='pending',page=0,message='',emailConfigured=null;
-  const date=value=>new Date(value).toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'});
-  root.classList.add('vpo-admin-card');
-  function render(){root.innerHTML=`<div class="vpo-admin-heading"><div><span class="small-label">ADMINISTRAÇÃO</span><h2>Novos cadastros.</h2></div><button class="subtle-button" data-admin-refresh type="button">Atualizar ↻</button></div><p>Aprove quem pode começar um plano no VPO.</p><p class="vpo-admin-note" id="admin-email-status">Os pedidos ficam salvos aqui, mesmo quando o aviso por e-mail não é enviado.</p><div class="vpo-admin-filters" aria-label="Filtrar cadastros">${[['pending','Pendentes'],['approved','Aprovados'],['rejected','Recusados']].map(([key,label])=>`<button class="subtle-button" type="button" data-admin-filter="${key}" aria-pressed="${status===key}">${label}</button>`).join('')}</div><div class="vpo-admin-list">${current?.items?.length?current.items.map(item=>`<article class="vpo-admin-request"><strong>${esc(item.name)}</strong><p>${esc(item.email)}</p>${item.phone?`<p>${esc(item.phone)}</p>`:''}<small>Cadastro em ${esc(date(item.requestedAt))}${status==='pending'?` · ${item.notification==='sent'?'Aviso enviado por e-mail':item.notification==='failed'?'Aviso não enviado':'Aviso de e-mail pendente'}`:''}</small>${status==='pending'?`<div class="vpo-admin-actions"><button class="btn btn-blue" type="button" data-approve="${esc(item.id)}">Aprovar acesso</button><button class="subtle-button" type="button" data-reject="${esc(item.id)}">Recusar</button></div><div class="vpo-admin-actions" data-confirm-reject="${esc(item.id)}" hidden><span>Recusar este cadastro?</span><button class="subtle-button" type="button" data-cancel-reject>Voltar</button><button class="subtle-button" type="button" data-decision="${esc(item.id)}">Sim, recusar</button></div>`:''}</article>`).join(''):`<p class="vpo-admin-note">${current?'Nenhum cadastro neste filtro.':'Carregando cadastros…'}</p>`}</div>${current?.total>10?`<div class="vpo-admin-pages"><button class="subtle-button" type="button" data-admin-prev ${page===0?'disabled':''}>← Anterior</button><span>${page+1} de ${Math.ceil(current.total/10)}</span><button class="subtle-button" type="button" data-admin-next ${(page+1)*10>=current.total?'disabled':''}>Próxima →</button></div>`:''}<p class="vpo-admin-status" role="status" aria-live="polite">${esc(message)}</p>`;}
-  function renderEmailStatus(){const el=root.querySelector('#admin-email-status');if(el)el.textContent=emailConfigured===false?'O envio automático de e-mails ainda precisa ser configurado. Você já pode aprovar os pedidos por aqui.':emailConfigured===true?'Configuração de envio preenchida. Confira abaixo o estado de cada aviso para edujcardozo@gmail.com.':'Os pedidos ficam salvos aqui, mesmo quando o aviso por e-mail não é enviado.';}
-  async function refresh(){if(busy)return;busy=true;root.setAttribute('aria-busy','true');try{current=await api('/requests',{status,page});message='';}catch(error){message=error.message;}finally{busy=false;root.removeAttribute('aria-busy');render();renderEmailStatus();}}
-  async function decide(userId,decision){if(busy)return;busy=true;let success=false;for(const b of root.querySelectorAll('button'))b.disabled=true;try{await api('/decision',{userId,decision});success=true;notify(decision==='approved'?'Acesso aprovado. A pessoa já pode abrir o VPO.':'Cadastro recusado.');}catch(error){message=error.message;}finally{busy=false;if(success)await refresh();else{render();renderEmailStatus();}}}
-  root.addEventListener('click',e=>{const button=e.target.closest('button');if(!button||busy)return;
-    if(button.hasAttribute('data-admin-refresh'))return refresh();
-    if(button.dataset.adminFilter){status=button.dataset.adminFilter;page=0;return refresh();}
-    if(button.hasAttribute('data-admin-prev')){page--;return refresh();}if(button.hasAttribute('data-admin-next')){page++;return refresh();}
-    if(button.dataset.approve)return decide(button.dataset.approve,'approved');
-    if(button.dataset.reject){const row=button.closest('article');row.querySelector('[data-confirm-reject]').hidden=false;button.parentElement.hidden=true;return;}
-    if(button.hasAttribute('data-cancel-reject')){const row=button.closest('article');row.querySelector('[data-confirm-reject]').hidden=true;row.querySelector('.vpo-admin-actions').hidden=false;return;}
-    if(button.dataset.decision)return decide(button.dataset.decision,'rejected');
-  });
-  render();refresh();notifier('status').then(result=>{emailConfigured=!!result.configured;renderEmailStatus();}).catch(()=>{emailConfigured=false;renderEmailStatus();});
-  return {refresh};
-}
+export {mountRegistrationAdmin} from './user-admin.js';
