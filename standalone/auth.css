@@ -2,17 +2,17 @@ html[data-auth-required] #landing,html[data-auth-required] #budget-app{display:n
 #vpo-access{min-height:100dvh;background:#f7f6f2;color:#202052;font-family:Figtree,system-ui,sans-serif}
 #vpo-access[hidden]{display:none}
 .vpo-access-loading{display:grid;place-items:center;min-height:100dvh;font-size:16px;margin:0;padding:24px;box-sizing:border-box}
-.vpo-access-shell{display:grid;grid-template-columns:minmax(300px,.9fr) minmax(420px,1.1fr);min-height:100dvh}
-.vpo-access-story{display:flex;flex-direction:column;justify-content:space-between;gap:50px;padding:clamp(30px,5vw,76px);background:#555af5;color:#fffdf4}
+.vpo-access-shell{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);min-height:100dvh;box-sizing:border-box}
+.vpo-access-story{display:flex;flex-direction:column;justify-content:space-between;min-width:0;gap:clamp(16px,4dvh,50px);padding:clamp(24px,5dvh,76px) clamp(28px,5vw,76px);background:#555af5;color:#fffdf4;box-sizing:border-box}
 .vpo-access-brand{display:flex;gap:12px;align-items:center;font-size:34px;font-weight:800;color:inherit;text-decoration:none;width:max-content}.vpo-access-brand>span>span{color:#bae677}
 .vpo-access-brand img{border-radius:12px}.vpo-access-eyebrow{font-size:11px;letter-spacing:.14em;font-weight:800;margin:0 0 18px}
-.vpo-access-story h1{font-size:clamp(44px,5.5vw,76px);line-height:1.04;letter-spacing:-.045em;margin:0 0 24px;font-weight:750}
+.vpo-access-story h1{font-size:clamp(40px,min(5.5vw,9dvh),76px);line-height:1.04;letter-spacing:-.045em;margin:0 0 24px;font-weight:750}
 .vpo-access-story>div>p:not(.vpo-access-eyebrow){font-size:19px;line-height:1.55;color:#edecff;margin:0}
 .vpo-access-story>small{font-size:12px;color:#e1e0ff}
-.vpo-access-preview{margin-top:40px;border:1px solid #ffffff40;border-radius:18px;padding:23px;background:#ffffff10;max-width:360px}
+.vpo-access-preview{margin-top:clamp(16px,4dvh,40px);border:1px solid #ffffff40;border-radius:18px;padding:23px;background:#ffffff10;max-width:360px}
 .vpo-access-preview>span{font-size:12px;color:#e2e0ff}.vpo-access-preview>strong{display:block;font-size:18px;line-height:1.4;margin:8px 0 18px;max-width:245px}.vpo-access-preview>small{font-size:11px;line-height:1.5;color:#e2e0ff;display:block}
 .vpo-access-preview>div{display:flex;gap:5px;margin-bottom:16px}.vpo-access-preview i{height:6px;border-radius:6px;flex:3;background:#bae677}.vpo-access-preview i:nth-child(2){flex:2;background:#d7edbc}.vpo-access-preview i:last-child{flex:1;background:#ffffff50}
-.vpo-access-main{display:grid;place-items:center;padding:40px 28px;min-width:0}
+.vpo-access-main{display:grid;place-items:center;place-items:safe center;padding:clamp(12px,3dvh,40px) clamp(16px,2.5vw,28px);min-width:0;box-sizing:border-box}
 .vpo-access-card{width:100%;max-width:420px;background:white;border:1px solid #e8e6ee;border-radius:24px;padding:38px;box-shadow:0 8px 35px #20205205;box-sizing:border-box}
 .vpo-access-card .vpo-access-eyebrow{color:#555af5;margin-bottom:14px}.vpo-access-card h2{font-size:31px;line-height:1.12;letter-spacing:-.035em;margin:0 0 12px;font-weight:750}.vpo-access-card #access-intro{font-size:15px;color:#6b6b83;line-height:1.5;margin:0 0 28px}
 .vpo-access-card label{display:block;font-size:13px;font-weight:700;margin-bottom:9px}
@@ -26,15 +26,16 @@ html[data-auth-required] #landing,html[data-auth-required] #budget-app{display:n
 .vpo-access-resend{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:2px 8px;margin-top:14px;font-size:11px;color:#737389}
 .vpo-access-error{background:#fff0f2;color:#a53049;border-radius:9px;padding:11px 13px;font-size:13px;line-height:1.5;margin:18px 0 0;overflow-wrap:anywhere}
 .vpo-access-invite{background:#eff5e8;color:#48702f;border-radius:9px;padding:12px;font-size:12px;line-height:1.5;margin:18px 0 0}.vpo-access-mobile-logo{display:none}
-@media(max-width:760px){.vpo-access-shell{display:block;background:#f7f6f2}.vpo-access-story{display:none}.vpo-access-main{min-height:100dvh;padding:calc(28px + env(safe-area-inset-top)) 24px calc(28px + env(safe-area-inset-bottom));box-sizing:border-box}.vpo-access-card{max-width:400px;padding:0;background:transparent;border:0;box-shadow:none;border-radius:0}.vpo-access-mobile-logo{display:block;margin-bottom:35px;border-radius:14px}.vpo-access-card h2{font-size:34px;max-width:290px}.vpo-access-card #access-intro{margin-bottom:30px}.vpo-access-footer{margin-top:30px;padding-top:22px}.vpo-access-card input{height:56px}.vpo-access-submit{min-height:54px}.vpo-access-card button:not(.vpo-access-submit){min-height:44px}.vpo-access-resend{margin-top:12px}}
+@media(max-width:760px){.vpo-access-shell{display:block;background:#f7f6f2}.vpo-access-story{display:none}.vpo-access-main{min-height:100dvh;padding:calc(clamp(16px,2.5dvh,28px) + env(safe-area-inset-top)) 24px calc(clamp(16px,2.5dvh,28px) + env(safe-area-inset-bottom));box-sizing:border-box}.vpo-access-card{max-width:400px;padding:0;background:transparent;border:0;box-shadow:none;border-radius:0}.vpo-access-mobile-logo{display:block;margin-bottom:35px;border-radius:14px}.vpo-access-card h2{font-size:34px;max-width:290px}.vpo-access-card #access-intro{margin-bottom:30px}.vpo-access-footer{margin-top:30px;padding-top:22px}.vpo-access-card input{height:56px}.vpo-access-submit{min-height:54px}.vpo-access-card button:not(.vpo-access-submit){min-height:44px}.vpo-access-resend{margin-top:12px}}
 @media(max-height:620px) and (max-width:760px){.vpo-access-main{place-items:start center;padding-top:24px}.vpo-access-mobile-logo{margin-bottom:20px}.vpo-access-footer{margin-top:20px;padding-top:16px}}
 @media(prefers-reduced-motion:reduce){#vpo-access *{scroll-behavior:auto;transition:none}}
 .vpo-access-card [hidden]{display:none!important}
 .vpo-access-modes{display:grid;grid-template-columns:.8fr 1fr 1.3fr;gap:3px;background:#f2f1f9;border-radius:11px;padding:4px;margin:0 0 25px}
 .vpo-access-card .vpo-access-modes button{font-size:12px;line-height:1.3;padding:9px 5px;min-height:42px;border-radius:8px;color:#707088}
 .vpo-access-card .vpo-access-modes button[aria-pressed=true]{background:white;color:#202052;box-shadow:0 2px 6px #2020520a}
-#vpo-signup-fields input{margin-bottom:18px}.vpo-field-optional{font-weight:400;color:#85859c;font-size:11px;margin-left:4px}
+#vpo-signup-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:18px}.vpo-access-field{min-width:0}.vpo-field-optional{font-weight:400;color:#85859c;font-size:11px;margin-left:4px}
 .vpo-field-help{font-size:12px;line-height:1.5;margin:8px 0 18px;color:#77778c}
+#vpo-invite-field{margin-bottom:18px}#vpo-invite-field .vpo-field-help{margin-bottom:0}
 .vpo-access-card:has(#vpo-signup-fields:not([hidden])){max-width:450px}
 .vpo-gate-symbol{display:grid;place-items:center;width:52px;height:52px;border-radius:17px;background:#eef4e6;color:#48702f;font-size:25px;margin-bottom:22px}
 .vpo-gate-summary{padding:15px;background:#f3f2f9;border-radius:12px;font-size:13px;line-height:1.6;margin:18px 0;overflow-wrap:anywhere}.vpo-gate-summary strong,.vpo-gate-summary span{display:block}
@@ -46,6 +47,83 @@ html[data-auth-required] #landing,html[data-auth-required] #budget-app{display:n
 .vpo-admin-list{display:grid;gap:12px;margin:16px 0}.vpo-admin-request{padding:16px;border:1px solid #e6e6ef;border-radius:14px;min-width:0}.vpo-admin-request strong{font-size:15px;display:block;color:#202052;overflow-wrap:anywhere}.vpo-admin-request p{margin:4px 0!important;font-size:13px!important;line-height:1.5!important;overflow-wrap:anywhere}.vpo-admin-request small{font-size:11px;color:#818197;display:block;margin-top:6px}
 .vpo-admin-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:13px}.vpo-admin-actions button{min-height:40px;padding:8px 14px}.vpo-admin-pages{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12px}.vpo-admin-status{font-size:13px;line-height:1.5;min-height:20px;overflow-wrap:anywhere}
 @media(max-width:760px){.vpo-access-modes{margin-bottom:26px}.vpo-access-card .vpo-access-modes button{min-height:44px;font-size:12px}.vpo-access-card:has(#vpo-signup-fields:not([hidden])){max-width:400px}.vpo-access-card:has(#vpo-signup-fields:not([hidden])) .vpo-access-mobile-logo{margin-bottom:22px}.vpo-admin-heading{flex-wrap:wrap}}
+
+/* Height matters as much as width: keep the complete access form in view. */
+@media(max-height:900px){#vpo-invite-preserved{display:none}}
+@media(max-height:760px),(min-width:761px) and (max-width:1000px){.vpo-access-preview{display:none}}
+@media(max-height:800px){
+ .vpo-access-card{padding:24px}
+ .vpo-access-card .vpo-access-eyebrow{margin-bottom:10px}
+ .vpo-access-card h2{font-size:29px;margin-bottom:10px}
+ .vpo-access-card #access-intro{font-size:14px;line-height:1.45;margin-bottom:18px}
+ .vpo-access-modes{margin-bottom:18px}
+ .vpo-access-card label{margin-bottom:6px}
+ .vpo-access-card input{height:48px;padding:10px 12px}
+ .vpo-access-submit{min-height:48px;padding:12px 15px;margin-top:14px}
+ .vpo-access-footer{margin-top:18px;padding-top:16px}
+ .vpo-access-note{line-height:1.5;margin-top:10px}
+ #vpo-signup-fields{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:14px}
+ .vpo-field-help{margin:6px 0 14px}
+ #vpo-invite-field{margin-bottom:14px}
+ #vpo-invite-field .vpo-field-help{display:none}
+ .vpo-access-address{margin-bottom:16px}
+ .vpo-access-error,.vpo-access-invite{margin-top:12px;padding:9px 11px}
+ .vpo-gate-symbol{margin-bottom:14px}
+ .vpo-gate-summary{margin:12px 0;padding:12px}
+ .vpo-gate-message{margin-top:12px}
+}
+@media(max-height:680px){
+ .vpo-access-story h1{margin-bottom:18px}
+ .vpo-access-card{padding:20px}
+ .vpo-access-card #access-intro{margin-bottom:14px}
+ .vpo-access-modes{margin-bottom:14px}
+ .vpo-access-footer{margin-top:14px;padding-top:12px}
+}
+@media(max-width:760px) and (max-height:800px){
+ .vpo-access-main{place-items:center;place-items:safe center;padding:calc(16px + env(safe-area-inset-top)) 20px calc(16px + env(safe-area-inset-bottom))}
+ .vpo-access-card{padding:0}
+ .vpo-access-mobile-logo,.vpo-access-card:has(#vpo-signup-fields:not([hidden])) .vpo-access-mobile-logo{width:40px;height:40px;border-radius:12px;margin-bottom:18px}
+ .vpo-access-card h2{max-width:none}
+}
+@media(max-height:600px){
+ .vpo-access-card .vpo-access-eyebrow{display:none}
+ .vpo-access-footer{display:none}
+ .vpo-access-card #access-intro{font-size:13px;margin-bottom:12px}
+ .vpo-access-card .vpo-access-modes button{min-height:44px;padding:7px 4px}
+ .vpo-access-card input{height:44px}
+ .vpo-access-submit{min-height:44px;padding:10px 14px;margin-top:12px}
+ .vpo-access-resend{margin-top:8px}
+ .vpo-access-address{padding:6px 10px;margin-bottom:12px}
+ .vpo-gate-symbol{width:36px;height:36px;border-radius:12px;margin-bottom:10px;font-size:20px}
+}
+@media(max-width:760px) and (max-height:600px){
+ .vpo-access-mobile-logo,.vpo-access-card:has(#vpo-signup-fields:not([hidden])) .vpo-access-mobile-logo{width:32px;height:32px;margin-bottom:12px}
+ .vpo-access-card h2{font-size:28px}
+}
+@media(max-height:520px){
+ .vpo-access-mobile-logo,.vpo-access-card:has(#vpo-signup-fields:not([hidden])) .vpo-access-mobile-logo{display:none}
+ .vpo-access-card:has(#vpo-email-form:not([hidden])) #access-intro{display:none}
+ .vpo-access-card h2{font-size:26px;margin-bottom:12px}
+ .vpo-access-modes{margin-bottom:12px}
+ .vpo-access-note{margin-top:8px}
+ #vpo-signup-fields{margin-bottom:12px}
+ .vpo-gate-actions{margin-top:8px}
+}
+/* Landscape uses the available width instead of making a tall, narrow form. */
+@media(min-width:640px) and (max-height:520px){
+ .vpo-access-shell{display:block}
+ .vpo-access-story{display:none}
+ .vpo-access-main{min-height:100dvh;padding:calc(12px + env(safe-area-inset-top)) max(20px,env(safe-area-inset-left),env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom))}
+ .vpo-access-card,.vpo-access-card:has(#vpo-signup-fields:not([hidden])){max-width:680px;padding:18px 24px}
+ #vpo-email-form{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:12px}
+ #vpo-signup-fields:not([hidden]){display:contents}
+ #vpo-invite-field{grid-column:span 2;min-width:0}
+ #vpo-invite-field{margin-bottom:0}
+ #vpo-invite-field .vpo-field-help{display:none}
+ .vpo-access-email{grid-column:1/-1}
+ #vpo-email-form:has(#vpo-signup-fields:not([hidden])) .vpo-access-email,#vpo-email-form:has(#vpo-invite-field:not([hidden])) .vpo-access-email{grid-column:auto}
+ #vpo-email-form>.vpo-access-submit,#vpo-mode-note{grid-column:1/-1}
+}
 
 /* Signed-in identity stays anchored at the bottom of the desktop sidebar. */
 .app-sidebar .sidebar-bottom.vpo-sidebar-account{margin-top:auto;padding:18px 0 0;border-top:1px solid #ffffff1f}
