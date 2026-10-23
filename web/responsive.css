@@ -19,10 +19,16 @@
 #overview-content .report-tabs button{min-width:0;white-space:normal;font-size:12px;line-height:1.35;min-height:42px;padding:8px 0;text-align:left}
 .report-tab-select{display:none;min-width:0}
 .report-tab-select select{width:100%;min-width:0;max-width:100%;min-height:40px;border:1px solid #e3dfec;border-radius:9px;background:#fff;color:#373259;font:inherit;font-size:14px;font-weight:600;padding:8px 30px 8px 11px;text-overflow:ellipsis}
-#overview-content .reports-toolbar{gap:8px 10px;min-width:0;align-items:end}
+#overview-content .reports-toolbar{--report-filter-height:40px;gap:8px 10px;min-width:0;align-items:end}
+.report-period-field{display:flex;flex-direction:column;flex:0 1 210px;min-width:0;max-width:100%}
+#overview-content .reports-toolbar :is(.report-filter-label,.report-filter-fields>label>span){display:block;margin:0 0 6px;font-size:11px;line-height:14px;font-weight:600;color:#716b83}
+#overview-content .report-period-control{width:100%;height:var(--report-filter-height);min-height:var(--report-filter-height);box-sizing:border-box;align-self:auto}
+#overview-content .report-period-control>button{height:100%;min-height:0;flex-shrink:0}
+#overview-content .report-period-control [data-period-toggle]{flex:1;min-width:0;overflow:hidden}
+#overview-content .report-period-control [data-period-toggle]>span:first-of-type{min-width:0;overflow:hidden;text-overflow:ellipsis}
 .report-filter-fields{display:contents}
 #overview-content .report-filter-fields>label{display:block;flex:0 1 210px;min-width:0}
-#overview-content .report-filter-fields select{width:100%;max-width:100%;min-width:0;text-overflow:ellipsis}
+#overview-content .report-filter-fields select{width:100%;max-width:100%;min-width:0;height:var(--report-filter-height);min-height:var(--report-filter-height);box-sizing:border-box;padding-block:7px;text-overflow:ellipsis}
 .report-filter-toggle,.report-filter-done{display:none}
 #overview-content .report-period-note{margin:7px 0 10px;gap:8px;flex-wrap:wrap;font-size:10px}
 #overview-content .report-period-note small{font-size:9px}
@@ -122,6 +128,7 @@
  #overview-content .report-panels>article:has(.wealth-stats) .report-chart-heading{margin-bottom:6px}
 }
 @media(max-width:719px){
+ #overview-content .reports-toolbar{--report-filter-height:44px}
  .overview-active.app-main{padding-bottom:calc(100px + env(safe-area-inset-bottom))}
  #overview-content .report-card{padding:14px;border-radius:18px}
  #overview-content .report-stat-row{gap:10px 14px;align-items:start}
@@ -143,19 +150,20 @@
  #overview-content .report-heading-actions{gap:3px}
  #overview-content .report-heading-actions [data-report-export]{width:38px;min-height:40px;justify-content:center;font-size:0;gap:0}
  #overview-content .report-heading-actions [data-report-export] .icon{width:17px;height:17px}
- #overview-content .reports-toolbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}
- #overview-content .report-period-control{flex:0 1 auto;min-width:0;max-width:calc(100% - 87px);grid-column:auto}
- #overview-content .report-period-control>button{min-height:40px;padding-inline:8px}
+ #overview-content .reports-toolbar{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:8px}
+ #overview-content .report-period-field{min-width:0;max-width:100%;grid-column:1}
+ #overview-content .report-period-control{min-width:0;max-width:100%;grid-column:auto}
+ #overview-content .report-period-control>button{min-height:0;padding-inline:8px}
  #overview-content .report-period-control [data-period-toggle]{overflow:hidden;text-overflow:ellipsis;font-size:12px;gap:5px}
  #overview-content .report-period-control [data-period-toggle]>span:first-of-type{overflow:hidden;text-overflow:ellipsis;min-width:0}
  #overview-content .report-period-control>button[data-period-shift]{min-width:27px}
- .report-filter-toggle{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:40px;min-width:79px;border:1px solid #e3dfec;border-radius:8px;background:white;color:#675783;padding:8px 9px;font:inherit;font-size:12px}
+ .report-filter-toggle{display:inline-flex;align-items:center;justify-content:center;gap:5px;box-sizing:border-box;height:var(--report-filter-height);min-height:var(--report-filter-height);min-width:79px;border:1px solid #e3dfec;border-radius:8px;background:white;color:#675783;padding:8px 9px;font:inherit;font-size:12px}
  .report-filter-toggle[aria-expanded=true]{border-color:#9c8ae4;background:#f1edff}
- #overview-content .report-filter-fields{display:none;flex:1 0 100%;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ #overview-content .report-filter-fields{display:none;grid-column:1/-1;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
  #overview-content .report-filter-fields.is-open{display:grid}
  #overview-content .report-filter-fields>label{min-width:0}
  .report-filter-done{display:block;grid-column:1/-1;justify-self:end;border:0;background:none;color:#6d50bd;min-height:34px;padding:5px 0;font:inherit;font-size:12px;font-weight:600}
- #overview-content .report-filter-fields select{min-height:42px;font-size:16px}
+ #overview-content .report-filter-fields select{font-size:16px}
  #overview-content .report-period-note small{display:none}
  #overview-content .report-card .donut{width:min(var(--report-donut-size,220px),80%);margin-block:8px}
  #overview-content .report-stat-row.wealth-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
