@@ -54,3 +54,20 @@ test('report charts fit their container initially and after resizing without cha
   assert.equal(container.querySelector('svg').getAttribute('viewBox'),'0 0 1500 256');assert.equal(root.querySelector('.report-stat-row').textContent,values);assert.equal(container.querySelector('[aria-pressed=true]').dataset.reportMonth,'2026-10');
  }finally{delete f.window.HTMLElement.prototype.clientWidth;if(originalResize===undefined)delete globalThis.ResizeObserver;else globalThis.ResizeObserver=originalResize;}
 });
+test('compact report selection, filters and month navigation preserve full-period totals and exports',async()=>{
+ const f=fixture(390),{root,event}=f;
+ f.change('report-view-select','income');
+ f.click('[data-period-toggle]');event(f.document.querySelector('[data-period-month="2026-09"][data-period-endpoint=start]'),'click');event(f.document.querySelector('[data-period-apply]'),'click');
+ assert.equal(root.querySelector('.income-matrix').dataset.monthColumns,'1');
+ assert.ok(root.querySelector('.income-matrix thead').textContent.includes('out.'));
+ const totals=root.querySelector('.report-stat-row').textContent,footer=root.querySelector('.income-matrix tfoot').textContent;
+ assert.ok(footer.includes('6.300,00'));
+ f.click('[data-income-month-page="-1"]');assert.ok(root.querySelector('.income-matrix thead').textContent.includes('set.'));
+ assert.equal(root.querySelector('.report-stat-row').textContent,totals);assert.equal(root.querySelector('.income-matrix tfoot').textContent.includes('6.300,00'),true);
+ assert.ok([...root.querySelectorAll('.income-matrix td')].every(cell=>cell.dataset.label));
+ f.click('[data-report-filters]');assert.ok(root.querySelector('.report-filter-fields.is-open'));
+ f.change('report-group','daily');f.click('[data-report-filters]');assert.equal(root.querySelector('.report-filter-fields.is-open'),null);
+ assert.equal(root.querySelector('#report-group').value,'daily');assert.equal(root.querySelector('#report-view-select').value,'income');
+ const create=URL.createObjectURL,revoke=URL.revokeObjectURL;let blob;
+ try{URL.createObjectURL=value=>{blob=value;return 'blob:matrix-test';};URL.revokeObjectURL=()=>{};f.click('[data-report-export]');const csv=await blob.text();assert.ok(csv.includes('2026-09'));assert.ok(csv.includes('2026-10'));}finally{URL.createObjectURL=create;URL.revokeObjectURL=revoke;}
+});
