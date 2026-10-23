@@ -1,4 +1,4 @@
-import {HISTORY_METHODS,planningHistory,applyPlanningHistory,undoPlanningHistory} from './planning-history.js';
+import {HISTORY_METHODS,planningHistory,applyPlanningHistory,undoPlanningHistory} from './planning-history.js?v=vpo-78';
 import {categoryIcon} from './category-icons.js?v=vpo-43';
 
 const esc=value=>String(value).replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));

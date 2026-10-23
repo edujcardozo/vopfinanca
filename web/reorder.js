@@ -13,7 +13,7 @@ export function createReorder({root,onCommit,onCancel,announce}){
   function position(){
     if(!drag?.active)return;const {node,type,y}=drag;
     if(type==='group'){
-      const others=groups().filter(g=>g!==node),before=others.find(g=>{const r=g.getBoundingClientRect();return y<r.top+r.height/2;})||null;insert(node,root,before||root.querySelector('[data-hidden-categories]'));
+      const others=groups().filter(g=>g!==node),before=others.find(g=>{const r=g.getBoundingClientRect();return y<r.top+r.height/2;})||null;insert(node,root,before||root.querySelector('[data-hidden-groups],[data-hidden-categories]'));
     }else{
       const gs=groups(),target=gs.reduce((best,g)=>{const r=g.getBoundingClientRect(),distance=Math.max(r.top-y,y-r.bottom,0);return !best||distance<best.distance?{node:g,distance}:best;},null)?.node;if(!target)return;
       const list=target.querySelector('.category-items'),others=rows(target).filter(r=>r!==node),before=others.find(r=>{const b=r.getBoundingClientRect();return y<b.top+b.height/2;})||null;
@@ -56,7 +56,7 @@ export function createReorder({root,onCommit,onCancel,announce}){
     if(e.key==='Escape'&&drag){e.preventDefault();if(cancel())onCancel();return;}
     const h=e.target.closest('[data-sort-handle]');if(!h||!['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key))return;e.preventDefault();
     const gs=groups(),group=h.closest('[data-sort-group]'),gi=gs.indexOf(group),dir=['ArrowUp','ArrowLeft'].includes(e.key)?-1:1;
-    if(h.dataset.sortHandle==='group'){const other=gs[gi+dir];if(other)root.insertBefore(group,dir<0?other:other.nextElementSibling||root.querySelector('[data-hidden-categories]'));}
+    if(h.dataset.sortHandle==='group'){const other=gs[gi+dir];if(other)root.insertBefore(group,dir<0?other:other.nextElementSibling||root.querySelector('[data-hidden-groups],[data-hidden-categories]'));}
     else{const row=h.closest('[data-sort-category]'),list=row.parentElement,rs=rows(group),ri=rs.indexOf(row),other=rs[ri+dir];if(!['ArrowLeft','ArrowRight'].includes(e.key)&&other)list.insertBefore(row,dir<0?other:other.nextElementSibling);else{const next=gs[gi+dir]?.querySelector('.category-items');if(next)next.insertBefore(row,dir<0?null:next.firstElementChild);}}
     const focus={type:h.dataset.sortHandle,id:h.closest(h.dataset.sortHandle==='group'?'[data-sort-group]':'[data-sort-category]').dataset[h.dataset.sortHandle==='group'?'sortGroup':'sortCategory']};
     onCommit(layout(),h.dataset.sortLabel,focus);

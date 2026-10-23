@@ -1,4 +1,5 @@
-import {currentMonth,validMonth,shiftMonth,getMonth,ensureMonth} from './core.js?v=vpo-73';
+import {currentMonth,validMonth,shiftMonth,getMonth,ensureMonth} from './core.js?v=vpo-78';
+import {isCategoryVisible} from './group-actions.js?v=vpo-78';
 
 export const HISTORY_METHODS=[
   {id:'last-month',title:'Gastos do mês passado',description:'Use o que você realmente gastou em cada categoria.'},
@@ -30,7 +31,7 @@ export function planningHistory(state,target,method,now=currentMonth()){
     for(const tx of month.transactions)if(tx.type==='expense')sums.set(tx.categoryId,(sums.get(tx.categoryId)||0n)+BigInt(tx.amount));
   }
   const assigned=getMonth(state,target).assigned;
-  const rows=state.categories.filter(category=>!category.hidden&&(sums.get(category.id)||0n)>0n).map(category=>{
+  const rows=state.categories.filter(category=>isCategoryVisible(state,category)&&(sums.get(category.id)||0n)>0n).map(category=>{
     const sum=sums.get(category.id),divisor=BigInt(count);
     const suggested=Number((sum+divisor/2n)/divisor);
     if(!Number.isSafeInteger(suggested)||suggested>amountLimit)throw new Error('Há valores acima do limite do planejado neste período. Use outro período ou edite as categorias individualmente.');

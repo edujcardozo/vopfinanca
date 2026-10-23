@@ -1,4 +1,4 @@
-import {validateState,createState,ensureMonth,payeeKey} from './core.js?v=vpo-73';
+import {validateState,createState,ensureMonth,payeeKey} from './core.js?v=vpo-78';
 const missing=Symbol('missing');
 const clone=v=>v===missing?missing:structuredClone(v);
 const plain=v=>v!==null&&typeof v==='object'&&!Array.isArray(v)&&v!==missing;

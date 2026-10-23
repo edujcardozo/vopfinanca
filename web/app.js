@@ -1,23 +1,24 @@
 import {createDialogPages} from './dialog-pages.js?v=vpo-73';
 import {coupleSummary,sharingLabel,expenseShares,saveSettlement} from './couple-core.js?v=vpo-73';
 import {coupleCard,coupleDetail} from './couple-ui.js?v=vpo-40';
-import {mobileHome} from './mobile-home.js?v=vpo-43';
+import {mobileHome} from './mobile-home.js?v=vpo-78';
 import {deleteCategory,categoryHasActivity} from './category-actions.js?v=vpo-34';
-import {matchingCategories} from './category-search.js?v=vpo-43';
+import {deleteGroup,setGroupHidden,visibleGroups} from './group-actions.js?v=vpo-78';
+import {matchingCategories} from './category-search.js?v=vpo-78';
 import {categoryBudgetDetails,categorySpendingLabel} from './budget-progress.js?v=vpo-34';
 import {categoryIcon} from './category-icons.js?v=vpo-43';
 import {mountPayeeAutocomplete} from './payee-autocomplete.js?v=vpo-34';
-import {applyLayout} from './reorder-core.js?v=vpo-73';
-import {createReorder} from './reorder.js?v=vpo-34';
-import {STORAGE_KEY,formatMoney,parseMoney,today,currentMonth,validDate,validMonth,shiftMonth,id,createState,getMonth,ensureMonth,totals,monthlyPlanTotals,monthlyCategoryTotals,validateState,dateOffset,formatTransactionDate,payeeHistory,matchingPayees,payeeKey,searchPayeeKey,saveTransaction,groupsFor,createGroup,renameGroup,moveCategory} from './core.js?v=vpo-73';
-import {createReportsUI} from './reports-ui.js?v=vpo-76';
+import {applyLayout} from './reorder-core.js?v=vpo-78';
+import {createReorder} from './reorder.js?v=vpo-78';
+import {STORAGE_KEY,formatMoney,parseMoney,today,currentMonth,validDate,validMonth,shiftMonth,id,createState,getMonth,ensureMonth,totals,monthlyPlanTotals,monthlyCategoryTotals,validateState,dateOffset,formatTransactionDate,payeeHistory,matchingPayees,payeeKey,searchPayeeKey,saveTransaction,groupsFor,createGroup,renameGroup,moveCategory} from './core.js?v=vpo-78';
+import {createReportsUI} from './reports-ui.js?v=vpo-78';
 import {wealthAt} from './reports-core.js?v=vpo-73';
-import {createCloudSync} from './cloud-sync.js?v=vpo-73';
+import {createCloudSync} from './cloud-sync.js?v=vpo-78';
 import {createSharingUI} from './sharing-ui.js?v=vpo-34';
 import {platform} from './platform.js';
 import {householdForSharing,inactiveHousehold} from './household-context.js';
 import {accountUsername} from './account-identity.js';
-import {createPlanningHistoryUI,historyIcon} from './planning-history-ui.js?v=vpo-43';
+import {createPlanningHistoryUI,historyIcon} from './planning-history-ui.js?v=vpo-78';
 import {createPlanningHistoryIntro} from './planning-history-intro.js';
 import {createSavingsGoalsUI} from './savings-goals-ui.js?v=vpo-73';
 import {revealTransactionComposer} from './transaction-focus.js';
@@ -170,14 +171,14 @@ function renderBudget(){
   $('#categories-list').classList.add('direct-reorder');
   $('#view-budget').classList.toggle('mobile-structure-open',mobileStructure);$('[data-mobile-structure]').setAttribute('aria-expanded',String(mobileStructure));
   renderBudgetSummary();
-  $('#categories-list').innerHTML=groupsFor(state).map(({id:key,name:label})=>{
+  $('#categories-list').innerHTML=visibleGroups(state).map(({id:key,name:label})=>{
     const cats=state.categories.filter(c=>!c.hidden&&c.group===key);
     const sum=cats.reduce((a,c)=>a+monthlyCategoryTotals(state,selectedMonth,c.id).available,0),assigned=cats.reduce((a,c)=>a+monthlyCategoryTotals(state,selectedMonth,c.id).assigned,0),folded=collapsedGroups.has(key);
-    return `<section class="category-group" data-sort-group="${esc(key)}"><div class="group-header">${sortHandle('group',label)}<button type="button" class="group-collapse" data-collapse-group="${esc(key)}" aria-expanded="${!folded}" aria-label="${folded?'Expandir':'Recolher'} ${esc(label)}"><svg class="group-collapse-chevron" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg></button><h3><button type="button" class="group-name" data-edit-group="${esc(key)}" aria-label="Renomear grupo ${esc(label)}">${esc(label)}</button></h3><div class="group-header-actions"><span class="group-planned-total"><small>Planejado</small><strong>${money(assigned)}</strong></span><span class="group-total"><small>Disponível</small><strong>${money(sum)}</strong></span><button type="button" class="icon-button" data-add-category-group="${esc(key)}" aria-label="Adicionar categoria em ${esc(label)}">${icon('plus')}</button><button type="button" class="icon-button" data-edit-group="${esc(key)}" aria-label="Editar nome do grupo ${esc(label)}">${icon('edit')}</button></div></div><div class="category-items" ${folded?'hidden':''}>${cats.map(c=>{
+    return `<section class="category-group" data-sort-group="${esc(key)}"><div class="group-header">${sortHandle('group',label)}<button type="button" class="group-collapse" data-collapse-group="${esc(key)}" aria-expanded="${!folded}" aria-label="${folded?'Expandir':'Recolher'} ${esc(label)}"><svg class="group-collapse-chevron" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg></button><h3><button type="button" class="group-name" data-edit-group="${esc(key)}" aria-label="Opções do grupo ${esc(label)}">${esc(label)}</button></h3><div class="group-header-actions"><span class="group-planned-total"><small>Planejado</small><strong>${money(assigned)}</strong></span><span class="group-total"><small>Disponível</small><strong>${money(sum)}</strong></span><button type="button" class="icon-button" data-add-category-group="${esc(key)}" aria-label="Adicionar categoria em ${esc(label)}">${icon('plus')}</button><button type="button" class="icon-button" data-edit-group="${esc(key)}" aria-label="Opções do grupo ${esc(label)}">${icon('edit')}</button></div></div><div class="category-items" ${folded?'hidden':''}>${cats.map(c=>{
       const ct=monthlyCategoryTotals(state,selectedMonth,c.id);
       return `<div class="category-sort-row" data-sort-category="${esc(c.id)}">${sortHandle('category',c.name)}<div class="category-row" data-category="${esc(c.id)}" aria-label="Editar ${esc(c.name)}, disponível ${money(ct.available)}"><span class="category-info"><span class="category-emoji" aria-hidden="true">${esc(categoryIcon(c.name))}</span><span><span class="category-heading"><button type="button" class="category-name category-menu-trigger" data-category-menu="${esc(c.id)}" aria-haspopup="dialog" aria-expanded="false">${esc(c.name)}</button>${categorySpendingLabel(ct,state.hideBalances)}</span><span class="category-budget-details">${categoryBudgetDetails(c,ct,state.hideBalances)}</span></span></span><span class="category-assigned"><input type="text" class="assigned-input" data-assigned-input="${esc(c.id)}" value="${money(ct.assigned)}" inputmode="decimal" autocomplete="off" spellcheck="false" maxlength="20" aria-label="Planejado de ${esc(c.name)}" aria-describedby="assigned-help"></span><button type="button" class="category-available category-value-edit" aria-label="Editar valores de ${esc(c.name)}"><span class="amount-badge ${ct.available<0?'negative':!ct.available?'zero':''}">${money(ct.available)}</span></button></div></div>`;
     }).join('')}</div>${!cats.length&&!folded?`<div class="empty-group"><p>Seu grupo está pronto. Qual categoria vem primeiro?</p><button type="button" class="text-link" data-add-category-group="${esc(key)}">${icon('plus')} Adicionar categoria</button></div>`:''}</section>`;
-  }).join('')+hiddenCategoriesHTML();
+  }).join('')+hiddenGroupsHTML()+hiddenCategoriesHTML();
   bindAssignedInputs();
   queueMicrotask(()=>historyIntro?.refresh());
 }
@@ -304,17 +305,39 @@ function confirmAction(title,message,button,action){
   openDialog(title,`<p class="confirm-text">${esc(message)}</p><div class="confirm-actions"><button class="subtle-button" id="confirm-cancel">Cancelar</button><button class="btn btn-blue" id="confirm-accept">${esc(button)}</button></div>`,'UM NOVO PASSO');
   $('#confirm-cancel').onclick=closeDialog;$('#confirm-accept').onclick=()=>{closeDialog();action();};
 }
-function groupOptions(selected){return groupsFor(state).map(g=>`<option value="${esc(g.id)}" ${g.id===selected?'selected':''}>${esc(g.name)}</option>`).join('');}
+function groupOptions(selected){return groupsFor(state).filter(g=>!g.hidden||g.id===selected).map(g=>`<option value="${esc(g.id)}" ${g.id===selected?'selected':''}>${esc(g.name)}${g.hidden?' (oculto)':''}</option>`).join('');}
 
 function groupDialog(groupId=null){
   const group=groupId?groupsFor(state).find(g=>g.id===groupId):null;
   if(groupId&&!group)return toast('Este grupo não está mais disponível.');
-  openDialog(group?'Editar grupo.':'Um novo grupo.',`<p class="group-dialog-intro">${group?'Escolha um nome que faça sentido para você. Suas categorias, valores e lançamentos serão mantidos.':'Organize categorias relacionadas em um só lugar. Por exemplo: Casa, Família ou Viagens.'}</p><form id="group-form"><label class="form-group"><span>Nome do grupo</span><input name="name" value="${esc(group?.name||'')}" placeholder="Ex.: Casa e família" maxlength="70" required autocomplete="off" autocapitalize="sentences"></label><p id="form-error" class="form-error" role="alert" hidden></p><button class="btn btn-blue form-submit" type="submit">${group?'Salvar nome':'Criar grupo'} ${icon(group?'check':'plus')}</button></form>`,'SEU PLANO, DO SEU JEITO');
+  openDialog(group?'Editar grupo.':'Um novo grupo.',`<p class="group-dialog-intro">${group?'Renomeie ou organize o grupo. Seus valores e lançamentos serão mantidos.':'Organize categorias relacionadas em um só lugar. Por exemplo: Casa, Família ou Viagens.'}</p><form id="group-form"><label class="form-group"><span>Nome do grupo</span><input name="name" value="${esc(group?.name||'')}" placeholder="Ex.: Casa e família" maxlength="70" required autocomplete="off" autocapitalize="sentences"></label><p id="form-error" class="form-error" role="alert" hidden></p><button class="btn btn-blue form-submit" type="submit">${group?'Salvar nome':'Criar grupo'} ${icon(group?'check':'plus')}</button>${group?`<div class="group-management-actions"><button type="button" data-hide-group="${esc(group.id)}">${icon(group.hidden?'eye':'eye-off')}<span>${group.hidden?'Reexibir grupo':'Ocultar grupo'}</span></button><button type="button" class="group-remove-action" data-remove-group="${esc(group.id)}">${icon('trash')}<span>Excluir grupo</span></button></div>`:''}</form>`,'SEU PLANO, DO SEU JEITO');
   $('#group-form').onsubmit=e=>{
     e.preventDefault();const name=new FormData(e.currentTarget).get('name');
     try{if(group)renameGroup(state,group.id,name);else createGroup(state,name);}catch(error){return formError(error.message);}
     persist();closeDialog();renderAll();toast(group?'Nome do grupo atualizado.':'Grupo criado. Use o + para adicionar categorias.');
   };
+  if(group){
+    $('[data-hide-group]').onclick=()=>{
+      const hidden=!group.hidden,planId=state.planId;
+      try{setGroupHidden(state,group.id,hidden);}catch(error){return formError(error.message);}
+      collapsedGroups.delete(group.id);persist();closeDialog();renderAll();
+      toast(hidden?'Grupo e categorias ocultos. Valores e histórico mantidos.':'Grupo de volta ao plano.',hidden?()=>{if(state.planId!==planId||!groupsFor(state).some(g=>g.id===group.id))return;setGroupHidden(state,group.id,false);collapsedGroups.delete(group.id);persist();renderAll();}:undefined);
+    };
+    $('[data-remove-group]').onclick=()=>deleteGroupDialog(group.id);
+  }
+}
+function hiddenGroupsHTML(){const groups=groupsFor(state).filter(group=>group.hidden);return groups.length?`<button type="button" class="hidden-categories-button hidden-groups-button" data-hidden-groups>Grupos ocultos <span>${groups.length}</span></button>`:'';}
+function hiddenGroupsDialog(){
+  openDialog('Grupos ocultos',`<p class="dialog-note">O histórico e os valores continuam no plano. Reexibir o grupo mantém as categorias que você já havia ocultado individualmente.</p><div class="hidden-group-list" data-dialog-flow>${groupsFor(state).filter(group=>group.hidden).map(group=>{const count=state.categories.filter(c=>c.group===group.id).length;return `<div class="hidden-group-row"><span><strong>${esc(group.name)}</strong><small>${count} ${count===1?'categoria':'categorias'}</small></span><div><button type="button" class="icon-button" data-edit-group="${esc(group.id)}" aria-label="Editar grupo ${esc(group.name)}">${icon('edit')}</button><button type="button" class="subtle-button" data-show-group="${esc(group.id)}">Reexibir</button></div></div>`;}).join('')}</div>`);
+  $$('[data-show-group]').forEach(button=>button.onclick=()=>{try{setGroupHidden(state,button.dataset.showGroup,false);}catch(error){return toast(error.message);}collapsedGroups.delete(button.dataset.showGroup);persist();closeDialog();renderAll();toast('Grupo de volta ao plano.');});
+}
+function deleteGroupDialog(groupId){
+  const group=groupsFor(state).find(item=>item.id===groupId);if(!group)return toast('Este grupo não está mais disponível.');
+  if(groupsFor(state).length===1)return toast('Mantenha pelo menos um grupo no seu plano.');
+  const count=state.categories.filter(category=>category.group===groupId).length;
+  openDialog('Excluir '+group.name+'?',`<form id="delete-group-form"><p class="confirm-text">${count?`${count===1?'A categoria será movida':'As '+count+' categorias serão movidas'} para o grupo escolhido. Todas as categorias, inclusive as ocultas, manterão seus valores planejados e lançamentos de todos os meses.`:'Este grupo está vazio. Nenhuma categoria ou lançamento será alterado.'}</p>${count?`<label class="form-group"><span>Mover categorias para</span><select name="destination" required><option value="">Selecione outro grupo</option>${groupsFor(state).filter(item=>item.id!==groupId).map(item=>`<option value="${esc(item.id)}">${esc(item.name)}${item.hidden?' (oculto)':''}</option>`).join('')}</select></label>`:''}<p id="form-error" class="form-error" role="alert" hidden></p><div class="confirm-actions"><button type="button" class="subtle-button" data-cancel-group-delete>Cancelar</button><button type="submit" class="btn btn-blue">${count?'Mover e excluir grupo':'Excluir grupo'}</button></div></form>`,'HISTÓRICO PRESERVADO');
+  $('[data-cancel-group-delete]').onclick=()=>groupDialog(groupId);
+  $('#delete-group-form').onsubmit=event=>{event.preventDefault();try{deleteGroup(state,groupId,event.currentTarget.elements.destination?.value);}catch(error){return formError(error.message);}collapsedGroups.delete(groupId);persist();closeDialog();renderAll();toast(count?'Grupo excluído. Categorias e histórico preservados.':'Grupo vazio excluído.');};
 }
 function closeComposer(){$('#transaction-composer').hidden=true;$('#transaction-composer').replaceChildren();}
 function transactionDialog(type='expense',transactionId=null,options={}){
@@ -428,9 +451,10 @@ function categoryMenu(categoryId,trigger){
 }
 window.addEventListener('resize',()=>{closeCategoryMenu(false);positionMonthRow();});
 document.addEventListener('scroll',e=>{if(!e.target.closest?.('#category-menu'))closeCategoryMenu(false);},true);
-function hiddenCategoriesHTML(){const cats=state.categories.filter(c=>c.hidden);return cats.length?`<button type="button" class="hidden-categories-button" data-hidden-categories>Categorias ocultas <span>${cats.length}</span></button>`:'';}
+function individuallyHiddenCategories(){const active=new Set(visibleGroups(state).map(group=>group.id));return state.categories.filter(category=>category.hidden&&active.has(category.group));}
+function hiddenCategoriesHTML(){const cats=individuallyHiddenCategories();return cats.length?`<button type="button" class="hidden-categories-button" data-hidden-categories>Categorias ocultas <span>${cats.length}</span></button>`:'';}
 function hiddenCategoriesDialog(){
-  openDialog('Categorias ocultas',`<p class="dialog-note">Os valores e o histórico continuam no plano. Reexiba uma categoria quando precisar.</p><div class="hidden-category-list">${state.categories.filter(c=>c.hidden).map(c=>`<button type="button" class="subtle-button" data-unhide="${esc(c.id)}"><span>${categoryIcon(c.name)} ${esc(c.name)}</span><strong>Reexibir</strong></button>`).join('')}</div>`);
+  openDialog('Categorias ocultas',`<p class="dialog-note">Os valores e o histórico continuam no plano. Reexiba uma categoria quando precisar.</p><div class="hidden-category-list">${individuallyHiddenCategories().map(c=>`<button type="button" class="subtle-button" data-unhide="${esc(c.id)}"><span>${categoryIcon(c.name)} ${esc(c.name)}</span><strong>Reexibir</strong></button>`).join('')}</div>`);
   $$('[data-unhide]').forEach(b=>b.onclick=()=>{const c=state.categories.find(c=>c.id===b.dataset.unhide);delete c.hidden;persist();closeDialog();renderAll();toast('Categoria de volta ao plano.');});
 }
 function deleteCategoryDialog(categoryId){
@@ -461,7 +485,8 @@ function categoryDialog(categoryId){
     persist();closeDialog();renderAll();toast(totals(state,selectedMonth).toAssign<0?'Plano salvo. Reduza alguma categoria ou registre uma entrada para cobrir o valor.':'Categoria atualizada. Seu plano acompanha você.');
   };
 }
-function newCategoryDialog(selectedGroup=groupsFor(state)[0].id){
+function newCategoryDialog(selectedGroup=visibleGroups(state)[0]?.id){
+  if(!selectedGroup)return toast('Crie um grupo ou reexiba um grupo oculto antes de adicionar categorias.');
   openDialog('Nova categoria',`<form id="new-category-form"><label class="form-group"><span>Nome da categoria</span><span class="new-category-name-control"><span id="suggested-category-icon" aria-hidden="true">${categoryIcon('')}</span><input name="name" placeholder="Ex.: reforma, estudos, aniversário" required maxlength="70" autocomplete="off"></span></label><div class="new-category-details"><label class="form-group"><span>Grupo</span><select name="group">${groupOptions(selectedGroup)}</select></label><label class="form-group"><span>Planejado</span><input name="assigned" inputmode="decimal" placeholder="0,00" maxlength="20" aria-describedby="new-category-help"></label></div><p class="new-category-help" id="new-category-help">O ícone acompanha o nome. O planejado pode começar em zero.</p><p id="form-error" class="form-error" role="alert" hidden></p><button class="btn btn-blue form-submit" type="submit">Criar categoria ${icon('plus')}</button></form>`,`SEU PLANO · ${esc(monthName(selectedMonth))}`,'new-category-dialog');
   $('#new-category-form').elements.name.oninput=e=>{$('#suggested-category-icon').textContent=categoryIcon(e.target.value);};
   $('#new-category-form').onsubmit=e=>{
@@ -536,6 +561,7 @@ document.addEventListener('click',e=>{
   const homeCategory=e.target.closest('[data-home-category]');if(homeCategory){goPlan('budget');setTimeout(()=>document.querySelector(`[data-assigned-input="${homeCategory.dataset.homeCategory}"]`)?.focus(),80);return;}
   const nav=e.target.closest('[data-view]');if(nav){goPlan(nav.dataset.view);return;}
   const groupEdit=e.target.closest('[data-edit-group]');if(groupEdit){groupDialog(groupEdit.dataset.editGroup);return;}
+  if(e.target.closest('[data-hidden-groups]')){hiddenGroupsDialog();return;}
   const groupAdd=e.target.closest('[data-add-category-group]');if(groupAdd){newCategoryDialog(groupAdd.dataset.addCategoryGroup);return;}
   const menu=e.target.closest('[data-category-menu]');if(menu){categoryMenu(menu.dataset.categoryMenu,menu);return;}
   if(e.target.closest('[data-hidden-categories]')){hiddenCategoriesDialog();return;}

@@ -170,7 +170,8 @@ export function validateState(raw){
   const groupIds=new Set();
   const groups=inputGroups.map(g=>{
     if(!plain(g)||!safeId(g.id)||groupIds.has(g.id)||typeof g.name!=='string'||!g.name.trim()||g.name.length>70)fail();
-    groupIds.add(g.id);return {id:g.id,name:g.name.trim()};
+    if(g.hidden!==undefined&&typeof g.hidden!=='boolean')fail();
+    groupIds.add(g.id);return {id:g.id,name:g.name.trim(),...(g.hidden?{hidden:true}:{})};
   });
   const ids=new Set(),transactionIds=new Set();
   const categories=raw.categories.map(c=>{

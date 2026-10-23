@@ -1,0 +1,16 @@
+.group-management-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:16px;padding-top:15px;border-top:1px solid #ebe7f2}
+.group-management-actions>button{display:flex;align-items:center;justify-content:center;gap:8px;min-width:0;min-height:44px;padding:10px;border:1px solid #e0dcf0;border-radius:10px;background:#f5f2fd;color:#60529c;font:inherit;font-size:13px;font-weight:550;line-height:1.4}
+.group-management-actions>button>span{min-width:0;overflow-wrap:anywhere}
+.group-management-actions .icon{width:16px;height:16px;flex:0 0 16px}
+.group-management-actions>.group-remove-action{background:#fff6f7;border-color:#f1dfe4;color:#a34e62}
+.hidden-group-list{display:grid;gap:8px;min-width:0}
+.hidden-group-row{display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:0;padding:11px 12px;border:1px solid #e7e2f0;border-radius:11px;background:#fcfbff}
+.hidden-group-row>span{min-width:0;flex:1}
+.hidden-group-row strong{display:block;font-size:13px;line-height:1.4;font-weight:600;overflow-wrap:anywhere}
+.hidden-group-row small{display:block;margin-top:3px;font-size:11px;line-height:1.4;color:#82798e}
+.hidden-group-row>div{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.hidden-group-row .icon-button{width:36px;min-height:44px;color:#807493}
+.hidden-group-row .subtle-button{min-height:44px;padding:9px 11px;font-size:12px;color:#6353ab}
+.hidden-groups-button{gap:12px}
+@media(max-width:359px){.hidden-group-row{gap:7px;padding-inline:9px}.hidden-group-row>div{gap:3px}.hidden-group-row .icon-button{width:30px}.group-management-actions>button{gap:6px;font-size:12px}}
+@media print{.hidden-groups-button{display:none!important}}

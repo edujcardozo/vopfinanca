@@ -42,3 +42,10 @@ test('historical planning actions are protected by the read-only subscription gu
   for(const selector of ['#planning-history','[data-options-history]','[data-history-method]','[data-history-apply]'])assert.equal(event(document.querySelector(selector),'click').defaultPrevented,true);
   assert.equal(shown,4);guard.destroy();
 });
+test('read-only access permits viewing hidden groups but protects hiding, restoring and deleting them',()=>{
+ const {document,event}=dom('<section id="app"><main id="app-main"><button data-hidden-groups>Ver ocultos</button></main></section><dialog><button data-hide-group>Ocultar</button><button data-remove-group>Excluir</button><button data-show-group>Reexibir</button><form id="delete-group-form"></form></dialog>');
+ let shown=0;const guard=mountBillingAccess({root:document.querySelector('#app'),showBilling:()=>shown++,documentObject:document});guard.update({enabled:true,canUse:false});
+ assert.equal(event(document.querySelector('[data-hidden-groups]'),'click').defaultPrevented,false);
+ for(const selector of ['[data-hide-group]','[data-remove-group]','[data-show-group]'])assert.equal(event(document.querySelector(selector),'click').defaultPrevented,true);
+ assert.equal(event(document.querySelector('#delete-group-form'),'submit').defaultPrevented,true);assert.equal(shown,4);guard.destroy();
+});
