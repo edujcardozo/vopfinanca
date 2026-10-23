@@ -120,3 +120,11 @@ E-mails automáticos de lembrete de fim do teste não foram implementados. Notif
 - [Asaas — consulta por checkout/assinatura](https://docs.asaas.com/reference/listar-cobrancas)
 - [Asaas — remoção e cobranças pendentes](https://docs.asaas.com/reference/remover-assinatura)
 - [Netlify — publicar funções](https://docs.netlify.com/build/functions/get-started/)
+
+## Pix manual
+
+Com `manual-pix.sql`, clientes podem pagar a mensalidade com QR Code estático BR Code (Banco Central, Manual de Padrões 2.10.0, seções 2.5.1/2.6.3), ou copiar o mesmo payload no celular. O QR é calculado localmente, sem enviar a chave a um serviço externo de imagens. O botão WhatsApp usa o link oficial `wa.me`, com uma mensagem de identificação da conta; o cliente anexa e envia o comprovante.
+
+A confirmação é exclusiva do administrador, após conferência no banco, pelo endpoint `/api/access/pix`. Uma chave idempotente e a versão do período impedem repetição de confirmação e concorrência com uma lista antiga. Datas, preço e permissões vêm do servidor. O registro fica em `manual_pix_payments`, com RLS e sem acesso direto para clientes. Pix confirmado concede um mês a partir do maior entre agora, fim do teste e fim do período já pago. Não cria uma cobrança ou pagamento fictício no Asaas.
+
+Links de referência: https://www.bcb.gov.br/content/estabilidadefinanceira/pix/Regulamento_Pix/II_ManualdePadroesparaIniciacaodoPix.pdf e https://faq.whatsapp.com/5913398998672934/?locale=pt_BR.
