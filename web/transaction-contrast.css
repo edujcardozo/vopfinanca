@@ -1,0 +1,50 @@
+/* Keep the violet palette while giving metadata and controls clearer contrast. */
+.transactions-active{--tx-ink:#28234e;--tx-secondary:#5b566f;--tx-muted:#625d76;text-rendering:optimizeLegibility}
+.transactions-active .tx-date{color:#504667;font-weight:650}
+.transactions-active .tx-row{border-color:#d9d5e5}
+.transactions-active .tx-info strong{color:var(--tx-ink);font-weight:650}
+.transactions-active .tx-info small{color:var(--tx-secondary);font-size:12px;font-weight:500;line-height:1.5}
+.transactions-active .tx-person-tag{color:var(--tx-muted);font-size:12px;font-weight:450;line-height:1.5}
+.transactions-active .tx-person-tag.unclassified{color:#845d32}
+.transactions-active .tx-info .tx-memo{color:var(--tx-muted);font-size:12px;line-height:1.5}
+.transactions-active .tx-amount{color:var(--tx-ink);font-size:14px;font-weight:700;line-height:1.4;font-variant-numeric:tabular-nums lining-nums}
+.transactions-active .tx-amount.income{color:#286b47}
+.transactions-active .tx-delete{color:#776b8d}
+.transactions-active .tx-icon{background:#eeebff;color:#5844ae}
+
+.transactions-active .transaction-tools .search-box,.transactions-active .transaction-tools .couple-filter select{border-color:#bdb5cf;background:#fff;box-shadow:none}
+.transactions-active .transaction-tools .search-box input{color:var(--tx-ink);font-weight:450}
+.transactions-active .transaction-tools .search-box input::placeholder{color:#6b637f;opacity:1}
+.transactions-active .transaction-tools .search-box .icon{color:#716485}
+.transactions-active .transaction-tools .couple-filter select{color:#48405f;font-weight:550}
+.transactions-active .transaction-tools .filter-tabs{border-color:#c9c1dc;background:#ede9f7;box-shadow:none}
+.transactions-active .transaction-tools .filter-tabs button{color:#5c5276;font-weight:600}
+.transactions-active .transaction-tools .filter-tabs button.active{color:#fff;background:var(--blue);font-weight:650;box-shadow:0 1px 3px #3b368b18}
+.transactions-active .transaction-tools :is(.search-box:focus-within,.couple-filter select:focus-visible){outline:2px solid var(--blue);outline-offset:2px}
+
+.transactions-active .couple-header-summary{border-color:#c9c0de;background:#f9f7ff;box-shadow:none}
+.transactions-active .couple-header-label strong{color:#413962;font-weight:650}
+.transactions-active .couple-header-label small{color:#655b7a}
+.transactions-active .couple-header-people>span[aria-hidden],.transactions-active .couple-header-arrow{color:#796a94}
+.transactions-active .couple-header-summary>b{background:#eae3ff;color:#4f40a4}
+.transactions-active .couple-header-summary.balanced>b{background:#eaf3e3;color:#3e6a37}
+.transactions-active .app-header .device-label{color:#625c75}
+.transactions-active .app-header-actions>.icon-button{border-color:#c7c0d7;color:#6a5e84}
+#transactions-desktop-month-slot .month-title{color:var(--tx-ink)}
+#transactions-desktop-month-slot .month-control .icon-button{border-color:#c7c0d7;color:#6a5e84}
+#transactions-desktop-month-slot #today-month{border-color:#c7c0d7;background:#f5f2ff;color:#5446a3}
+
+@media(min-width:720px){.transactions-active .tx-info strong{font-size:14px}}
+@media(max-width:719px){
+ .transactions-active .tx-row{border-color:#ded7ca}
+ .transactions-active .tx-info .tx-category-tag{background:#efeaf8;color:#514765}
+ .transactions-active .tx-info .tx-category-tag.income{background:#e8f3df;color:#355f31}
+ .transactions-active .tx-icon{background:#eeebff}
+ .transactions-active .transaction-tools .filter-tabs{background:#ede9e2;border-color:#c6bfcf}
+}
+@media(hover:hover){
+ .transactions-active .tx-row:hover{background:#fcfbff}
+ .transactions-active .tx-delete:hover{color:#9c4158;background:#fff0f3;border-radius:8px}
+ .transactions-active .transaction-tools .filter-tabs button:hover:not(.active){color:#413363;background:#e3ddf2}
+ .transactions-active .couple-header-summary:hover{border-color:#afa0cf;background:#f2edff}
+}
