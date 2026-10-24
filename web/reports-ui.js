@@ -1,4 +1,5 @@
-import {donutSvg} from './vector-charts.js?v=vpo-75';
+import {donutSvg} from './vector-charts.js?v=vpo-80';
+import {renderDonutCanvas} from './donut-renderer.js?v=vpo-80';
 import {createReportPeriod} from './report-period.js?v=vpo-34';
 import {categoryBudgetDetails} from './budget-progress.js?v=vpo-34';
 import {categoryIcon} from './category-icons.js?v=vpo-43';
@@ -93,6 +94,8 @@ export function createReportsUI({root,getState,getEndMonth,onEditWealth,onToggle
     const available=viewportHeight()?viewportHeight()-Math.max(0,card.getBoundingClientRect().top)-head-padding-after:320;
     const size=Math.floor(Math.max(120,Math.min(320,card.clientWidth-padding,available)));
     root.style.setProperty('--report-donut-size',size+'px');root.style.setProperty('--report-ranking-height',Math.max(112,size+head-80)+'px');
+    const entries=breakdownMode==='groups'?lastData.groupSpending:lastData.spending;
+    renderDonutCanvas(donut.querySelector('canvas'),entries.map(entry=>entry.spent),colors,{pixelRatio:window.devicePixelRatio||1});
   }
   function fitCharts(){
     chartObserver?.disconnect();
@@ -128,7 +131,7 @@ export function createReportsUI({root,getState,getEndMonth,onEditWealth,onToggle
   function breakdown(data){
     const entries=breakdownMode==='groups'?data.groupSpending:data.spending;
     const selected=data.spending.find(c=>c.id===categoryDetail);
-    return `<div class="report-breakdown-grid"><article class="overview-card report-card breakdown-chart"><header class="report-chart-heading">${metric('Gastos no período',m(data.filteredExpense))}<div class="report-segmented" role="group" aria-label="Agrupar distribuição"><button data-breakdown-mode="categories" aria-pressed="${breakdownMode==='categories'}">Categorias</button><button data-breakdown-mode="groups" aria-pressed="${breakdownMode==='groups'}">Grupos</button></div></header>${entries.length?`<div class="donut" role="img" aria-label="Gastos no período ${m(data.filteredExpense)}; detalhamento ao lado" >${donutSvg(entries.map(c=>c.spent),colors)}<div class="donut-center"><span>Total de gastos</span><strong>${m(data.filteredExpense)}</strong></div></div>`:empty('Nenhuma despesa neste filtro.','Escolha outro período, grupo ou categoria.')}</article><article class="overview-card report-card breakdown-ranking"><header><h3>${breakdownMode==='groups'?'Grupos':'Categorias'}</h3><span>Total gasto</span></header><div class="spending-legend">${entries.map((c,i)=>`<button class="report-ranking-row ${categoryDetail===c.id?'selected':''}" ${breakdownMode==='groups'?`data-report-group="${esc(c.id)}"`:`data-report-category="${esc(c.id)}" aria-expanded="${categoryDetail===c.id}"`}><span><i style="background:${colors[i%colors.length]}"></i>${esc(c.name)}</span><strong>${m(c.spent)}</strong><span class="report-rank-track"><i style="width:${c.spent/data.filteredExpense*100}%;background:${colors[i%colors.length]}"></i></span><small>${pct(c.spent/data.filteredExpense*100)}</small></button>`).join('')||'<p class="report-note">Sem gastos no período.</p>'}</div><p class="report-note">${breakdownMode==='groups'?'Selecione um grupo para ver suas categorias.':'Selecione uma categoria para ver e editar os lançamentos.'}</p>${selected?transactionList(transactions(data).filter(t=>t.type==='expense'&&t.categoryId===selected.id),selected.name):''}</article></div>${plannedSpending()}`;
+    return `<div class="report-breakdown-grid"><article class="overview-card report-card breakdown-chart"><header class="report-chart-heading">${metric('Gastos no período',m(data.filteredExpense))}<div class="report-segmented" role="group" aria-label="Agrupar distribuição"><button data-breakdown-mode="categories" aria-pressed="${breakdownMode==='categories'}">Categorias</button><button data-breakdown-mode="groups" aria-pressed="${breakdownMode==='groups'}">Grupos</button></div></header>${entries.length?`<div class="donut" role="img" aria-label="Gastos no período ${m(data.filteredExpense)}; detalhamento ao lado" >${donutSvg(entries.map(c=>c.spent),colors)}<canvas class="report-donut-canvas" aria-hidden="true"></canvas><div class="donut-center"><span>Total de gastos</span><strong>${m(data.filteredExpense)}</strong></div></div>`:empty('Nenhuma despesa neste filtro.','Escolha outro período, grupo ou categoria.')}</article><article class="overview-card report-card breakdown-ranking"><header><h3>${breakdownMode==='groups'?'Grupos':'Categorias'}</h3><span>Total gasto</span></header><div class="spending-legend">${entries.map((c,i)=>`<button class="report-ranking-row ${categoryDetail===c.id?'selected':''}" ${breakdownMode==='groups'?`data-report-group="${esc(c.id)}"`:`data-report-category="${esc(c.id)}" aria-expanded="${categoryDetail===c.id}"`}><span><i style="background:${colors[i%colors.length]}"></i>${esc(c.name)}</span><strong>${m(c.spent)}</strong><span class="report-rank-track"><i style="width:${c.spent/data.filteredExpense*100}%;background:${colors[i%colors.length]}"></i></span><small>${pct(c.spent/data.filteredExpense*100)}</small></button>`).join('')||'<p class="report-note">Sem gastos no período.</p>'}</div><p class="report-note">${breakdownMode==='groups'?'Selecione um grupo para ver suas categorias.':'Selecione uma categoria para ver e editar os lançamentos.'}</p>${selected?transactionList(transactions(data).filter(t=>t.type==='expense'&&t.categoryId===selected.id),selected.name):''}</article></div>${plannedSpending()}`;
   }
   function spending(data){
     const average=data.filteredExpense/data.series.length;
@@ -210,5 +213,8 @@ export function createReportsUI({root,getState,getEndMonth,onEditWealth,onToggle
   root.addEventListener('toggle',queueLayout,true);
   window.addEventListener?.('resize',queueLayout);window.visualViewport?.addEventListener('resize',queueLayout);
   const media=window.matchMedia('(max-width:719px)');media.addEventListener?.('change',()=>render());
+  let densityMedia;
+  function densityChanged(){densityMedia?.removeEventListener?.('change',densityChanged);densityMedia=window.matchMedia('(resolution: '+(window.devicePixelRatio||1)+'dppx)');densityMedia.addEventListener?.('change',densityChanged,{once:true});queueLayout();}
+  densityChanged();
   return {render,resetMobile(){mobileDetail=false;}};
 }
