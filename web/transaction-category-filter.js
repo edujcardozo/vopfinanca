@@ -1,0 +1,1 @@
+export function needsCategory(transaction,categories){if(transaction.type!=='expense')return false;const category=categories.find(c=>c.id===transaction.categoryId);if(!category)return true;const name=category.name.normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase();return ['a classificar','sem categoria','nao categorizado','nao categorizada'].includes(name);}

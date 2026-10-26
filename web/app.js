@@ -1,6 +1,7 @@
+import {needsCategory} from './transaction-category-filter.js?v=vpo-87';
 import {overspendingInsights,overspendingHTML} from './overspending-insights.js?v=vpo-86';
 import {mountCategoryActivity} from './category-activity.js?v=vpo-84';
-import {mountInvoiceImport} from './invoice-import.js?v=vpo-85';
+import {mountInvoiceImport} from './invoice-import.js?v=vpo-87';
 import {createDialogPages} from './dialog-pages.js?v=vpo-73';
 import {coupleSummary,sharingLabel,expenseShares,saveSettlement} from './couple-core.js?v=vpo-73';
 import {coupleCard,coupleDetail} from './couple-ui.js?v=vpo-40';
@@ -40,7 +41,7 @@ let mobileStructure=false;
 let historyPlanning,savingsGoals,categoryActivity;
 let historyIntro,historyIntroReady=false;
 const routes={home:'inicio',budget:'planejar',transactions:'movimentos',overview:'visao',settings:'ajustes'};
-let state,hadStored=false,loadWarning=false,selectedMonth=currentMonth(),view='budget',txFilter='all',personFilter='all',toastTimer,undoAction=null;
+let state,hadStored=false,loadWarning=false,selectedMonth=currentMonth(),view='budget',txFilter='all',personFilter='all',uncategorizedOnly=false,toastTimer,undoAction=null;
 const planStorage=platform.storage;
 try{const stored=planStorage.getItem(STORAGE_KEY);hadStored=!!stored;state=stored?validateState(JSON.parse(stored)):createState(platform.example);}catch{state=createState(platform.example);loadWarning=true;}
 const initialPlanSnapshot=JSON.stringify(state);
@@ -224,12 +225,14 @@ function bindAssignedInputs(){
 function renderTransactions(){
   const search=$('#transaction-search').value.trim().toLocaleLowerCase('pt-BR');
   const transactions=[...getMonth(state,selectedMonth).transactions].sort((a,b)=>b.date.localeCompare(a.date));
+  const pendingCount=transactions.filter(t=>needsCategory(t,state.categories)).length;
+  const pendingButton=$('#transaction-uncategorized');pendingButton.setAttribute('aria-pressed',String(uncategorizedOnly));pendingButton.querySelector('b').textContent=String(pendingCount);
   const filtered=transactions.filter(t=>{
     const category=state.categories.find(c=>c.id===t.categoryId);
     const personMatches=personFilter==='all'||personFilter==='unknown'&&t.type==='expense'&&!t.sharing||personFilter==='shared'&&t.sharing?.eduPercent>0&&t.sharing.eduPercent<100||['edu','larissa'].includes(personFilter)&&t.sharing?.paidBy===personFilter;
-    return personMatches&&(txFilter==='all'||t.type===txFilter)&&(!search||`${t.payee||''} ${t.memo||''} ${t.description} ${category?.name||'Entrada'}`.toLocaleLowerCase('pt-BR').includes(search));
+    return (!uncategorizedOnly||needsCategory(t,state.categories))&&personMatches&&(txFilter==='all'||t.type===txFilter)&&(!search||`${t.payee||''} ${t.memo||''} ${t.description} ${category?.name||'Entrada'}`.toLocaleLowerCase('pt-BR').includes(search));
   });
-  if(!filtered.length){$('#transactions-list').innerHTML=`<div class="empty-state">${icon('swap')}<h3>${transactions.length?'Nenhum resultado por aqui.':'Seu próximo movimento começa aqui.'}</h3><p>${transactions.length?'Tente outro termo ou escolha um filtro diferente.':'Registre uma entrada ou uma despesa e acompanhe tudo no mesmo lugar.'}</p>${transactions.length?'':`<button class="btn btn-blue" data-add-transaction>${icon('plus')} Novo lançamento</button>`}</div>`;return;}
+  if(!filtered.length){$('#transactions-list').innerHTML=`<div class="empty-state">${icon('swap')}<h3>${uncategorizedOnly&&!pendingCount?'Tudo classificado neste mês.':transactions.length?'Nenhum resultado por aqui.':'Seu próximo movimento começa aqui.'}</h3><p>${uncategorizedOnly&&!pendingCount?'Nenhuma despesa está sem categoria. Desative o filtro para ver os demais movimentos.':transactions.length?'Tente outro termo ou escolha um filtro diferente.':'Registre uma entrada ou uma despesa e acompanhe tudo no mesmo lugar.'}</p>${transactions.length?'':`<button class="btn btn-blue" data-add-transaction>${icon('plus')} Novo lançamento</button>`}</div>`;return;}
   let date='';
   $('#transactions-list').innerHTML=filtered.map(t=>{
     const c=state.categories.find(c=>c.id===t.categoryId),income=t.type==='income';
@@ -576,7 +579,8 @@ document.addEventListener('click',e=>{
   if(e.target.closest('[data-add-transaction]')){transactionDialog();return;}
   const edit=e.target.closest('[data-edit-tx]');if(edit){transactionDialog('expense',edit.dataset.editTx);return;}
   const remove=e.target.closest('[data-delete-tx]');if(remove){removeTransaction(remove.dataset.deleteTx);return;}
-  const filter=e.target.closest('[data-tx-filter]');if(filter){txFilter=filter.dataset.txFilter;$$('[data-tx-filter]').forEach(b=>{const active=b===filter;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});renderTransactions();return;}
+  if(e.target.closest('#transaction-uncategorized')){uncategorizedOnly=!uncategorizedOnly;if(uncategorizedOnly&&txFilter==='income'){txFilter='all';$$('[data-tx-filter]').forEach(b=>{b.classList.toggle('active',b.dataset.txFilter==='all');b.setAttribute('aria-pressed',String(b.dataset.txFilter==='all'));});}renderTransactions();return;}
+  const filter=e.target.closest('[data-tx-filter]');if(filter){txFilter=filter.dataset.txFilter;if(txFilter==='income')uncategorizedOnly=false;$$('[data-tx-filter]').forEach(b=>{const active=b===filter;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});renderTransactions();return;}
   if(e.target.closest('[data-fix-monthly-spending]')){monthlySpendingDialog();return;}
   const insightPage=e.target.closest('[data-overspend-page]');if(insightPage){monthlySpendingDialog(Number(insightPage.dataset.overspendPage));return;}
   const insightCategory=e.target.closest('[data-overspend-category]');if(insightCategory){closeDialog();const categoryId=insightCategory.dataset.overspendCategory;const trigger=$$('[data-category-menu]').find(b=>b.dataset.categoryMenu===categoryId);categoryActivity.open(categoryId,trigger);return;}
