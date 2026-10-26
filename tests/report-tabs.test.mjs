@@ -40,6 +40,31 @@ test('each tab exports its own filtered CSV, and user-provided spreadsheet formu
 test('mobile report cards open a detail and return to the overview without losing period controls',()=>{
  const f=fixture(390);assert.ok(f.root.querySelector('.mobile-reflect'));assert.equal(f.root.querySelector('.mobile-reflect').textContent.includes('Meta'),false);f.click('[data-mobile-report=income]');assert.equal(f.root.querySelector('.mobile-reflect'),null);assert.ok(f.root.querySelector('.report-detail.mobile-detail-open'));assert.ok(f.root.querySelector('.income-matrix'));f.click('[data-mobile-report-back]');assert.ok(f.root.querySelector('.mobile-reflect'));f.click('[data-mobile-report=wealth]');assert.ok(f.root.querySelector('[data-report-wealth]'));assert.ok(f.root.querySelector('[data-period-toggle]'));f.ui.resetMobile();f.ui.render();assert.ok(f.root.querySelector('.mobile-reflect'));
 });
+test('returning from a group restores all groups and totals while preserving period, focus and plan data',()=>{
+ for(const width of [1440,390])for(const tab of ['spending','breakdown']){
+  const f=fixture(width),{root,click,change,event}=f;
+  if(width<720){click('[data-mobile-report=breakdown]');if(tab!=='breakdown')change('report-view-select',tab);}else click('#report-tab-'+tab);
+  click('[data-period-toggle]');event(f.document.querySelector('[data-period-month="2026-09"][data-period-endpoint=start]'),'click');event(f.document.querySelector('[data-period-apply]'),'click');
+  if(tab==='breakdown')click('[data-breakdown-mode=groups]');else click('.report-chart-scroll [data-report-month="2026-09"]');
+  const period=root.querySelector('.report-period-note>span').textContent,state=JSON.stringify(f.state);
+  click('[data-report-group=daily]');assert.equal(root.querySelector('#report-group').value,'daily');assert.ok(root.querySelector('.report-drilldown').textContent.includes('O dia a dia'));
+  change('report-category-filter','mercado');
+  if(tab==='breakdown'){click('[data-report-category=mercado]');assert.ok(root.querySelector('.report-transactions'));}
+  click('.report-drilldown [data-report-groups-back]');
+  assert.equal(root.querySelector('#report-group').value,'all');assert.equal(root.querySelector('#report-category-filter').value,'all');assert.equal(root.querySelector('.report-drilldown'),null);assert.equal(root.querySelector('.report-transactions'),null);
+  assert.equal(root.querySelector('.report-period-note>span').textContent,period);assert.equal(f.document.activeElement.dataset.reportGroup,'daily');
+  assert.ok((root.querySelector(tab==='spending'?'.report-stat-row':'.report-chart-heading')).textContent.includes('1.700,00'));
+  if(tab==='spending')assert.equal(root.querySelector('.report-chart-scroll [aria-pressed=true]').dataset.reportMonth,'2026-09');
+  else{
+   assert.equal(root.querySelector('[data-breakdown-mode=groups]').getAttribute('aria-pressed'),'true');assert.equal(root.querySelectorAll('.report-ranking-row[data-report-group]').length,2);
+   click('[data-report-group=daily]');const donut=root.querySelector('button.donut[data-report-groups-back]');assert.equal(donut.type,'button');assert.ok(donut.textContent.includes('Ver grupos'));event(donut.querySelector('strong'),'click');
+   assert.equal(root.querySelector('#report-group').value,'all');assert.ok(root.querySelector('.donut[role=img]'));assert.equal(root.querySelector('button.donut'),null);
+   click('[data-report-group=daily]');click('[data-breakdown-mode=groups]');assert.equal(root.querySelector('#report-group').value,'all');
+  }
+  assert.equal(JSON.stringify(f.state),state);
+  click('[data-report-group=daily]');f.state.hideBalances=true;f.ui.render();click('.report-drilldown [data-report-groups-back]');assert.equal(root.innerHTML.includes('R$'),false);
+ }
+});
 test('report charts fit their container initially and after resizing without changing the selected data',()=>{
  const f=fixture(1440),originalResize=globalThis.ResizeObserver;let observer,width=940;
  try{

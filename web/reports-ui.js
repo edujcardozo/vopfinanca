@@ -88,7 +88,7 @@ export function createReportsUI({root,getState,getEndMonth,onEditWealth,onToggle
   }
   function fitBreakdown(){
     const card=root.querySelector('.breakdown-chart'),donut=card?.querySelector('.donut');if(!card?.clientWidth||!donut)return;
-    const head=boxHeight(card.querySelector('.report-chart-heading')),padding=36;
+    const head=boxHeight(card.querySelector('.report-chart-heading'))+boxHeight(card.querySelector('.report-drilldown')),padding=36;
     const after=(compactView()?100:20)+boxHeight(root.querySelector('.report-planned'))+10;
     const available=viewportHeight()?viewportHeight()-Math.max(0,card.getBoundingClientRect().top)-head-padding-after:320;
     const size=Math.floor(Math.max(120,Math.min(320,card.clientWidth-padding,available)));
@@ -114,12 +114,17 @@ export function createReportsUI({root,getState,getEndMonth,onEditWealth,onToggle
   const empty=(title,text,button='')=>`<div class="report-empty">${icon('chart')}<h3>${title}</h3><p>${text}</p>${button}</div>`;
   function transactionList(txs,label){return `<section class="report-transactions" aria-label="Lançamentos detalhados"><h3>${esc(label)}</h3><p>${txs.length} lançamento${txs.length===1?'':'s'} no período</p>${txs.length?txs.sort((a,b)=>b.date.localeCompare(a.date)).map(t=>`<button data-edit-tx="${esc(t.id)}"><span><strong>${esc(t.payee||t.description)}</strong><small>${t.date.split('-').reverse().join('/')}${t.memo?' · '+esc(t.memo):''}</small></span><strong>${m(t.amount)}</strong>${icon('chevron')}</button>`).join(''):'<p class="report-note">Nenhum lançamento neste recorte.</p>'}</section>`;}
   function legend(entries){return `<div class="report-legend">${entries.map(([label,color,id])=>id?`<button type="button" data-report-group="${esc(id)}"><i style="background:${color}"></i>${esc(label)}</button>`:`<span><i style="background:${color}"></i>${esc(label)}</span>`).join('')}</div>`;}
+  function groupNavigation(){
+    if(group==='all')return '';
+    const name=groupsFor(getState()).find(g=>g.id===group)?.name||'';
+    return `<div class="report-drilldown"><button type="button" data-report-groups-back aria-label="Voltar para todos os grupos">${icon('chevron')} Todos os grupos</button><span title="${esc(name)}">${esc(name)}</span></div>`;
+  }
   function graph(data,kind){
     const compact=window.matchMedia('(max-width:719px)').matches,row=data.series.find(r=>r.month===picked)||data.series.at(-1);
     const svg=chartSvg(data.series,{kind,dimensions:data.dimensions,selected:row.month,format:m,hidden:getState().hideBalances,compact});
     const point=kind==='income'?`<span>Receitas <strong class="positive">${m(row.income)}</strong></span><span>Despesas <strong>${m(row.filteredExpense)}</strong></span><span>Resultado <strong>${m(row.income-row.filteredExpense)}</strong></span>`:kind==='spending'?`<span>Gastos <strong>${m(row.filteredExpense)}</strong></span>`:kind==='wealth'?row.wealth.known?`<span>Ativos <strong>${m(row.wealth.assets)}</strong></span><span>Dívidas <strong>${m(row.wealth.debt)}</strong></span><span>Líquido <strong>${m(row.wealth.netWorth)}</strong></span>`:'<span>Patrimônio não informado neste mês.</span>':`<span>${row.age.days===null?'Histórico insuficiente':`Idade estimada <strong>${getState().hideBalances?'••':row.age.days} dias</strong>`}</span>`;
     const entries=kind==='income'?[['Receitas','#41b98d'],['Despesas','#7446ff']]:kind==='wealth'?[['Ativos','#7446ff'],['Dívidas','#d85c6a'],['Patrimônio líquido','#545bfe']]:kind==='spending'?data.dimensions.map((d,i)=>[d.name,colors[i%colors.length],group==='all'?d.id:null]):[['Dias estimados','#7446ff']];
-    return `${legend(entries)}<div class="report-chart-scroll" data-chart-kind="${kind}">${svg}</div><div class="report-point ${kind==='wealth'&&row.month===data.end?'is-latest-wealth':''}"><strong>${esc(fullMonth(row.month))}</strong><div>${point}</div></div>`;
+    return `${kind==='spending'?groupNavigation():''}${legend(entries)}<div class="report-chart-scroll" data-chart-kind="${kind}">${svg}</div><div class="report-point ${kind==='wealth'&&row.month===data.end?'is-latest-wealth':''}"><strong>${esc(fullMonth(row.month))}</strong><div>${point}</div></div>`;
   }
   function plannedSpending(){
     const s=getState(),month=period.end,cats=s.categories.filter(c=>{const t=monthlyCategoryTotals(s,month,c.id);return (group==='all'||c.group===group)&&(categoryFilter==='all'||c.id===categoryFilter)&&(t.assigned||t.spent);});
@@ -128,7 +133,9 @@ export function createReportsUI({root,getState,getEndMonth,onEditWealth,onToggle
   function breakdown(data){
     const entries=breakdownMode==='groups'?data.groupSpending:data.spending;
     const selected=data.spending.find(c=>c.id===categoryDetail);
-    return `<div class="report-breakdown-grid"><article class="overview-card report-card breakdown-chart"><header class="report-chart-heading">${metric('Gastos no período',m(data.filteredExpense))}<div class="report-segmented" role="group" aria-label="Agrupar distribuição"><button data-breakdown-mode="categories" aria-pressed="${breakdownMode==='categories'}">Categorias</button><button data-breakdown-mode="groups" aria-pressed="${breakdownMode==='groups'}">Grupos</button></div></header>${entries.length?`<div class="donut" role="img" aria-label="Gastos no período ${m(data.filteredExpense)}; detalhamento ao lado" >${donutSvg(entries.map(c=>c.spent),colors)}<div class="donut-center"><span>Total de gastos</span><strong>${m(data.filteredExpense)}</strong></div></div>`:empty('Nenhuma despesa neste filtro.','Escolha outro período, grupo ou categoria.')}</article><article class="overview-card report-card breakdown-ranking"><header><h3>${breakdownMode==='groups'?'Grupos':'Categorias'}</h3><span>Total gasto</span></header><div class="spending-legend">${entries.map((c,i)=>`<button class="report-ranking-row ${categoryDetail===c.id?'selected':''}" ${breakdownMode==='groups'?`data-report-group="${esc(c.id)}"`:`data-report-category="${esc(c.id)}" aria-expanded="${categoryDetail===c.id}"`}><span><i style="background:${colors[i%colors.length]}"></i>${esc(c.name)}</span><strong>${m(c.spent)}</strong><span class="report-rank-track"><i style="width:${c.spent/data.filteredExpense*100}%;background:${colors[i%colors.length]}"></i></span><small>${pct(c.spent/data.filteredExpense*100)}</small></button>`).join('')||'<p class="report-note">Sem gastos no período.</p>'}</div><p class="report-note">${breakdownMode==='groups'?'Selecione um grupo para ver suas categorias.':'Selecione uma categoria para ver e editar os lançamentos.'}</p>${selected?transactionList(transactions(data).filter(t=>t.type==='expense'&&t.categoryId===selected.id),selected.name):''}</article></div>${plannedSpending()}`;
+    const back=group!=='all',tag=back?'button':'div';
+    const ring=entries.length?`<${tag} class="donut" ${back?'type="button" data-report-groups-back aria-label="Voltar para todos os grupos pelo gráfico" title="Voltar para todos os grupos"':`role="img" aria-label="Gastos no período ${m(data.filteredExpense)}; detalhamento ao lado"`}>${donutSvg(entries.map(c=>c.spent),colors)}<span class="donut-center"><span>Total de gastos</span><strong>${m(data.filteredExpense)}</strong>${back?`<span class="report-donut-back">${icon('chevron')} Ver grupos</span>`:''}</span></${tag}>`:empty('Nenhuma despesa neste filtro.','Escolha outro período, grupo ou categoria.');
+    return `<div class="report-breakdown-grid"><article class="overview-card report-card breakdown-chart"><header class="report-chart-heading">${metric('Gastos no período',m(data.filteredExpense))}<div class="report-segmented" role="group" aria-label="Agrupar distribuição"><button data-breakdown-mode="categories" aria-pressed="${breakdownMode==='categories'}">Categorias</button><button data-breakdown-mode="groups" aria-pressed="${breakdownMode==='groups'}">Grupos</button></div></header>${groupNavigation()}${ring}</article><article class="overview-card report-card breakdown-ranking"><header><h3>${breakdownMode==='groups'?'Grupos':'Categorias'}</h3><span>Total gasto</span></header><div class="spending-legend">${entries.map((c,i)=>`<button class="report-ranking-row ${categoryDetail===c.id?'selected':''}" ${breakdownMode==='groups'?`data-report-group="${esc(c.id)}"`:`data-report-category="${esc(c.id)}" aria-expanded="${categoryDetail===c.id}"`}><span><i style="background:${colors[i%colors.length]}"></i>${esc(c.name)}</span><strong>${m(c.spent)}</strong><span class="report-rank-track"><i style="width:${c.spent/data.filteredExpense*100}%;background:${colors[i%colors.length]}"></i></span><small>${pct(c.spent/data.filteredExpense*100)}</small></button>`).join('')||'<p class="report-note">Sem gastos no período.</p>'}</div><p class="report-note">${breakdownMode==='groups'?'Selecione um grupo para ver suas categorias.':'Selecione uma categoria para ver e editar os lançamentos.'}</p>${selected?transactionList(transactions(data).filter(t=>t.type==='expense'&&t.categoryId===selected.id),selected.name):''}</article></div>${plannedSpending()}`;
   }
   function spending(data){
     const average=data.filteredExpense/data.series.length;
@@ -171,6 +178,11 @@ export function createReportsUI({root,getState,getEndMonth,onEditWealth,onToggle
     fitCharts();queueLayout();
   }
   function selectTab(key,focus=true){if(!tabs.some(([id])=>id===key))return;tab=key;mobileDetail=true;incomeDetail=null;render();const button=root.querySelector(`#report-tab-${tab}`);if(focus)button?.focus({preventScroll:true});button?.scrollIntoView?.({block:'nearest',inline:'nearest',behavior:'smooth'});}
+  function backToGroups(){
+    const previous=group;group='all';categoryFilter='all';categoryDetail=null;incomeDetail=null;breakdownMode='groups';render();
+    const buttons=tab==='spending'?root.querySelectorAll('.report-legend [data-report-group]'):root.querySelectorAll('.report-ranking-row[data-report-group]');
+    ([...buttons].find(button=>button.dataset.reportGroup===previous)||root.querySelector('#report-group'))?.focus({preventScroll:true});
+  }
   function exportData(){
     const d=lastData;if(!d)return;const number=n=>n===null?'':(n/100).toFixed(2).replace('.',',');let rows;
     if(tab==='income')rows=[['Origem / categoria',...d.series.map(r=>r.month),'Média mensal','Total'],...d.incomeRows.map(r=>[r.name,...r.values.map(number),number(r.total/d.series.length),number(r.total)]),...d.expenseGroups.flatMap(g=>g.rows.map(c=>[g.name+' / '+c.name,...c.values.map(v=>number(-v)),number(-c.total/d.series.length),number(-c.total)])),['Resultado líquido',...d.series.map(r=>number(r.income-r.filteredExpense)),number((d.income-d.filteredExpense)/d.series.length),number(d.income-d.filteredExpense)]];
@@ -188,12 +200,13 @@ export function createReportsUI({root,getState,getEndMonth,onEditWealth,onToggle
     if(e.target.id==='report-category-filter'){categoryFilter=e.target.value;categoryDetail=null;incomeDetail=null;render();root.querySelector('#report-category-filter')?.focus({preventScroll:true});}
   });
   root.addEventListener('click',e=>{
+    if(e.target.closest('[data-report-groups-back]')){backToGroups();return;}
     if(e.target.closest('[data-report-filters]')){filtersOpen=!filtersOpen;render();root.querySelector('[data-report-filters]')?.focus({preventScroll:true});return;}
     const page=e.target.closest('[data-income-month-page]');if(page){const size=incomeMonthWindow(lastData.series.length,contentWidth(),incomeStart).count;incomeStart=Math.max(0,(incomeStart||0)+Number(page.dataset.incomeMonthPage)*size);render();return;}
     if(e.target.closest('[data-mobile-report-back]')){mobileDetail=false;render();root.querySelector('.mobile-reflect h1')?.scrollIntoView?.({block:'start'});return;}
     const mobileTab=e.target.closest('[data-mobile-report]');if(mobileTab){selectTab(mobileTab.dataset.mobileReport);return;}
     const nav=e.target.closest('[data-report-tab]');if(nav){selectTab(nav.dataset.reportTab);return;}
-    const mode=e.target.closest('[data-breakdown-mode]');if(mode){breakdownMode=mode.dataset.breakdownMode;categoryDetail=null;render();root.querySelector(`[data-breakdown-mode="${breakdownMode}"]`)?.focus({preventScroll:true});return;}
+    const mode=e.target.closest('[data-breakdown-mode]');if(mode){breakdownMode=mode.dataset.breakdownMode;if(breakdownMode==='groups'){group='all';categoryFilter='all';incomeDetail=null;}categoryDetail=null;render();root.querySelector(`[data-breakdown-mode="${breakdownMode}"]`)?.focus({preventScroll:true});return;}
     const groupButton=e.target.closest('[data-report-group]');if(groupButton){group=groupButton.dataset.reportGroup;categoryFilter='all';breakdownMode='categories';categoryDetail=null;render();return;}
     const month=e.target.closest('[data-report-month]');if(month){picked=month.dataset.reportMonth;render();return;}
     const category=e.target.closest('[data-report-category]');if(category){categoryDetail=categoryDetail===category.dataset.reportCategory?null:category.dataset.reportCategory;render();root.querySelector(`[data-report-category="${category.dataset.reportCategory}"]`)?.focus({preventScroll:true});return;}

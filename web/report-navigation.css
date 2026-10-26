@@ -1,0 +1,19 @@
+/* A small return path stays next to the chart while drilling into a group. */
+#overview-content .report-drilldown{display:flex;align-items:center;gap:10px;min-width:0;max-width:100%;margin:0 0 10px}
+#overview-content .report-drilldown>button{display:inline-flex;align-items:center;justify-content:center;gap:6px;flex-shrink:0;min-height:34px;padding:6px 10px;border:1px solid #ded5f2;border-radius:7px;background:#f7f3ff;color:#6541bc;font:inherit;font-size:12px;font-weight:650;line-height:1.3;cursor:pointer}
+#overview-content .report-drilldown>button:hover{background:#eee6ff;border-color:#bba1eb}
+#overview-content .report-drilldown>button .icon{width:13px;height:13px;transform:rotate(180deg)}
+#overview-content .report-drilldown>span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;font-weight:600;color:#5d4a79}
+#overview-content .report-drilldown>button:focus-visible,#overview-content button.donut:focus-visible{outline:2px solid #7446ff;outline-offset:4px}
+#overview-content button.donut{appearance:none;padding:0;border:0;color:inherit;font:inherit;cursor:pointer}
+#overview-content button.donut .report-donut-back{display:inline-flex;align-items:center;justify-content:center;gap:3px;margin-top:7px;color:#6541bc;font-size:11px;font-weight:650;line-height:1.3}
+#overview-content .report-donut-back .icon{width:11px;height:11px;transform:rotate(180deg)}
+#overview-content button.donut:hover .report-donut-back{text-decoration:underline;text-underline-offset:3px}
+@media(max-width:719px){
+ #overview-content .report-drilldown>button{min-height:44px}
+ #overview-content button.donut .report-donut-back{font-size:9px;margin-top:5px}
+ #overview-content button.donut .report-donut-back .icon{width:9px;height:9px}
+}
+@media print{
+ #overview-content .report-drilldown,#overview-content .report-donut-back{display:none!important}
+}
