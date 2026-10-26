@@ -6,10 +6,3 @@
 #overview-content .report-card .donut::before{display:none}
 #overview-content .report-donut-svg{position:absolute;inset:0;display:block;width:100%;height:100%;overflow:visible;pointer-events:none}
 #overview-content .donut-center{z-index:1;font-variant-numeric:tabular-nums;font-synthesis:none}
-#overview-content .report-donut-canvas{position:absolute;display:none;pointer-events:none}
-#overview-content .donut[data-smooth=true]>.report-donut-canvas{display:block}
-#overview-content .donut[data-smooth=true]>.report-donut-svg{visibility:hidden}
-@media print{
- #overview-content .report-donut-canvas{display:none!important}
- #overview-content .donut[data-smooth=true]>.report-donut-svg{visibility:visible}
-}
