@@ -1,3 +1,4 @@
+import {overspendingInsights,overspendingHTML} from './overspending-insights.js?v=vpo-86';
 import {mountCategoryActivity} from './category-activity.js?v=vpo-84';
 import {mountInvoiceImport} from './invoice-import.js?v=vpo-85';
 import {createDialogPages} from './dialog-pages.js?v=vpo-73';
@@ -576,7 +577,9 @@ document.addEventListener('click',e=>{
   const edit=e.target.closest('[data-edit-tx]');if(edit){transactionDialog('expense',edit.dataset.editTx);return;}
   const remove=e.target.closest('[data-delete-tx]');if(remove){removeTransaction(remove.dataset.deleteTx);return;}
   const filter=e.target.closest('[data-tx-filter]');if(filter){txFilter=filter.dataset.txFilter;$$('[data-tx-filter]').forEach(b=>{const active=b===filter;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});renderTransactions();return;}
-  if(e.target.closest('[data-fix-monthly-spending]')){const t=monthlyPlanTotals(state,selectedMonth);openDialog('Gastos acima do planejado.',`<p class="confirm-text">Você gastou <strong>${money(Math.max(0,-t.remaining))}</strong> além do planejado em ${esc(monthName(selectedMonth))}. Confira os lançamentos ou ajuste o planejado das categorias desse mês.</p>`);return;}
+  if(e.target.closest('[data-fix-monthly-spending]')){monthlySpendingDialog();return;}
+  const insightPage=e.target.closest('[data-overspend-page]');if(insightPage){monthlySpendingDialog(Number(insightPage.dataset.overspendPage));return;}
+  const insightCategory=e.target.closest('[data-overspend-category]');if(insightCategory){closeDialog();const categoryId=insightCategory.dataset.overspendCategory;const trigger=$$('[data-category-menu]').find(b=>b.dataset.categoryMenu===categoryId);categoryActivity.open(categoryId,trigger);return;}
   if(e.target.closest('[data-fix-budget]')){openDialog('Vamos equilibrar o plano.',`<p class="confirm-text">O planejado acumulado até o mês selecionado supera as entradas registradas até esse mês. Para cobrir a diferença, reveja os valores planejados ou registre uma entrada que ainda não está no plano.</p><button class="btn btn-blue form-submit" id="fix-add-income">Registrar uma entrada ${icon('plus')}</button>`);$('#fix-add-income').onclick=()=>transactionDialog('income');return;}
   const preview=e.target.closest('[data-preview]');if(preview){previewSelected=preview.dataset.preview;renderPreview();return;}
   if(e.target.closest('#preview-add')){const p=previews.find(c=>c.id===previewSelected);p.amount=Math.min(p.target,p.amount+10000);renderPreview();return;}
@@ -621,3 +624,5 @@ renderPreview();route();if(!$('#budget-app').hidden)sharingUI.refresh();
 mountInvoiceImport({getState:()=>state,getPeople:()=>household.people,storage:planStorage,notify:toast,apply:next=>{cloudSync.backupCurrent();state=next;persist();renderAll();}});
 
 categoryActivity=mountCategoryActivity({getState:()=>state,getMonth:()=>selectedMonth,getView:()=>view,getPeople:()=>household.people,onEdit:txId=>transactionDialog('expense',txId),onOptions:(categoryId,trigger)=>categoryMenu(categoryId,trigger)});
+
+function monthlySpendingDialog(page=0){const insights=overspendingInsights(state,selectedMonth);openDialog('Onde passou do planejado?',overspendingHTML(insights,{page,hidden:state.hideBalances}),esc(monthName(selectedMonth)));}
