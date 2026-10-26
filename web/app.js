@@ -4,7 +4,7 @@ import {mountCategoryActivity} from './category-activity.js?v=vpo-84';
 import {mountInvoiceImport} from './invoice-import.js?v=vpo-87';
 import {createDialogPages} from './dialog-pages.js?v=vpo-73';
 import {coupleSummary,sharingLabel,expenseShares,saveSettlement} from './couple-core.js?v=vpo-73';
-import {coupleCard,coupleDetail} from './couple-ui.js?v=vpo-40';
+import {coupleCard,coupleDetail} from './couple-ui.js?v=vpo-90';
 import {mobileHome} from './mobile-home.js?v=vpo-78';
 import {deleteCategory,categoryHasActivity} from './category-actions.js?v=vpo-34';
 import {deleteGroup,setGroupHidden,visibleGroups} from './group-actions.js?v=vpo-78';
@@ -246,7 +246,7 @@ function renderHome(){$('#mobile-home-content').innerHTML=mobileHome(state,selec
 function renderCouple(){
   $('#couple-budget-summary').hidden=!household.enabled;
   $('#couple-transactions-summary').hidden=!household.enabled||view!=='transactions';
-  $('#transaction-person-filter').closest('label').hidden=!household.enabled;
+  $('#transaction-person-filter').closest('label').hidden=true;
   for(const key of ['edu','larissa'])$('#transaction-person-filter').querySelector(`[value=${key}]`).textContent=household.people[key]+' pagou';
   $('#couple-budget-summary').innerHTML=household.enabled?coupleCard(state,selectedMonth,{compact:true,people:household.people}):'';
   $('#couple-transactions-summary').innerHTML=household.enabled?coupleCard(state,selectedMonth,{header:true,people:household.people}):'';

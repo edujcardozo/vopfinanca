@@ -230,3 +230,31 @@ button.monthly-plan-balance{cursor:pointer}
  .budget-active .budget-heading>#couple-budget-summary{grid-column:2}
  .budget-active .budget-heading:has(>#couple-budget-summary[hidden]){grid-template-columns:minmax(0,1fr)}
 }
+
+/* Payer chips replace the redundant person dropdown. */
+.transactions-active .transaction-tools .couple-filter[hidden]{display:none!important}
+.transactions-active .transaction-tools .couple-header-summary{height:auto;min-height:54px;background:#f2f0ff;border-color:#cfc8ed;color:#292253;box-shadow:0 1px 2px #28205008}
+.transactions-active .transaction-tools .couple-header-label strong{font-size:12px;color:#51457d}
+.transactions-active .transaction-tools .couple-header-label small{font-size:13px;font-weight:650;line-height:1.45;color:#302756;white-space:normal}
+.transactions-active .couple-header-label small.couple-header-people{display:flex;flex-wrap:wrap;gap:2px 5px}
+.transactions-active .couple-header-name{overflow:visible;text-overflow:clip;white-space:normal;overflow-wrap:anywhere}
+.transactions-active .couple-transfer-word{font-weight:450;color:#665c7c}
+.transactions-active .transaction-tools .couple-header-summary>b{font-size:16px;color:#4434a5;background:#e5dfff;padding:6px 9px;letter-spacing:-.2px}
+@media(min-width:720px){
+ .transactions-active .transaction-tools:has(.couple-filter[hidden]){grid-template-columns:minmax(180px,1fr) auto minmax(280px,330px)}
+ .transactions-active .transaction-tools:has(.couple-filter[hidden]) .filter-tabs{grid-column:2;grid-row:1}
+ .transactions-active .transaction-tools #couple-transactions-summary{grid-column:3;grid-row:1}
+}
+@media(min-width:720px) and (max-width:1199px){
+ .transactions-active .transaction-tools:has(.couple-filter[hidden]){grid-template-columns:minmax(0,1fr) minmax(270px,1fr)}
+ .transactions-active .transaction-tools .search-box{grid-column:1/-1}
+ .transactions-active .transaction-tools:has(.couple-filter[hidden]) .filter-tabs{grid-column:1;grid-row:2}
+ .transactions-active .transaction-tools #couple-transactions-summary{grid-column:2;grid-row:2}
+}
+@media(max-width:719px){
+ .transactions-active #shared-month-slot.transactions-month-header{grid-template-columns:minmax(0,1fr)}
+ .transactions-active #shared-month-slot #couple-transactions-summary{width:100%;min-width:0}
+ .transactions-active #shared-month-slot .couple-header-summary{background:#f2f0ff;border-color:#cfc8ed;min-height:54px}
+ .transactions-active #shared-month-slot .couple-header-label small{font-size:13px;font-weight:650;color:#302756}
+ .transactions-active #shared-month-slot .couple-header-summary>b{font-size:16px;background:#e5dfff;color:#4434a5}
+}
