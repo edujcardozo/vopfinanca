@@ -1,3 +1,4 @@
+import {mountInvoiceImport} from './invoice-import.js?v=vpo-83';
 import {createDialogPages} from './dialog-pages.js?v=vpo-73';
 import {coupleSummary,sharingLabel,expenseShares,saveSettlement} from './couple-core.js?v=vpo-73';
 import {coupleCard,coupleDetail} from './couple-ui.js?v=vpo-40';
@@ -614,3 +615,5 @@ $('#sync-now').onclick=()=>cloudSync.flush();
 setInterval(()=>{if(!$('#budget-app').hidden&&document.visibilityState!=='hidden'&&!dialog.open&&$('#transaction-composer').hidden)sharingUI.refresh();},10000);
 $('#sync-recoveries').onclick=recoveryDialog;
 renderPreview();route();if(!$('#budget-app').hidden)sharingUI.refresh();
+
+mountInvoiceImport({getState:()=>state,getPeople:()=>household.people,storage:planStorage,notify:toast,apply:next=>{cloudSync.backupCurrent();state=next;persist();renderAll();}});
