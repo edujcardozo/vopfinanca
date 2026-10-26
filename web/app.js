@@ -227,6 +227,7 @@ function renderTransactions(){
   const transactions=[...getMonth(state,selectedMonth).transactions].sort((a,b)=>b.date.localeCompare(a.date));
   const pendingCount=transactions.filter(t=>needsCategory(t,state.categories)).length;
   const pendingButton=$('#transaction-uncategorized');pendingButton.setAttribute('aria-pressed',String(uncategorizedOnly));pendingButton.querySelector('b').textContent=String(pendingCount);
+  for(const button of $$('[data-payer-filter]')){const key=button.dataset.payerFilter,name=household.people[key]||'',short=accountUsername(name).split(/\s+/)[0]||name;const paid=transactions.filter(t=>t.type==='expense'&&t.sharing?.paidBy===key);button.hidden=!household.enabled;button.setAttribute('aria-pressed',String(personFilter===key));button.setAttribute('aria-label','Filtrar gastos pagos por '+name);button.title=name+' pagou · '+money(paid.reduce((n,t)=>n+t.amount,0))+' no mês';button.querySelector('[data-payer-name]').textContent=short+' pagou';button.querySelector('.payer-filter-avatar').textContent=short.slice(0,1).toLocaleUpperCase('pt-BR');button.querySelector('b').textContent=String(paid.length);}
   const filtered=transactions.filter(t=>{
     const category=state.categories.find(c=>c.id===t.categoryId);
     const personMatches=personFilter==='all'||personFilter==='unknown'&&t.type==='expense'&&!t.sharing||personFilter==='shared'&&t.sharing?.eduPercent>0&&t.sharing.eduPercent<100||['edu','larissa'].includes(personFilter)&&t.sharing?.paidBy===personFilter;
@@ -594,6 +595,7 @@ document.addEventListener('click',e=>{
   if(e.target.closest('[data-add-transaction]')){transactionDialog();return;}
   const edit=e.target.closest('[data-edit-tx]');if(edit){transactionDialog('expense',edit.dataset.editTx);return;}
   const remove=e.target.closest('[data-delete-tx]');if(remove){removeTransaction(remove.dataset.deleteTx);return;}
+  const payerButton=e.target.closest('[data-payer-filter]');if(payerButton){personFilter=personFilter===payerButton.dataset.payerFilter?'all':payerButton.dataset.payerFilter;$('#transaction-person-filter').value=personFilter;if(txFilter==='income'){txFilter='all';$$('[data-tx-filter]').forEach(b=>{b.classList.toggle('active',b.dataset.txFilter==='all');b.setAttribute('aria-pressed',String(b.dataset.txFilter==='all'));});}renderTransactions();return;}
   if(e.target.closest('#transaction-uncategorized')){uncategorizedOnly=!uncategorizedOnly;if(uncategorizedOnly&&txFilter==='income'){txFilter='all';$$('[data-tx-filter]').forEach(b=>{b.classList.toggle('active',b.dataset.txFilter==='all');b.setAttribute('aria-pressed',String(b.dataset.txFilter==='all'));});}renderTransactions();return;}
   const filter=e.target.closest('[data-tx-filter]');if(filter){txFilter=filter.dataset.txFilter;if(txFilter==='income')uncategorizedOnly=false;$$('[data-tx-filter]').forEach(b=>{const active=b===filter;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});renderTransactions();return;}
   if(e.target.closest('[data-fix-monthly-spending]')){monthlySpendingDialog();return;}
