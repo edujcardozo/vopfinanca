@@ -21,7 +21,7 @@ test('email-only rosters display usernames and preserve names across refreshes f
   const initial=info();initial.participants[0].name='Edu';initial.participants[1].name='Larissa';
   const previous=householdForSharing(initial);
   const emails={...initial,participants:initial.participants.map((p,i)=>({...p,name:i?'larissa@example.test':'edu@example.test',email:i?'larissa@example.test':'edu@example.test'}))};
-  assert.deepEqual(householdForSharing(emails).people,{edu:'edu',larissa:'larissa'});
+  assert.deepEqual(householdForSharing(emails).people,{edu:'edu',larissa:'Larissa'});
   for(let i=0;i<4;i++)assert.deepEqual(householdForSharing(emails,previous).people,{edu:'Edu',larissa:'Larissa'});
   emails.participants[1].id='replacement';emails.participants[1].email=emails.participants[1].name='carla@example.test';
   assert.deepEqual(householdForSharing(emails,previous).people,{edu:'Edu',larissa:'carla'});

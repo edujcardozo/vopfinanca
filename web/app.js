@@ -18,10 +18,10 @@ import {STORAGE_KEY,formatMoney,parseMoney,today,currentMonth,validDate,validMon
 import {createReportsUI} from './reports-ui.js?v=vpo-82';
 import {wealthAt} from './reports-core.js?v=vpo-73';
 import {createCloudSync} from './cloud-sync.js?v=vpo-78';
-import {createSharingUI} from './sharing-ui.js?v=vpo-34';
+import {createSharingUI} from './sharing-ui.js?v=vpo-93';
 import {platform} from './platform.js';
-import {householdForSharing,inactiveHousehold} from './household-context.js';
-import {accountUsername} from './account-identity.js';
+import {householdForSharing,inactiveHousehold} from './household-context.js?v=vpo-93';
+import {accountUsername} from './account-identity.js?v=vpo-93';
 import {createPlanningHistoryUI,historyIcon} from './planning-history-ui.js?v=vpo-78';
 import {createPlanningHistoryIntro} from './planning-history-intro.js';
 import {createSavingsGoalsUI} from './savings-goals-ui.js?v=vpo-73';

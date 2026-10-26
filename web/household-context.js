@@ -1,3 +1,4 @@
+import {participantDisplayName} from './account-identity.js?v=vpo-93';
 // Storage keeps the two existing budget-relative slots for compatibility.
 // They mean plan owner and accepted collaborator, never global user names.
 const clean=value=>String(value||'').replace(/[\u0000-\u001f\u007f]/g,' ').trim().replace(/\s+/gu,' ').slice(0,100);
@@ -20,5 +21,5 @@ export function householdForSharing(info,previous=null){
     return clean(p?.email||p?.name||self?.email).split('@',1)[0];
   };
   if(!owner||!guest||!name(owner,'edu')||!name(guest,'larissa')||!participants.some(p=>p?.id===info.user?.id))return {...empty,scopeId:scope.id};
-  return {enabled:true,scopeId:scope.id,participantIds:{edu:owner.id,larissa:guest.id},people:{edu:name(owner,'edu'),larissa:name(guest,'larissa')},current:info.user.id===owner.id?'edu':'larissa'};
+  return {enabled:true,scopeId:scope.id,participantIds:{edu:owner.id,larissa:guest.id},people:{edu:participantDisplayName(name(owner,'edu')),larissa:participantDisplayName(name(guest,'larissa'))},current:info.user.id===owner.id?'edu':'larissa'};
 }
