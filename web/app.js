@@ -1,3 +1,4 @@
+import {mountCategoryActivity} from './category-activity.js?v=vpo-84';
 import {mountInvoiceImport} from './invoice-import.js?v=vpo-83';
 import {createDialogPages} from './dialog-pages.js?v=vpo-73';
 import {coupleSummary,sharingLabel,expenseShares,saveSettlement} from './couple-core.js?v=vpo-73';
@@ -35,7 +36,7 @@ const monthName=k=>new Intl.DateTimeFormat('pt-BR',{month:'long',year:'numeric'}
 const dayName=d=>new Intl.DateTimeFormat('pt-BR',{day:'numeric',month:'long',weekday:'long'}).format(new Date(d+'T12:00:00'));
 const collapsedGroups=new Set();
 let mobileStructure=false;
-let historyPlanning,savingsGoals;
+let historyPlanning,savingsGoals,categoryActivity;
 let historyIntro,historyIntroReady=false;
 const routes={home:'inicio',budget:'planejar',transactions:'movimentos',overview:'visao',settings:'ajustes'};
 let state,hadStored=false,loadWarning=false,selectedMonth=currentMonth(),view='budget',txFilter='all',personFilter='all',toastTimer,undoAction=null;
@@ -112,6 +113,7 @@ function positionMonthRow(){
   $('#shared-month-slot').hidden=['overview','home','budget'].includes(view)||view==='transactions'&&desktop;
 }
 function renderAll(){
+  categoryActivity?.refresh();
   $('#app-main').classList.toggle('budget-active',view==='budget');
   $('#app-main').classList.toggle('overview-active',view==='overview');
   $('#app-main').classList.toggle('home-active',view==='home');
@@ -177,7 +179,7 @@ function renderBudget(){
     const sum=cats.reduce((a,c)=>a+monthlyCategoryTotals(state,selectedMonth,c.id).available,0),assigned=cats.reduce((a,c)=>a+monthlyCategoryTotals(state,selectedMonth,c.id).assigned,0),folded=collapsedGroups.has(key);
     return `<section class="category-group" data-sort-group="${esc(key)}"><div class="group-header">${sortHandle('group',label)}<button type="button" class="group-collapse" data-collapse-group="${esc(key)}" aria-expanded="${!folded}" aria-label="${folded?'Expandir':'Recolher'} ${esc(label)}"><svg class="group-collapse-chevron" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg></button><h3><button type="button" class="group-name" data-edit-group="${esc(key)}" aria-label="Opções do grupo ${esc(label)}">${esc(label)}</button></h3><div class="group-header-actions"><span class="group-planned-total"><small>Planejado</small><strong>${money(assigned)}</strong></span><span class="group-total"><small>Disponível</small><strong>${money(sum)}</strong></span><button type="button" class="icon-button" data-add-category-group="${esc(key)}" aria-label="Adicionar categoria em ${esc(label)}">${icon('plus')}</button><button type="button" class="icon-button" data-edit-group="${esc(key)}" aria-label="Opções do grupo ${esc(label)}">${icon('edit')}</button></div></div><div class="category-items" ${folded?'hidden':''}>${cats.map(c=>{
       const ct=monthlyCategoryTotals(state,selectedMonth,c.id);
-      return `<div class="category-sort-row" data-sort-category="${esc(c.id)}">${sortHandle('category',c.name)}<div class="category-row" data-category="${esc(c.id)}" aria-label="Editar ${esc(c.name)}, disponível ${money(ct.available)}"><span class="category-info"><span class="category-emoji" aria-hidden="true">${esc(categoryIcon(c.name))}</span><span><span class="category-heading"><button type="button" class="category-name category-menu-trigger" data-category-menu="${esc(c.id)}" aria-haspopup="dialog" aria-expanded="false">${esc(c.name)}</button>${categorySpendingLabel(ct,state.hideBalances)}</span><span class="category-budget-details">${categoryBudgetDetails(c,ct,state.hideBalances)}</span></span></span><span class="category-assigned"><input type="text" class="assigned-input" data-assigned-input="${esc(c.id)}" value="${money(ct.assigned)}" inputmode="decimal" autocomplete="off" spellcheck="false" maxlength="20" aria-label="Planejado de ${esc(c.name)}" aria-describedby="assigned-help"></span><button type="button" class="category-available category-value-edit" aria-label="Editar valores de ${esc(c.name)}"><span class="amount-badge ${ct.available<0?'negative':!ct.available?'zero':''}">${money(ct.available)}</span></button></div></div>`;
+      return `<div class="category-sort-row" data-sort-category="${esc(c.id)}">${sortHandle('category',c.name)}<div class="category-row" data-category="${esc(c.id)}" aria-label="Editar ${esc(c.name)}, disponível ${money(ct.available)}"><span class="category-info"><span class="category-emoji" aria-hidden="true">${esc(categoryIcon(c.name))}</span><span><span class="category-heading"><button type="button" class="category-name category-menu-trigger" data-category-menu="${esc(c.id)}" aria-controls="category-activity-panel" aria-expanded="false">${esc(c.name)}</button>${categorySpendingLabel(ct,state.hideBalances)}</span><span class="category-budget-details">${categoryBudgetDetails(c,ct,state.hideBalances)}</span></span></span><span class="category-assigned"><input type="text" class="assigned-input" data-assigned-input="${esc(c.id)}" value="${money(ct.assigned)}" inputmode="decimal" autocomplete="off" spellcheck="false" maxlength="20" aria-label="Planejado de ${esc(c.name)}" aria-describedby="assigned-help"></span><button type="button" class="category-available category-value-edit" aria-label="Editar valores de ${esc(c.name)}"><span class="amount-badge ${ct.available<0?'negative':!ct.available?'zero':''}">${money(ct.available)}</span></button></div></div>`;
     }).join('')}</div>${!cats.length&&!folded?`<div class="empty-group"><p>Seu grupo está pronto. Qual categoria vem primeiro?</p><button type="button" class="text-link" data-add-category-group="${esc(key)}">${icon('plus')} Adicionar categoria</button></div>`:''}</section>`;
   }).join('')+hiddenGroupsHTML()+hiddenCategoriesHTML();
   bindAssignedInputs();
@@ -564,7 +566,7 @@ document.addEventListener('click',e=>{
   const groupEdit=e.target.closest('[data-edit-group]');if(groupEdit){groupDialog(groupEdit.dataset.editGroup);return;}
   if(e.target.closest('[data-hidden-groups]')){hiddenGroupsDialog();return;}
   const groupAdd=e.target.closest('[data-add-category-group]');if(groupAdd){newCategoryDialog(groupAdd.dataset.addCategoryGroup);return;}
-  const menu=e.target.closest('[data-category-menu]');if(menu){categoryMenu(menu.dataset.categoryMenu,menu);return;}
+  const menu=e.target.closest('[data-category-menu]');if(menu){categoryActivity.open(menu.dataset.categoryMenu,menu);return;}
   if(e.target.closest('[data-hidden-categories]')){hiddenCategoriesDialog();return;}
   if(e.target.closest('#category-menu'))return;
   closeCategoryMenu(false);
@@ -617,3 +619,5 @@ $('#sync-recoveries').onclick=recoveryDialog;
 renderPreview();route();if(!$('#budget-app').hidden)sharingUI.refresh();
 
 mountInvoiceImport({getState:()=>state,getPeople:()=>household.people,storage:planStorage,notify:toast,apply:next=>{cloudSync.backupCurrent();state=next;persist();renderAll();}});
+
+categoryActivity=mountCategoryActivity({getState:()=>state,getMonth:()=>selectedMonth,getView:()=>view,getPeople:()=>household.people,onEdit:txId=>transactionDialog('expense',txId),onOptions:(categoryId,trigger)=>categoryMenu(categoryId,trigger)});
