@@ -4,7 +4,7 @@ import {mountCategoryActivity} from './category-activity.js?v=vpo-84';
 import {mountInvoiceImport} from './invoice-import.js?v=vpo-87';
 import {createDialogPages} from './dialog-pages.js?v=vpo-73';
 import {coupleSummary,sharingLabel,expenseShares,saveSettlement} from './couple-core.js?v=vpo-73';
-import {coupleCard,coupleDetail} from './couple-ui.js?v=vpo-91';
+import {coupleCard,coupleDetail} from './couple-ui.js?v=vpo-92';
 import {mobileHome} from './mobile-home.js?v=vpo-78';
 import {deleteCategory,categoryHasActivity} from './category-actions.js?v=vpo-34';
 import {deleteGroup,setGroupHidden,visibleGroups} from './group-actions.js?v=vpo-78';
@@ -227,7 +227,7 @@ function renderTransactions(){
   const transactions=[...getMonth(state,selectedMonth).transactions].sort((a,b)=>b.date.localeCompare(a.date));
   const pendingCount=transactions.filter(t=>needsCategory(t,state.categories)).length;
   const pendingButton=$('#transaction-uncategorized');pendingButton.setAttribute('aria-pressed',String(uncategorizedOnly));pendingButton.querySelector('b').textContent=String(pendingCount);
-  for(const button of $$('[data-payer-filter]')){const key=button.dataset.payerFilter,name=household.people[key]||'',short=accountUsername(name).split(/\s+/)[0]||name;const paid=transactions.filter(t=>t.type==='expense'&&t.sharing?.paidBy===key);button.hidden=!household.enabled;button.setAttribute('aria-pressed',String(personFilter===key));button.setAttribute('aria-label','Filtrar gastos pagos por '+name);button.title=name+' pagou · '+money(paid.reduce((n,t)=>n+t.amount,0))+' no mês';button.querySelector('[data-payer-name]').textContent=short+' pagou';button.querySelector('.payer-filter-avatar').textContent=short.slice(0,1).toLocaleUpperCase('pt-BR');button.querySelector('b').textContent=String(paid.length);}
+  for(const button of $$('[data-payer-filter]')){const key=button.dataset.payerFilter,name=household.people[key]||'',short=accountUsername(name).split(/\s+/)[0].replace(/^larissabassi(?:borges)?$/i,'Larissa')||name;const paid=transactions.filter(t=>t.type==='expense'&&t.sharing?.paidBy===key);button.hidden=!household.enabled;button.setAttribute('aria-pressed',String(personFilter===key));button.setAttribute('aria-label','Filtrar gastos pagos por '+name);button.title=name+' pagou · '+money(paid.reduce((n,t)=>n+t.amount,0))+' no mês';button.querySelector('[data-payer-name]').textContent=short+' pagou';button.querySelector('.payer-filter-avatar').textContent=short.slice(0,1).toLocaleUpperCase('pt-BR');button.querySelector('b').textContent=String(paid.length);}
   const filtered=transactions.filter(t=>{
     const category=state.categories.find(c=>c.id===t.categoryId);
     const personMatches=personFilter==='all'||personFilter==='unknown'&&t.type==='expense'&&!t.sharing||personFilter==='shared'&&t.sharing?.eduPercent>0&&t.sharing.eduPercent<100||['edu','larissa'].includes(personFilter)&&t.sharing?.paidBy===personFilter;
