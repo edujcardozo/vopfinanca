@@ -1,5 +1,5 @@
 import {mountCategoryActivity} from './category-activity.js?v=vpo-84';
-import {mountInvoiceImport} from './invoice-import.js?v=vpo-83';
+import {mountInvoiceImport} from './invoice-import.js?v=vpo-85';
 import {createDialogPages} from './dialog-pages.js?v=vpo-73';
 import {coupleSummary,sharingLabel,expenseShares,saveSettlement} from './couple-core.js?v=vpo-73';
 import {coupleCard,coupleDetail} from './couple-ui.js?v=vpo-40';

@@ -29,7 +29,7 @@ export function commitInvoice(state,rows,batch){
  validateState(next);return next;
 }
 export function mountInvoiceImport({getState,apply,getPeople,storage,notify}){
- const tools=document.querySelector('.transaction-tools'),button=document.createElement('button');button.type='button';button.className='subtle-button';button.textContent='Importar fatura';tools.append(button);
+ const tools=document.querySelector('.transaction-tools'),button=document.createElement('button');button.type='button';button.className='subtle-button invoice-import-trigger';button.setAttribute('aria-label','Importar fatura CSV');button.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4m-4 4 4-4 4 4M5 14v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-5"/></svg><span>Importar fatura</span><small>CSV</small>';tools.append(button);
  const panel=document.createElement('section');panel.className='invoice-import';panel.hidden=true;tools.after(panel);let draft=null,page=0,planId=null,fileName='';
  const prefs=()=>{try{return JSON.parse(storage.getItem('vpo-invoice-'+getState().planId)||'{}');}catch{return {};}};
  const batches=()=>[...new Set(Object.values(getState().months).flatMap(m=>m.transactions).map(t=>t.memo?.match(/\[lote:([\w-]+)\]/)?.[1]).filter(Boolean))].reverse();
