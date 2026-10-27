@@ -1,0 +1,8 @@
+import {categoryActivityData} from './category-activity.js?v=vpo-84';
+import {formatMoney} from './core.js?v=vpo-78';
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+export function categorySpendingPopup(state,month,categoryId,people={}){
+ const data=categoryActivityData(state,month,categoryId);if(!data)return null;
+ const money=n=>state.hideBalances?'••••':formatMoney(n),period=new Intl.DateTimeFormat('pt-BR',{month:'long',year:'numeric'}).format(new Date(month+'-15T12:00:00'));
+ return {title:data.category.name,body:`<div class="spending-popup-summary"><div><span>${esc(period)}</span><small>${data.transactions.length} lançamento${data.transactions.length===1?'':'s'}</small></div><div><span>Total gasto</span><strong>${money(data.spent)}</strong></div></div><div class="spending-popup-list" role="region" aria-label="Transações da categoria" tabindex="0"><table><thead><tr><th>Data</th><th>Estabelecimento / observação</th><th>Valor</th></tr></thead><tbody>${data.transactions.map(t=>`<tr><td>${esc(t.date.slice(8,10)+'/'+t.date.slice(5,7))}</td><td><strong>${esc(t.payee||t.description||'Sem estabelecimento')}</strong>${t.memo?`<small>${esc(t.memo)}</small>`:''}${t.sharing&&people[t.sharing.paidBy]?`<small>${esc(people[t.sharing.paidBy])} pagou</small>`:''}</td><td>− ${money(t.amount)}</td></tr>`).join('')}</tbody></table>${data.transactions.length?'':'<p class="spending-popup-empty">Nenhum gasto nesta categoria no mês selecionado.</p>'}</div><footer class="spending-popup-footer"><span>Somente gastos deste mês</span><button type="button" class="btn btn-blue" data-close-spending>Fechar</button></footer>`};
+}
