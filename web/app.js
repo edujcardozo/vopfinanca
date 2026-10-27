@@ -369,12 +369,11 @@ function transactionDialog(type='expense',transactionId=null,options={}){
       <details class="memo-details" ${memo?'open':''}><summary>Adicionar observação <span>Opcional</span></summary><label class="form-group"><span class="visually-hidden">Observações do lançamento</span><textarea name="memo" maxlength="280" rows="2" placeholder="Ex.: compras da semana, almoço com a família">${esc(memo||'')}</textarea></label></details>
       ${existing&&!existing.payee?'<p class="legacy-transaction-note">A descrição anterior está nas observações. Complete o estabelecimento acima.</p>':''}
       </div><p id="form-error" class="form-error" role="alert" hidden></p>
-      <div class="transaction-form-actions"><span class="tx-save-note">${icon('cloud')} Sincronização automática ativada</span><button type="button" class="subtle-button" id="cancel-transaction">Cancelar</button><button class="btn btn-blue" type="submit">${existing?'Salvar alterações':'Salvar'} ${icon('check')}</button>${existing?'':'<button class="subtle-button save-another" type="submit" name="action" value="another">Salvar e adicionar outra</button>'}</div>
+      <div class="transaction-form-actions"><span class="tx-save-note">${icon('cloud')} Sincronização automática ativada</span><button class="btn btn-blue" type="submit">${existing?'Salvar alterações':'Salvar'} ${icon('check')}</button>${existing?'':'<button class="subtle-button save-another" type="submit" name="action" value="another">Salvar e adicionar outra</button>'}</div>
     </form>`;
   const closeTransaction=()=>{if(desktop)closeComposer();else closeDialog();};
   if(desktop){if(dialog.open)closeDialog();$('#dialog-body').replaceChildren();goPlan('transactions');route();const composer=$('#transaction-composer');composer.innerHTML=`<div class="composer-heading"><div><span class="small-label">REGISTRO RÁPIDO</span><h2>${title}</h2></div><button type="button" id="close-composer" class="icon-button" aria-label="Fechar formulário de lançamento">${icon('close')}</button></div>${body}`;composer.hidden=false;$('#close-composer').onclick=closeTransaction;}
   else{closeComposer();openDialog(title,body,'CADA MOVIMENTO CONTA');dialog.classList.add('transaction-dialog');}
-  $('#cancel-transaction').onclick=closeTransaction;
   const form=$('#transaction-form');
   if(desktop){const fields=form.querySelector('.transaction-fields');fields.prepend(fields.querySelector('.transaction-date-field'),fields.querySelector('.tx-payee-field'),fields.querySelector('#tx-category-field'),fields.querySelector('.tx-amount-field'));form.addEventListener('keydown',e=>{if(e.key==='Escape'&&!e.defaultPrevented){e.preventDefault();closeTransaction();}});}
   function updateType(){
