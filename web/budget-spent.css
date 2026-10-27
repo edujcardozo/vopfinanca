@@ -34,3 +34,18 @@
  .budget-active .assigned-input{max-width:100%;font-size:13px}
  .budget-active .category-available .amount-badge{font-size:12px;white-space:normal;overflow-wrap:anywhere}
 }
+
+/* Keep the mobile group title, chevron and numeric baselines aligned. */
+@media(max-width:719px){
+ .budget-active .group-header{padding:10px 16px 12px;row-gap:5px;align-items:center}
+ .budget-active .group-header>h3{display:flex;align-items:center;min-height:32px;margin:0;padding:0 0 0 28px;line-height:1.35}
+ .budget-active .group-header .group-name{display:block;text-align:left;font-size:14px;line-height:1.35;padding:4px 0;max-width:100%;overflow-wrap:anywhere}
+ .budget-active .group-header>.group-collapse{top:10px;left:16px;transform:none;width:24px;height:32px;min-height:32px;align-self:start}
+ .budget-active .group-header :is(.group-planned-total,.group-spent-total,.group-total){align-self:stretch;justify-content:flex-start;gap:4px;margin:0;padding:8px 0 0;border-top:1px solid #e5e0d5;text-align:right}
+ .budget-active .group-header :is(.group-planned-total,.group-spent-total,.group-total)>small{font-size:10px;font-weight:450;line-height:14px;margin:0;letter-spacing:0;color:#746d7c}
+ .budget-active .group-header :is(.group-planned-total,.group-spent-total,.group-total)>strong{font-size:13px;font-weight:650;line-height:18px;margin:0;letter-spacing:-.2px;font-variant-numeric:tabular-nums;white-space:normal}
+ .budget-active .group-header .group-total>small,.budget-active .group-header .group-total>strong{padding-right:7px}
+ .budget-active .group-header .group-spent-total>strong{color:#625581}
+ .budget-active .group-header .group-total>strong{color:#4d4569}
+ .budget-active .group-header>.sort-handle{top:26px}
+}
