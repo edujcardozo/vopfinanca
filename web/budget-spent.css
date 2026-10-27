@@ -51,5 +51,5 @@
 }
 
 /* Stronger visual separation between groups and their category rows. */
-.budget-active .category-group>.group-header{background:#e6e3ed;border-bottom:1px solid #d7d2e3}
-@media(max-width:719px){.budget-active .category-group>.group-header{background:#e5e1d6;border-bottom-color:#d5cfc0}.budget-active .group-header :is(.group-planned-total,.group-spent-total,.group-total){border-top-color:#d5cfc0}}
+.budget-active .category-group>.group-header{background:#f8f6f2;border-bottom:1px solid #ded7ca}
+@media(max-width:719px){.budget-active .category-group>.group-header{background:#f8f6f2;border-bottom-color:#ded7ca}.budget-active .group-header :is(.group-planned-total,.group-spent-total,.group-total){border-top-color:#e5ded2}}
