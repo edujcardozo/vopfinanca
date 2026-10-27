@@ -223,15 +223,20 @@ function bindAssignedInputs(){
     };
   });
 }
+function matchesPayerFilter(tx,filter){
+ const key=filter.split('-')[0],shares=expenseShares(tx);
+ return tx.type==='expense'&&tx.sharing?.paidBy===key&&!!shares&&(filter.endsWith('-personal')?!shares.inAcerto:shares.inAcerto);
+}
 function renderTransactions(){
   const search=$('#transaction-search').value.trim().toLocaleLowerCase('pt-BR');
   const transactions=[...getMonth(state,selectedMonth).transactions].sort((a,b)=>b.date.localeCompare(a.date));
   const pendingCount=transactions.filter(t=>needsCategory(t,state.categories)).length;
   const pendingButton=$('#transaction-uncategorized');pendingButton.setAttribute('aria-pressed',String(uncategorizedOnly));pendingButton.querySelector('b').textContent=String(pendingCount);
-  for(const button of $$('[data-payer-filter]')){const key=button.dataset.payerFilter,name=household.people[key]||'',short=accountUsername(name).split(/\s+/)[0].replace(/^larissabassi(?:borges)?$/i,'Larissa')||name;const paid=transactions.filter(t=>t.type==='expense'&&t.sharing?.paidBy===key);button.hidden=!household.enabled;button.setAttribute('aria-pressed',String(personFilter===key));button.setAttribute('aria-label','Filtrar gastos pagos por '+name);button.title=name+' pagou · '+money(paid.reduce((n,t)=>n+t.amount,0))+' no mês';button.querySelector('[data-payer-name]').textContent=short+' pagou';button.querySelector('.payer-filter-avatar').textContent=short.slice(0,1).toLocaleUpperCase('pt-BR');button.querySelector('b').textContent=String(paid.length);}
+  for(const button of $$('[data-payer-filter]')){const filter=button.dataset.payerFilter,key=filter.split('-')[0],personal=filter.endsWith('-personal'),name=household.people[key]||'',short=accountUsername(name).split(/\s+/)[0].replace(/^larissabassi(?:borges)?$/i,'Larissa')||name;const paid=transactions.filter(t=>matchesPayerFilter(t,filter));button.hidden=!household.enabled;button.setAttribute('aria-pressed',String(personFilter===filter));button.setAttribute('aria-label','Filtrar gastos '+(personal?'individuais':'compartilhados')+' pagos por '+name);button.title=name+' pagou · '+money(paid.reduce((n,t)=>n+t.amount,0))+' no mês';button.querySelector('[data-payer-name]').textContent=short+(personal?' pagou seu gasto':' pagou');button.querySelector('.payer-filter-avatar').textContent=short.slice(0,1).toLocaleUpperCase('pt-BR');button.querySelector('b').textContent=String(paid.length);}
+  for(const group of $$('[data-payer-filter-group]'))group.hidden=!household.enabled;
   const filtered=transactions.filter(t=>{
     const category=state.categories.find(c=>c.id===t.categoryId);
-    const personMatches=personFilter==='all'||personFilter==='unknown'&&t.type==='expense'&&!t.sharing||personFilter==='shared'&&t.sharing?.eduPercent>0&&t.sharing.eduPercent<100||['edu','larissa'].includes(personFilter)&&t.sharing?.paidBy===personFilter;
+    const personMatches=personFilter==='all'||personFilter==='unknown'&&t.type==='expense'&&!t.sharing||personFilter==='shared'&&t.sharing?.eduPercent>0&&t.sharing.eduPercent<100||['edu','larissa','edu-personal','larissa-personal'].includes(personFilter)&&matchesPayerFilter(t,personFilter);
     return (!uncategorizedOnly||needsCategory(t,state.categories))&&personMatches&&(txFilter==='all'||t.type===txFilter)&&(!search||`${t.payee||''} ${t.memo||''} ${t.description} ${category?.name||'Entrada'}`.toLocaleLowerCase('pt-BR').includes(search));
   });
   if(!filtered.length){$('#transactions-list').innerHTML=`<div class="empty-state">${icon('swap')}<h3>${uncategorizedOnly&&!pendingCount?'Tudo classificado neste mês.':transactions.length?'Nenhum resultado por aqui.':'Seu próximo movimento começa aqui.'}</h3><p>${uncategorizedOnly&&!pendingCount?'Nenhuma despesa está sem categoria. Desative o filtro para ver os demais movimentos.':transactions.length?'Tente outro termo ou escolha um filtro diferente.':'Registre uma entrada ou uma despesa e acompanhe tudo no mesmo lugar.'}</p>${transactions.length?'':`<button class="btn btn-blue" data-add-transaction>${icon('plus')} Novo lançamento</button>`}</div>`;return;}
