@@ -102,3 +102,20 @@
  .action-dialog.transaction-dialog .dialog-pages{display:none}
  .action-dialog.transaction-dialog .form-group input,.action-dialog.transaction-dialog .form-group select,.action-dialog.transaction-dialog textarea{font-size:16px;min-height:48px}
 }
+
+/* An inset focus ring remains complete inside the phone's scrolling sheet. */
+@media(max-width:719px){
+ .action-dialog.transaction-dialog .dialog-heading{align-items:center;margin-bottom:14px}
+ .action-dialog.transaction-dialog .dialog-heading .eyebrow{display:none}
+ .action-dialog.transaction-dialog .dialog-heading h2{font-size:23px;line-height:1.25;letter-spacing:-.5px}
+ .action-dialog.transaction-dialog .dialog-heading .icon-button{width:44px;height:44px;flex:0 0 44px}
+ .action-dialog.transaction-dialog #dialog-body{padding-top:3px;padding-inline:3px;scroll-padding-top:12px}
+ .action-dialog.transaction-dialog .tx-type-switch{margin-bottom:18px;padding:4px;border-radius:12px}
+ .action-dialog.transaction-dialog .tx-type-switch button{min-height:44px;padding:10px;font-size:14px;border-radius:9px}
+ .action-dialog.transaction-dialog .form-group{margin-bottom:16px}
+ .action-dialog.transaction-dialog .form-group>label,.action-dialog.transaction-dialog .form-group>span{font-size:12px;font-weight:650;line-height:1.4;margin-bottom:6px}
+ .action-dialog.transaction-dialog .form-group small{font-size:11px;line-height:1.45;margin-top:6px;color:#777166}
+ .action-dialog.transaction-dialog .form-group .amount-input{font-size:26px;font-weight:650;min-height:58px;padding:10px 14px;line-height:1.25}
+ .action-dialog.transaction-dialog :is(input,select,textarea):focus{outline:none!important;outline-offset:0!important;border-color:#8065e9!important;box-shadow:inset 0 0 0 1.5px #8065e9!important}
+ .action-dialog.transaction-dialog :is(button,summary):focus-visible{outline:2px solid #8065e9;outline-offset:-3px}
+}
