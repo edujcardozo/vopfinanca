@@ -130,3 +130,12 @@
  .action-dialog.transaction-dialog .transaction-form-actions>.save-another{background:#faf9f5;color:#514682;border:1px solid #d9d3e8}
  .action-dialog.transaction-dialog .transaction-form-actions>button .icon{width:18px;height:18px}
 }
+
+/* Keep iOS overlay scroll indicators in a dedicated lane outside the fields. */
+@media(max-width:719px){
+ .action-dialog.transaction-dialog #dialog-body{margin-right:-8px;padding-left:3px;padding-right:16px;scrollbar-gutter:stable;scrollbar-width:thin;scrollbar-color:#b8b2a5 transparent}
+ .action-dialog.transaction-dialog #dialog-body::-webkit-scrollbar{width:4px}
+ .action-dialog.transaction-dialog #dialog-body::-webkit-scrollbar-track{background:transparent}
+ .action-dialog.transaction-dialog #dialog-body::-webkit-scrollbar-thumb{background:#b8b2a5;border-radius:8px}
+ .action-dialog.transaction-dialog .transaction-form-actions{padding-bottom:8px}
+}
