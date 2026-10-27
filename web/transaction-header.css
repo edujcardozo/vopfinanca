@@ -44,13 +44,13 @@
 
 /* Settlement is a monthly summary, outside the filter controls. */
 #transactions-settlement-slot:empty,#transactions-settlement-slot:has(>[hidden]){display:none}
-.transactions-active #couple-transactions-summary .couple-header-summary{background:linear-gradient(120deg,#25215b,#373071);border:1px solid #51458c;box-shadow:0 3px 12px #28205316;min-height:68px;padding:11px 14px;border-radius:12px;column-gap:12px;row-gap:7px;color:#fff}
+.transactions-active #couple-transactions-summary .couple-header-summary{background:#1c1f58;border:1px solid #30356c;box-shadow:0 3px 12px #28205316;min-height:68px;padding:11px 14px;border-radius:12px;column-gap:12px;row-gap:7px;color:#fff}
 .transactions-active #couple-transactions-summary .couple-header-label strong{font-size:11px;font-weight:550;color:#ded8f4;letter-spacing:.015em}
 .transactions-active #couple-transactions-summary .couple-header-summary>b{font-size:20px;font-weight:750;color:#c3ef93;background:transparent;letter-spacing:-.4px}
 .transactions-active #couple-transactions-summary .couple-header-label small{color:#f2eefb;border-color:#ffffff22;font-size:12px;padding-top:7px}
 .transactions-active #couple-transactions-summary .couple-transfer-word{color:#bbaee2}
 .transactions-active #couple-transactions-summary .couple-header-arrow{color:#c8bde7}
-.transactions-active #couple-transactions-summary .couple-header-summary:hover{background:linear-gradient(120deg,#30296c,#433884);border-color:#8d78c1}
+.transactions-active #couple-transactions-summary .couple-header-summary:hover{background:#272b69;border-color:#555a8c}
 .transactions-active #couple-transactions-summary .couple-header-summary:focus-visible{outline:2px solid #9476e1;outline-offset:3px}
 .transactions-active #couple-transactions-summary .couple-header-summary.balanced>b{color:#c3ef93}
 @media(min-width:720px){
