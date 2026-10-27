@@ -45,7 +45,7 @@ test('desktop transaction composer selects saved payee/category, saves once and 
    for(const changes of [{altKey:false},{ctrlKey:true},{metaKey:true},{shiftKey:true},{repeat:true},{isComposing:true},{getModifierState:name=>name==='AltGraph'}])shortcut(document,changes);
    assert.equal(document.querySelector('#transaction-form'),null);
    shortcut(document.querySelector('#transaction-search'));assert.equal(document.querySelector('#transaction-form'),null);
-   event(document.querySelector('#add-group'),'click');const unfinishedGroup=document.querySelector('#group-form');unfinishedGroup.elements.name.value='Rascunho do grupo';shortcut();assert.equal(document.querySelector('#group-form'),unfinishedGroup);assert.equal(unfinishedGroup.elements.name.value,'Rascunho do grupo');event(document.querySelector('#close-dialog'),'click');
+   event(document.querySelector('#add-group'),'click');const unfinishedGroup=document.querySelector('#quick-create-form');unfinishedGroup.elements.name.value='Rascunho do grupo';shortcut();assert.equal(document.querySelector('#quick-create-form'),unfinishedGroup);assert.equal(unfinishedGroup.elements.name.value,'Rascunho do grupo');event(document.querySelector('#quick-create-cancel'),'click');
    const pressed=shortcut();assert.equal(pressed.defaultPrevented,width>=720);
    if(width<720){assert.equal(document.querySelector('#transaction-form'),null);event(document.querySelector('[data-add-transaction]'),'click');}
    const form=document.querySelector('#transaction-form');assert.ok(form);assert.equal(dialog.open||false,width<1000);assert.equal(document.querySelector('#transaction-composer').hidden,width<1000);assert.equal(document.querySelectorAll('#transaction-form').length,1);

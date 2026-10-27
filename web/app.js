@@ -1,3 +1,4 @@
+import {openQuickCreate} from './quick-create.js?v=vpo-110';
 import {needsCategory} from './transaction-category-filter.js?v=vpo-87';
 import {overspendingInsights,overspendingHTML} from './overspending-insights.js?v=vpo-86';
 import {mountCategoryActivity} from './category-activity.js?v=vpo-84';
@@ -329,6 +330,19 @@ function confirmAction(title,message,button,action){
 }
 function groupOptions(selected){return groupsFor(state).filter(g=>!g.hidden||g.id===selected).map(g=>`<option value="${esc(g.id)}" ${g.id===selected?'selected':''}>${esc(g.name)}${g.hidden?' (oculto)':''}</option>`).join('');}
 
+function quickCreate(trigger,groupId=null){
+ const planId=state.planId;
+ openQuickCreate({trigger,title:groupId?'Nova categoria':'Novo grupo',placeholder:groupId?'Nome da categoria':'Nome do grupo',onCreate:name=>{
+  if(state.planId!==planId)throw Error('O orçamento mudou. Abra novamente.');
+  if(groupId){
+   if(!visibleGroups(state).some(g=>g.id===groupId))throw Error('Este grupo não está disponível.');
+   if(state.categories.length>=1000)throw Error('Seu plano atingiu o limite de categorias.');
+   if(state.categories.some(c=>c.group===groupId&&c.name.trim().toLocaleLowerCase('pt-BR')===name.toLocaleLowerCase('pt-BR')))throw Error('Já existe uma categoria com esse nome neste grupo.');
+   state.categories.push({id:id(),name,group:groupId,target:0,icon:categoryIcon(name)});collapsedGroups.delete(groupId);
+  }else createGroup(state,name);
+  persist();renderAll();toast(groupId?'Categoria criada.':'Grupo criado. Use o + para adicionar categorias.');
+ }});
+}
 function groupDialog(groupId=null){
   const group=groupId?groupsFor(state).find(g=>g.id===groupId):null;
   if(groupId&&!group)return toast('Este grupo não está mais disponível.');
@@ -572,7 +586,7 @@ let chosenGoal='viagem';
 const goalTexts={viagem:'Uma viagem começa bem antes da mala. Separe um pouco por mês e veja esse plano se aproximar.',reserva:'Imprevistos fazem parte da vida. Uma reserva ajuda você a atravessar cada um deles com mais tranquilidade.',lazer:'Um café, um jantar, um encontro. Quando esses momentos estão no plano, fica mais fácil aproveitar.'};
 document.addEventListener('keydown',e=>{
   if(e.defaultPrevented||e.repeat||e.isComposing||!e.altKey||e.ctrlKey||e.metaKey||e.shiftKey||e.getModifierState?.('AltGraph')||(e.code!=='KeyN'&&e.key?.toLowerCase()!=='n'))return;
-  if($('#budget-app').hidden||!window.matchMedia('(min-width: 720px)').matches||dialog.open||!$('#transaction-composer').hidden||e.target.closest?.('input,textarea,select,[contenteditable]:not([contenteditable="false"])'))return;
+  if($('#budget-app').hidden||!window.matchMedia('(min-width: 720px)').matches||dialog.open||document.querySelector('#quick-create-popover')||!$('#transaction-composer').hidden||e.target.closest?.('input,textarea,select,[contenteditable]:not([contenteditable="false"])'))return;
   const trigger=$('.app-header [data-add-transaction]');
   if(!trigger||trigger.disabled)return;
   e.preventDefault();
@@ -598,7 +612,7 @@ document.addEventListener('click',e=>{
   const nav=e.target.closest('[data-view]');if(nav){goPlan(nav.dataset.view);return;}
   const groupEdit=e.target.closest('[data-edit-group]');if(groupEdit){groupDialog(groupEdit.dataset.editGroup);return;}
   if(e.target.closest('[data-hidden-groups]')){hiddenGroupsDialog();return;}
-  const groupAdd=e.target.closest('[data-add-category-group]');if(groupAdd){newCategoryDialog(groupAdd.dataset.addCategoryGroup);return;}
+  const groupAdd=e.target.closest('[data-add-category-group]');if(groupAdd){quickCreate(groupAdd,groupAdd.dataset.addCategoryGroup);return;}
   const menu=e.target.closest('[data-category-menu]');if(menu){categoryActivity.open(menu.dataset.categoryMenu,menu);return;}
   if(e.target.closest('[data-hidden-categories]')){hiddenCategoriesDialog();return;}
   if(e.target.closest('#category-menu'))return;
@@ -629,7 +643,7 @@ $('#privacy-toggle').onclick=()=>{state.hideBalances=!state.hideBalances;persist
 $('#transaction-search').oninput=renderTransactions;
 $('#transaction-person-filter').onchange=e=>{personFilter=e.target.value;renderTransactions();};
 $('#add-category').onclick=()=>newCategoryDialog();
-$('#add-group').onclick=()=>groupDialog();
+$('#add-group').onclick=e=>quickCreate(e.currentTarget);
 $('#categories-list').addEventListener('reorderstart',()=>{closeCategoryMenu(false);collapsedGroups.clear();$$('.category-items').forEach(list=>list.hidden=false);$$('[data-collapse-group]').forEach(b=>b.setAttribute('aria-expanded','true'));});
 $('#close-dialog').onclick=closeDialog;
 dialog.addEventListener('close',()=>{if(!dialog.open)document.body.style.overflow='';queueMicrotask(()=>historyIntro?.maybeShow());});
