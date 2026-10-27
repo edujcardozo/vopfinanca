@@ -49,3 +49,7 @@
  .budget-active .group-header .group-total>strong{color:#4d4569}
  .budget-active .group-header>.sort-handle{top:26px}
 }
+
+/* Stronger visual separation between groups and their category rows. */
+.budget-active .category-group>.group-header{background:#e6e3ed;border-bottom:1px solid #d7d2e3}
+@media(max-width:719px){.budget-active .category-group>.group-header{background:#e5e1d6;border-bottom-color:#d5cfc0}.budget-active .group-header :is(.group-planned-total,.group-spent-total,.group-total){border-top-color:#d5cfc0}}
