@@ -41,3 +41,9 @@ test('a queued close from the previous popup preserves the reopened popup reflow
  pending();assert.equal(dialog.style.getPropertyValue('--dialog-center-y'),'195px');assert.equal(dialog.style.getPropertyValue('--dialog-viewport-height'),'390px');
  dialog.open=false;event(dialog,'close');assert.equal(cancelled,true);
 });
+test('mobile transaction keeps one stable sheet when keyboard reduces the visual viewport',()=>{
+ const {window,document,dialog,root,pager,event}=setup('<form><label data-height="300">Valor<input value="123"></label><label data-height="300">Categoria<input></label><button>Salvar</button></form>',900);
+ window.innerWidth=390;window.innerHeight=844;window.visualViewport={height:844,offsetTop:0,addEventListener(){}};dialog.classList.add('transaction-dialog');pager.reset();
+ const before=dialog.style.getPropertyValue('--transaction-stable-height');window.visualViewport.height=420;window.innerHeight=420;event(window,'resize');
+ assert.equal(dialog.style.getPropertyValue('--transaction-stable-height'),before);assert.equal(pager.count,0);assert.equal(document.querySelector('.dialog-pages').hidden,true);assert.equal(root.querySelector('[data-dialog-page-hidden]'),null);assert.equal(root.querySelector('input').value,'123');
+});

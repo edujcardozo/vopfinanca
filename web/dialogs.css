@@ -92,3 +92,13 @@
 @media(max-height:480px){.action-dialog.new-category-dialog{padding:14px 16px}.new-category-dialog #new-category-form{gap:10px}.new-category-dialog .dialog-heading{margin-bottom:12px}.new-category-dialog .dialog-heading h2{font-size:20px}.new-category-dialog .form-group input,.new-category-dialog .form-group select{min-height:42px;padding-block:8px}.new-category-dialog .new-category-help{display:none}.new-category-dialog .form-submit{min-height:42px}}
 
 .payer-option .payer-glyph{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#e8e8ff;color:#4d50ce;font-size:14px;font-weight:750}.payer-option[data-paid-by=larissa] .payer-glyph{background:#e5f2d2;color:#406a22}
+
+/* The phone keyboard covers the transaction sheet without repaginating it. */
+@media(max-width:719px){
+ .action-dialog.transaction-dialog{top:12px;bottom:auto;transform:translateX(-50%);height:calc(var(--transaction-stable-height,100svh) - 24px);max-height:calc(var(--transaction-stable-height,100svh) - 24px);padding:16px;overflow:hidden}
+ .action-dialog.transaction-dialog #dialog-body{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding-bottom:var(--transaction-keyboard-space,0px);scroll-padding-block:16px;box-sizing:border-box}
+ .action-dialog.transaction-dialog .dialog-heading{flex:none;margin-bottom:16px}
+ .action-dialog.transaction-dialog .dialog-heading h2{font-size:24px}
+ .action-dialog.transaction-dialog .dialog-pages{display:none}
+ .action-dialog.transaction-dialog .form-group input,.action-dialog.transaction-dialog .form-group select,.action-dialog.transaction-dialog textarea{font-size:16px;min-height:48px}
+}

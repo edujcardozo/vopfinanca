@@ -5,7 +5,7 @@ export function paginateHeights(heights,available){
  if(page.length)pages.push(page);return pages;
 }
 export function createDialogPages(dialog,{body,heading}){
- let units=[],pages=[],current=0,frame=null,firstInvalid=false,anchor=null;
+ let units=[],pages=[],current=0,frame=null,firstInvalid=false,anchor=null,stableHeight=0,stableWidth=0;
  const footer=document.createElement('nav');footer.className='dialog-pages';footer.hidden=true;footer.setAttribute('aria-label','Etapas do popup');
  footer.innerHTML='<button type="button" data-dialog-prev>‹ Anterior</button><span data-dialog-page-label role="status" aria-live="polite"></span><button type="button" data-dialog-next>Continuar ›</button>';
  dialog.append(footer);
@@ -24,6 +24,20 @@ export function createDialogPages(dialog,{body,heading}){
  function fit(){
   frame=null;if(!dialog.open)return;
   const focused=document.activeElement,previousAnchor=units.find(el=>el.contains(focused))||anchor;
+  if(dialog.classList.contains('transaction-dialog')&&(window.innerWidth||1000)<720){
+   clearLayout();dialog.classList.remove('dialog-paged','dialog-tight');footer.hidden=true;units=[];pages=[];current=0;
+   const width=window.innerWidth,visible=window.visualViewport?.height||window.innerHeight;
+   if(!stableHeight||stableWidth!==width){stableHeight=Math.max(window.innerHeight||0,visible||0);stableWidth=width;}
+   const keyboard=Math.max(0,stableHeight-visible-(window.visualViewport?.offsetTop||0));
+   dialog.style.setProperty('--transaction-stable-height',stableHeight+'px');
+   dialog.style.setProperty('--transaction-keyboard-space',keyboard>100?keyboard+'px':'0px');
+   if(focused&&body.contains(focused)&&focused.matches('input,textarea,select')&&keyboard>100){
+    const rect=focused.getBoundingClientRect(),bottom=visible+(window.visualViewport?.offsetTop||0)-20;
+    if(rect.bottom>bottom)body.scrollTop+=rect.bottom-bottom;
+   }
+   return;
+  }
+
   clearLayout();dialog.classList.remove('dialog-paged');
   const viewport=window.visualViewport?.height||window.innerHeight||0;if(!viewport)return;
   dialog.style.setProperty('--dialog-viewport-height',viewport+'px');dialog.style.setProperty('--dialog-center-y',((window.visualViewport?.offsetTop||0)+viewport/2)+'px');
@@ -68,8 +82,8 @@ export function createDialogPages(dialog,{body,heading}){
  dialog.addEventListener('invalid',e=>{if(firstInvalid){e.preventDefault();return;}firstInvalid=true;reveal(e.target);queueMicrotask(()=>firstInvalid=false);},true);
  dialog.addEventListener('submit',e=>{if(pages.length>1&&current<pages.length-1){e.preventDefault();e.stopImmediatePropagation();if(validPage())show(current+1,{focus:true});}},true);
  // Reflow when conditional fields, errors, expanded notes or the keyboard change space.
- ['change','toggle','input','click'].forEach(type=>body.addEventListener(type,refresh,true));
+ ['change','toggle','input','click','focusin'].forEach(type=>body.addEventListener(type,refresh,true));
  window.addEventListener('resize',refresh);window.visualViewport?.addEventListener('resize',refresh);
  dialog.addEventListener('close',()=>{if(dialog.open){refresh();return;}window.cancelAnimationFrame?.(frame);frame=null;clearLayout();footer.hidden=true;dialog.classList.remove('dialog-paged','dialog-tight');units=[];pages=[];anchor=null;});
- return {refresh,reveal,reset(){clearLayout();units=[];pages=[];current=0;anchor=null;footer.hidden=true;refresh();},get page(){return current;},get count(){return pages.length;},next(){if(validPage())show(current+1);},previous(){show(current-1);}};
+ return {refresh,reveal,reset(){stableHeight=window.innerHeight||window.visualViewport?.height||0;stableWidth=window.innerWidth;clearLayout();units=[];pages=[];current=0;anchor=null;footer.hidden=true;refresh();},get page(){return current;},get count(){return pages.length;},next(){if(validPage())show(current+1);},previous(){show(current-1);}};
 }
