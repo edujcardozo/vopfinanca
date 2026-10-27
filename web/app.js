@@ -1,4 +1,4 @@
-import {categorySpendingPopup} from './category-spending-popup.js?v=vpo-112';
+import {categorySpendingPopup,filterSpendingPopup} from './category-spending-popup.js?v=vpo-113';
 import {openQuickCreate} from './quick-create.js?v=vpo-110';
 import {needsCategory} from './transaction-category-filter.js?v=vpo-87';
 import {overspendingInsights,overspendingHTML} from './overspending-insights.js?v=vpo-86';
@@ -676,3 +676,5 @@ mountInvoiceImport({getState:()=>state,getPeople:()=>household.people,storage:pl
 categoryActivity=mountCategoryActivity({getState:()=>state,getMonth:()=>selectedMonth,getView:()=>view,getPeople:()=>household.people,onEdit:txId=>transactionDialog('expense',txId),onOptions:(categoryId,trigger)=>categoryMenu(categoryId,trigger)});
 
 function monthlySpendingDialog(page=0){const insights=overspendingInsights(state,selectedMonth);openDialog('Onde passou do planejado?',overspendingHTML(insights,{page,hidden:state.hideBalances}),esc(monthName(selectedMonth)));}
+
+document.addEventListener('input',e=>{if(e.target.matches('[data-spending-search]'))filterSpendingPopup($('#dialog-body'),e.target.value,state.hideBalances);});
