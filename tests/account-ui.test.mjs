@@ -8,7 +8,7 @@ test('sidebar shows only the email username safely and links directly to account
   const {document}=dom('<aside><div></div></aside>');
   const root=document.querySelector('div');
   mountAccountUI({root,name:'Larissa Bassi',email:'larissa@example.test'});
-  assert.equal(root.querySelector('strong').textContent,'larissa');assert.equal(root.querySelector('.vpo-account-avatar').textContent,'L');
+  assert.equal(root.querySelector('strong').textContent,'Larissa');assert.equal(root.querySelector('.vpo-account-avatar').textContent,'L');
   assert.equal(root.querySelector('.vpo-account-identity').textContent.includes('@'),false);assert.equal(root.querySelector('a').getAttribute('href'),'#plano/ajustes');
   assert.equal(root.querySelector('strong').title,'larissa@example.test');assert.ok(root.querySelector('a').getAttribute('aria-label').includes('larissa@example.test'));
   mountAccountUI({root,name:'<img src=x onerror=alert(1)>',email:'<script>@example.test'});

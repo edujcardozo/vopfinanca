@@ -26,10 +26,10 @@ test('group options hide, restore, cancel and delete safely on desktop and mobil
    click('[data-edit-group="daily"]');click('[data-remove-group]');click('[data-cancel-group-delete]');assert.ok(document.querySelector('#group-form'));assert.ok(stored().groups.find(g=>g.id==='daily'));
    click('[data-remove-group]');let form=document.querySelector('#delete-group-form');event(form,'submit');assert.equal(document.querySelector('#form-error').hidden,false);assert.ok(stored().groups.find(g=>g.id==='daily'));
    form.elements.destination.value='essentials';event(form,'submit');assert.equal(document.querySelector('[data-sort-group="daily"]'),null);assert.equal(document.querySelector('[data-category="mercado"]').closest('[data-sort-group]').dataset.sortGroup,'essentials');assert.equal(stored().categories.find(c=>c.id==='lazer').group,'essentials');assert.deepEqual(stored().months,financial);assert.deepEqual(validateState(stored()),stored());
-   click('#add-group');form=document.querySelector('#group-form');form.elements.name.value='Temporário';event(form,'submit');const empty=stored().groups.find(g=>g.name==='Temporário');assert.ok(empty);
+   click('#add-group');form=document.querySelector('#quick-create-form');form.elements.name.value='Temporário';event(form,'submit');const empty=stored().groups.find(g=>g.name==='Temporário');assert.ok(empty);
    click(`[data-edit-group="${empty.id}"]`);click('[data-remove-group]');form=document.querySelector('#delete-group-form');assert.equal(form.elements.destination,undefined);event(form,'submit');assert.equal(stored().groups.some(g=>g.id===empty.id),false);assert.deepEqual(stored().months,financial);
    for(const group of stored().groups){click(`[data-edit-group="${group.id}"]`);click('[data-hide-group]');}
-   assert.equal(document.querySelectorAll('[data-sort-group]').length,0);assert.ok(document.querySelector('[data-hidden-groups]'));click('#add-category');assert.equal(document.querySelector('#new-category-form'),null);
+   assert.equal(document.querySelectorAll('[data-sort-group]').length,0);assert.ok(document.querySelector('[data-hidden-groups]'));click('[data-app-options]');click('[data-options-category]');assert.equal(document.querySelector('#new-category-form'),null);
    click('[data-hidden-groups]');click('[data-show-group="essentials"]');assert.ok(document.querySelector('[data-category="mercado"]'));assert.deepEqual(stored().months,financial);
   }
  }finally{await new Promise(setImmediate);Object.assign(globalThis,saved);}

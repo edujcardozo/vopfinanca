@@ -128,3 +128,11 @@ Com `manual-pix.sql`, clientes podem pagar a mensalidade com QR Code estático B
 A confirmação é exclusiva do administrador, após conferência no banco, pelo endpoint `/api/access/pix`. Uma chave idempotente e a versão do período impedem repetição de confirmação e concorrência com uma lista antiga. Datas, preço e permissões vêm do servidor. O registro fica em `manual_pix_payments`, com RLS e sem acesso direto para clientes. Pix confirmado concede um mês a partir do maior entre agora, fim do teste e fim do período já pago. Não cria uma cobrança ou pagamento fictício no Asaas.
 
 Links de referência: https://www.bcb.gov.br/content/estabilidadefinanceira/pix/Regulamento_Pix/II_ManualdePadroesparaIniciacaodoPix.pdf e https://faq.whatsapp.com/5913398998672934/?locale=pt_BR.
+
+## Congelar e renovar sem perder o orçamento
+
+Instale `plan-freeze.sql` depois de `savings-goals.sql`. O administrador encontra Congelar plano nas opções de acesso e a lista Congelados separada de Removidos. Ambos bloqueiam consultas e gravações da conta, incluindo o plano compartilhado quando o titular está suspenso. Nenhum orçamento ou usuário do Auth é apagado.
+
+Após confirmar o e-mail, contas suspensas veem instruções Pix, cópia do código e WhatsApp. O pagamento continua manual: só **Confirmar Pix · renovar e retomar**, após conferir o banco, registra um mês e remove a suspensão atomicamente. Erros e confirmações antigas mantêm o bloqueio. Retomar plano / Restaurar acesso são liberações administrativas sem pagamento e não reiniciam o teste nem estendem datas pagas. Congelar pausa o acesso, não o calendário do período contratado. Assinaturas automáticas em andamento precisam ser canceladas e confirmadas antes de congelar.
+
+O aplicativo de assinantes exige conexão para confirmar acesso ao abrir e oculta o orçamento ao ficar offline. Sessões abertas verificam a aprovação a cada 15 segundos e ao recuperar o foco; o servidor verifica cada requisição, independentemente do token de login ainda ser válido. Arquivos de backup já baixados pelo usuário não podem ser revogados remotamente.

@@ -1,3 +1,4 @@
+import {pixPaymentHTML,bindPixPayment} from './pix-ui.js';
 import {accessShell} from './auth.js';
 import {invitationToken} from '../web/sharing-ui.js';
 const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -12,6 +13,7 @@ export function createRegistrationNotifier({auth,fetcher=fetch}){return async fu
   if(!response.ok)throw Object.assign(new Error(result.error||'O envio de e-mails ainda precisa ser configurado.'),{code:result.code});return result;
 };}
 export function mountAccessGate({root,api,intent={},email='',notifyRegistration=async()=>{},onSignOut=()=>{},windowObject=window,offlineAccess=null,onVerified=()=>{}}){
+  let renewal=null,renewalLoading=false,renewalError='';
   let info=null,busy=false,done=false,token=intent?.token||invitationToken(windowObject.location.hash),preview=null,inviteError='',enterInvite=false,lastView='',draft=intent?.profile;
   let resolveReady;const ready=new Promise(resolve=>resolveReady=resolve);
   const $=s=>root.querySelector(s);
@@ -22,13 +24,22 @@ export function mountAccessGate({root,api,intent={},email='',notifyRegistration=
     $('#gate-signout').onclick=async()=>{try{await onSignOut();}catch(error){message(error.message,true);}};
   }
   function render(){
-    const key=JSON.stringify([info,token,preview,inviteError,enterInvite]);if(key===lastView)return;lastView=key;
+    const key=JSON.stringify([info,token,preview,inviteError,enterInvite,renewal,renewalError]);if(key===lastView)return;lastView=key;
     if(!info.hasProfile){
       shell('Só mais um passo.','Seu e-mail está confirmado. Complete seus dados para continuar.',`<form id="gate-profile"><label for="gate-name">Nome completo</label><input id="gate-name" autocomplete="name" maxlength="100" required placeholder="Como você se chama?"><label for="gate-phone" style="margin-top:18px">Celular <span class="vpo-field-optional">opcional</span></label><input id="gate-phone" type="tel" autocomplete="tel" maxlength="30" placeholder="(00) 00000-0000"><p class="vpo-field-help">${esc(info.email||email)}</p><button class="vpo-access-submit" type="submit">Concluir cadastro →</button></form>`);
       $('#gate-name').value=draft?.fullName||'';$('#gate-phone').value=draft?.phone||'';
       $('#gate-profile').onsubmit=async e=>{e.preventDefault();await register({fullName:$('#gate-name').value,phone:$('#gate-phone').value},token||intent?.mode==='invite'?'guest':'personal');};return;
     }
-    if(info.status==='rejected'||info.status==='revoked'){
+    if(['revoked','frozen'].includes(info.status)||info.planPaused){
+      root.classList.add('vpo-renewal-screen');
+      const personal=['revoked','frozen'].includes(info.status);
+      shell(personal?'Seu plano espera por você.':'O plano compartilhado está pausado.',personal?'Seus lançamentos continuam guardados com carinho. Renove seu acesso para continuar de onde parou.':'Quem compartilhou o orçamento com você precisa renovar ou reativar o plano. Os dados continuam salvos.',`<div class="vpo-renewal-content">${renewal?.manualPix?.ready?pixPaymentHTML(renewal):`<p class="vpo-gate-message">${personal?'Conferindo as opções para renovar seu plano…':'Entre em contato com o titular do plano.'}</p>`}</div>${renewalError?`<p class="vpo-access-error">${esc(renewalError)}</p>`:''}<button type="button" id="gate-renewal-refresh" class="vpo-access-submit">Já renovei · conferir acesso ↻</button>`, '↻');
+      if(renewal?.manualPix?.ready)bindPixPayment({dialog:root.querySelector('.vpo-pix-payment'),info:renewal,back:()=>onSignOut(),refresh,notify:text=>message(text)});
+      $('#gate-renewal-refresh').onclick=refresh;
+      if(personal&&!renewal&&!renewalLoading){renewalLoading=true;api('/renewal').then(value=>{renewal=value;if(!value.manualPix?.ready)renewalError='Fale com o administrador para combinar a renovação do seu acesso.';}).catch(error=>{renewalError=error.message;}).finally(()=>{renewalLoading=false;if(!done)render();});}
+      return;
+    }
+    if(info.status==='rejected'){
       shell(info.status==='revoked'?'Seu acesso foi removido.':'Cadastro não autorizado.',info.status==='revoked'?'O administrador removeu seu acesso ao VPO. Entre em contato para saber como continuar.':'Seu pedido foi analisado e não foi liberado neste momento.','<p class="vpo-gate-message">Se precisar de ajuda, entre em contato com <a href="mailto:edujcardozo@gmail.com">edujcardozo@gmail.com</a>.</p>','–');return;
     }
     if(token||enterInvite){
@@ -64,8 +75,7 @@ export function mountAccessGate({root,api,intent={},email='',notifyRegistration=
     if(info.canUse&&!token&&!enterInvite){finish(info);return;}render();await loadPreview();
   });}
   const timer=windowObject.setInterval(()=>{if(windowObject.document?.visibilityState!=='hidden')refresh();},15000);
-  if(offlineAccess?.canUse&&offlineAccess.hasProfile&&!token)finish(offlineAccess);
-  else refresh().then(()=>{if(!info&&!done){shell('Vamos reconectar.','Precisamos confirmar seu acesso para abrir o plano.','<button class="vpo-access-submit" id="gate-retry" type="button">Tentar novamente →</button>','↻');$('#gate-retry').onclick=refresh;}});
+  refresh().then(()=>{if(!info&&!done){shell('Vamos reconectar.','Precisamos confirmar seu acesso para abrir o plano.','<button class="vpo-access-submit" id="gate-retry" type="button">Tentar novamente →</button>','↻');$('#gate-retry').onclick=refresh;}});
   return {ready,refresh,destroy(){windowObject.clearInterval(timer);done=true;}};
 }
 

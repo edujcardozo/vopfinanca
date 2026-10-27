@@ -38,10 +38,8 @@ client.auth.onAuthStateChange((event,next)=>{
     leaving=true;conceal();setTimeout(()=>location.reload(),0);
   }
 });
-let cachedAccess=null;
-try{const cached=JSON.parse(storage.getItem('vpo-verified-access-v1'));if(!navigator.onLine&&cached?.info?.userId===userId&&Date.now()-cached.checkedAt<7*86400000)cachedAccess=cached.info;}catch{/* First access needs an online verification. */}
 function rememberAccess(info){if(navigator.onLine)try{storage.setItem('vpo-verified-access-v1',JSON.stringify({info,checkedAt:Date.now()}));}catch{/* Cloud authorization does not depend on a browser cache. */}}
-const gate=mountAccessGate({root:access,api:registrationAPI,intent,email:session.user.email,notifyRegistration:registrationNotifier,offlineAccess:cachedAccess,onVerified:rememberAccess,onSignOut:async()=>{
+const gate=mountAccessGate({root:access,api:registrationAPI,intent,email:session.user.email,notifyRegistration:registrationNotifier,onVerified:rememberAccess,onSignOut:async()=>{
   const {error}=await client.auth.signOut({scope:'local'});if(error)throw new Error('Não foi possível sair. Tente novamente.');leaving=true;conceal();location.reload();
 }});
 const accountAccess=await gate.ready;gate.destroy();
@@ -67,6 +65,8 @@ export const platform={
     billingUI.refresh().then(info=>{if(info?.enabled&&info.isOwner&&info.trialStartedAt&&info.hasBillingAccount!==false)billingUI.refresh(false,true);});
     setInterval(()=>{if(document.visibilityState!=='hidden')billingUI.refresh();},60000);
     setInterval(()=>{if(document.visibilityState!=='hidden')checkApproval();},15000);
+    window.addEventListener('offline',()=>{conceal();access.innerHTML='<p class="vpo-access-loading" role="status">Conecte-se à internet para confirmar seu acesso e continuar. Seus dados permanecem salvos.</p>';});
+    window.addEventListener('online',()=>location.reload());
     window.addEventListener('focus',checkApproval);
     window.addEventListener('online',checkApproval);
     if(accountAccess.isAdmin){const admin=document.createElement('article');admin.className='settings-card';document.querySelector('.settings-grid').append(admin);mountRegistrationAdmin({root:admin,api:registrationAPI,notifier:registrationNotifier,notify});}

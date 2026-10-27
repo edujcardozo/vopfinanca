@@ -3,6 +3,7 @@ export function remainingTrialDays(info){
 }
 export function accessLabel(info){
   if(!info)return '';
+  if(info.phase==='frozen')return 'Plano congelado';
   if(info.phase==='revoked')return 'Acesso removido';
   if(info.isOwner===false)return info.phase==='trialing'&&remainingTrialDays(info)!==null?`Compartilhado · ${remainingTrialDays(info)} dias de teste`:'Plano compartilhado';
   if(info.phase==='permanent')return 'Acesso permanente';
@@ -17,5 +18,5 @@ export function accessLabel(info){
 }
 export function accessTone(info){
   return info?.phase==='permanent'||info?.phase==='active'?'success':
-    ['payment_required','canceled','awaiting_payment','revoked'].includes(info?.phase)?'attention':'trial';
+    ['payment_required','canceled','awaiting_payment','revoked','frozen'].includes(info?.phase)?'attention':'trial';
 }
