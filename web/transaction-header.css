@@ -38,3 +38,6 @@
  .transactions-active .payer-filter-group:not(.classification-filter-group)>div{grid-template-columns:repeat(2,minmax(0,1fr))}
  .transactions-active .payer-filter-group-label{font-size:11px}
 }
+
+.transaction-filter-summary[hidden]{display:none!important}.transaction-filter-summary{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 14px;margin:-5px 0 15px;border:1px solid #e1d7f1;border-radius:10px;background:#f3eefb;color:#4d347b;font-variant-numeric:tabular-nums}.filter-total-copy{display:flex;flex-direction:column;gap:3px;min-width:0}.filter-total-copy>strong{font-size:12px;line-height:1.4;font-weight:650}.filter-total-copy>small{font-size:11px;line-height:1.45;color:#7d6c92;overflow-wrap:anywhere}.filter-total-amount{display:flex;flex-direction:column;gap:3px;text-align:right;flex-shrink:0}.filter-total-amount>b{font-size:18px;font-weight:750;line-height:1.3;letter-spacing:-.3px}.filter-total-amount>small{font-size:10px;color:#7d6c92}
+@media(max-width:719px){.transaction-filter-summary{margin:0 12px 12px;padding:11px 12px;border-radius:13px;flex-wrap:wrap}.filter-total-copy{flex:1;min-width:130px}.filter-total-amount>b{font-size:17px}}

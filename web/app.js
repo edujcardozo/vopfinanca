@@ -239,6 +239,14 @@ function renderTransactions(){
     const personMatches=personFilter==='all'||personFilter==='unknown'&&t.type==='expense'&&!t.sharing||personFilter==='shared'&&t.sharing?.eduPercent>0&&t.sharing.eduPercent<100||['edu','larissa','edu-personal','larissa-personal'].includes(personFilter)&&matchesPayerFilter(t,personFilter);
     return (!uncategorizedOnly||needsCategory(t,state.categories))&&personMatches&&(txFilter==='all'||t.type===txFilter)&&(!search||`${t.payee||''} ${t.memo||''} ${t.description} ${category?.name||'Entrada'}`.toLocaleLowerCase('pt-BR').includes(search));
   });
+  const filterSummary=$('#transaction-filter-summary');
+  filterSummary.hidden=!(uncategorizedOnly||personFilter!=='all'||txFilter!=='all'||search);
+  if(!filterSummary.hidden){
+    const spent=filtered.filter(t=>t.type==='expense').reduce((sum,t)=>sum+t.amount,0),income=filtered.filter(t=>t.type==='income').reduce((sum,t)=>sum+t.amount,0);
+    const selectedPayer=$$('[data-payer-filter]').find(b=>b.dataset.payerFilter===personFilter);
+    const description=[selectedPayer?(personFilter.endsWith('-personal')?'Individual · ':'Compartilhado · ')+selectedPayer.querySelector('[data-payer-name]').textContent:'',uncategorizedOnly?'Sem categoria':'',search?'Busca aplicada':''].filter(Boolean).join(' · ');
+    filterSummary.innerHTML=`<span class="filter-total-copy"><strong>${txFilter==='income'?'Entradas filtradas':'Gastos filtrados'}</strong><small>${filtered.length} ${filtered.length===1?'movimento':'movimentos'} no mês${description?' · '+esc(description):''}</small></span><span class="filter-total-amount"><b>${money(txFilter==='income'?income:spent)}</b>${income&&txFilter!=='income'?`<small>Entradas: ${money(income)}</small>`:''}</span>`;
+  }
   if(!filtered.length){$('#transactions-list').innerHTML=`<div class="empty-state">${icon('swap')}<h3>${uncategorizedOnly&&!pendingCount?'Tudo classificado neste mês.':transactions.length?'Nenhum resultado por aqui.':'Seu próximo movimento começa aqui.'}</h3><p>${uncategorizedOnly&&!pendingCount?'Nenhuma despesa está sem categoria. Desative o filtro para ver os demais movimentos.':transactions.length?'Tente outro termo ou escolha um filtro diferente.':'Registre uma entrada ou uma despesa e acompanhe tudo no mesmo lugar.'}</p>${transactions.length?'':`<button class="btn btn-blue" data-add-transaction>${icon('plus')} Novo lançamento</button>`}</div>`;return;}
   let date='';
   $('#transactions-list').innerHTML=filtered.map(t=>{
