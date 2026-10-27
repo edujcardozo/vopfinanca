@@ -642,7 +642,6 @@ $('#today-month').onclick=$('#month-title').onclick=()=>{selectedMonth=currentMo
 $('#privacy-toggle').onclick=()=>{state.hideBalances=!state.hideBalances;persist();renderAll();};
 $('#transaction-search').oninput=renderTransactions;
 $('#transaction-person-filter').onchange=e=>{personFilter=e.target.value;renderTransactions();};
-$('#add-category').onclick=()=>newCategoryDialog();
 $('#add-group').onclick=e=>quickCreate(e.currentTarget);
 $('#categories-list').addEventListener('reorderstart',()=>{closeCategoryMenu(false);collapsedGroups.clear();$$('.category-items').forEach(list=>list.hidden=false);$$('[data-collapse-group]').forEach(b=>b.setAttribute('aria-expanded','true'));});
 $('#close-dialog').onclick=closeDialog;
