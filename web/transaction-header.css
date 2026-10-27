@@ -77,3 +77,19 @@
  .transactions-active #shared-month-slot #couple-transactions-summary{padding:0 16px}
  .transactions-active #shared-month-slot #couple-transactions-summary .couple-header-summary{border-radius:14px;min-height:68px;max-width:none}
 }
+
+/* Anchor the settlement to the right edge of the shared header structure. */
+@media(min-width:720px){
+ .transactions-active .app-header{padding:12px 14px;background:#fff;border:1px solid #e3deef;border-radius:13px;gap:16px;margin-bottom:12px}
+ .transactions-active #transactions-settlement-slot .couple-header-summary{box-shadow:none;min-height:64px}
+ .transactions-active .app-header>div:first-child{grid-column:1;grid-row:1}
+}
+@media(min-width:1400px){
+ .transactions-active .app-header{grid-template-columns:minmax(0,1fr) auto 290px}
+ .transactions-active .app-header-actions{grid-column:2;grid-row:1;justify-self:end}
+ .transactions-active #transactions-settlement-slot{grid-column:3;grid-row:1;width:100%;justify-self:end;border-left:1px solid #eeeaf5;padding-left:16px}
+ .transactions-active .app-header:has(#transactions-settlement-slot:empty),.transactions-active .app-header:has(#transactions-settlement-slot>[hidden]){grid-template-columns:minmax(0,1fr) auto}
+}
+@media(min-width:720px) and (max-width:1399px){
+ .transactions-active #transactions-settlement-slot{border-top:1px solid #eeeaf5;padding-top:12px}
+}
