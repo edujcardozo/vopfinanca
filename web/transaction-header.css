@@ -41,3 +41,39 @@
 
 .transaction-filter-summary[hidden]{display:none!important}.transaction-filter-summary{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 14px;margin:-5px 0 15px;border:1px solid #e1d7f1;border-radius:10px;background:#f3eefb;color:#4d347b;font-variant-numeric:tabular-nums}.filter-total-copy{display:flex;flex-direction:column;gap:3px;min-width:0}.filter-total-copy>strong{font-size:12px;line-height:1.4;font-weight:650}.filter-total-copy>small{font-size:11px;line-height:1.45;color:#7d6c92;overflow-wrap:anywhere}.filter-total-amount{display:flex;flex-direction:column;gap:3px;text-align:right;flex-shrink:0}.filter-total-amount>b{font-size:18px;font-weight:750;line-height:1.3;letter-spacing:-.3px}.filter-total-amount>small{font-size:10px;color:#7d6c92}
 @media(max-width:719px){.transaction-filter-summary{margin:0 12px 12px;padding:11px 12px;border-radius:13px;flex-wrap:wrap}.filter-total-copy{flex:1;min-width:130px}.filter-total-amount>b{font-size:17px}}
+
+/* Settlement is a monthly summary, outside the filter controls. */
+#transactions-settlement-slot:empty,#transactions-settlement-slot:has(>[hidden]){display:none}
+.transactions-active #couple-transactions-summary .couple-header-summary{background:linear-gradient(120deg,#25215b,#373071);border:1px solid #51458c;box-shadow:0 3px 12px #28205316;min-height:68px;padding:11px 14px;border-radius:12px;column-gap:12px;row-gap:7px;color:#fff}
+.transactions-active #couple-transactions-summary .couple-header-label strong{font-size:11px;font-weight:550;color:#ded8f4;letter-spacing:.015em}
+.transactions-active #couple-transactions-summary .couple-header-summary>b{font-size:20px;font-weight:750;color:#c3ef93;background:transparent;letter-spacing:-.4px}
+.transactions-active #couple-transactions-summary .couple-header-label small{color:#f2eefb;border-color:#ffffff22;font-size:12px;padding-top:7px}
+.transactions-active #couple-transactions-summary .couple-transfer-word{color:#bbaee2}
+.transactions-active #couple-transactions-summary .couple-header-arrow{color:#c8bde7}
+.transactions-active #couple-transactions-summary .couple-header-summary:hover{background:linear-gradient(120deg,#30296c,#433884);border-color:#8d78c1}
+.transactions-active #couple-transactions-summary .couple-header-summary:focus-visible{outline:2px solid #9476e1;outline-offset:3px}
+.transactions-active #couple-transactions-summary .couple-header-summary.balanced>b{color:#c3ef93}
+@media(min-width:720px){
+ .transactions-active .app-header{display:grid;grid-template-columns:minmax(0,1fr) minmax(250px,290px) auto;align-items:center;gap:18px;margin-bottom:16px}
+ .transactions-active .app-header>div:first-child{min-width:0}
+ .transactions-active #transactions-settlement-slot{min-width:0}
+ .transactions-active .app-header:has(#transactions-settlement-slot:empty),.transactions-active .app-header:has(#transactions-settlement-slot>[hidden]){grid-template-columns:minmax(0,1fr) auto}
+ .transactions-active .transaction-tools:has(.couple-filter[hidden]){grid-template-columns:minmax(0,1fr) auto}
+ .transactions-active .transaction-tools .search-box{grid-column:1;grid-row:1}
+ .transactions-active .transaction-tools:has(.couple-filter[hidden]) .filter-tabs{grid-column:2;grid-row:1}
+ .transactions-active .transaction-tools>.transaction-secondary-actions{grid-row:2}
+}
+@media(min-width:720px) and (max-width:1399px){
+ .transactions-active .app-header{grid-template-columns:minmax(0,1fr) auto;gap:12px}
+ .transactions-active #transactions-settlement-slot{grid-column:1/-1;grid-row:2;width:100%}
+ .transactions-active .app-header-actions{grid-column:2;grid-row:1}
+ .transactions-active #transactions-settlement-slot .couple-header-summary{grid-template-columns:minmax(0,1fr) auto 12px;grid-template-rows:auto;min-height:56px;max-width:none}
+ .transactions-active #transactions-settlement-slot .couple-header-label strong{grid-column:1;grid-row:1}
+ .transactions-active #transactions-settlement-slot .couple-header-label small{grid-column:1;grid-row:2;border:0;padding:0}
+ .transactions-active #transactions-settlement-slot .couple-header-summary>b{grid-column:2;grid-row:1/3}
+}
+@media(max-width:719px){
+ #transactions-settlement-slot{display:none}
+ .transactions-active #shared-month-slot #couple-transactions-summary{padding:0 16px}
+ .transactions-active #shared-month-slot #couple-transactions-summary .couple-header-summary{border-radius:14px;min-height:68px;max-width:none}
+}

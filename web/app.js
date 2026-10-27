@@ -110,7 +110,7 @@ function positionMonthRow(){
   const desktop=window.matchMedia('(min-width: 720px)').matches;
   const slot=$(view==='budget'?(desktop?'#budget-desktop-month-slot':'#budget-month-slot'):view==='transactions'&&desktop?'#transactions-desktop-month-slot':'#shared-month-slot'),row=$('.app-month-row');
   if(row.parentElement!==slot)slot.append(row);
-  const summary=$('#couple-transactions-summary'),summarySlot=$(view==='transactions'&&desktop?'#view-transactions .transaction-tools':'#shared-month-slot');
+  const summary=$('#couple-transactions-summary'),summarySlot=$(view==='transactions'&&desktop?'#transactions-settlement-slot':'#shared-month-slot');
   if(summary.parentElement!==summarySlot)summarySlot.append(summary);
   $('#shared-month-slot').hidden=['overview','home','budget'].includes(view)||view==='transactions'&&desktop;
 }
