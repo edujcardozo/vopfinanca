@@ -1,0 +1,36 @@
+/* Monthly spending uses the same column edges for headings, groups and rows. */
+.budget-active .category-spent{min-width:0;text-align:right;font-size:12px;font-weight:550;color:#625581;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+@media(min-width:720px){
+ .budget-active{--spent-column:125px}
+ .budget-active .category-row,.budget-active .category-table-head,.budget-active .group-header,.budget-active .budget-controls-row{grid-template-columns:minmax(0,1fr) var(--planned-column) var(--spent-column) var(--available-column)}
+ .budget-active .group-header .group-planned-total,.budget-active .group-header .group-spent-total,.budget-active .group-header .group-total{display:block;grid-row:1;min-width:0;margin:0;text-align:right;font-size:13px;font-weight:650;font-variant-numeric:tabular-nums;color:#555876;padding-right:8px}
+ .budget-active .group-header .group-planned-total{grid-column:2}
+ .budget-active .group-header .group-spent-total{grid-column:3;color:#625581}
+ .budget-active .group-header .group-total{grid-column:4;padding-right:9px}
+ .budget-active .group-header :is(.group-planned-total,.group-spent-total)>strong{font:inherit;color:inherit}
+ .budget-active .group-header :is(.group-planned-total,.group-spent-total)>small{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+ .budget-active .category-spent{padding-right:8px}
+ .budget-active .category-table-head>span:nth-child(3){padding-right:8px}
+ .budget-active .category-table-head>span:nth-child(4){padding-right:9px}
+}
+@media(min-width:720px) and (max-width:1100px){.budget-active{--planned-column:100px;--spent-column:100px;--available-column:110px;--category-column-gap:8px}}
+@media(max-width:719px){
+ .budget-active .group-header,.budget-active .category-row{grid-template-columns:repeat(3,minmax(0,1fr));column-gap:8px;padding-inline:16px}
+ .budget-active .group-header{row-gap:7px;padding-block:10px}
+ .budget-active .group-header h3{grid-column:1/-1;grid-row:1}
+ .budget-active .group-header :is(.group-planned-total,.group-spent-total,.group-total){display:flex!important;flex-direction:column;gap:3px;grid-row:2;min-width:0;text-align:right;font-variant-numeric:tabular-nums}
+ .budget-active .group-header .group-planned-total{grid-column:1}
+ .budget-active .group-header .group-spent-total{grid-column:2}
+ .budget-active .group-header .group-total{grid-column:3}
+ .budget-active .group-header :is(.group-planned-total,.group-spent-total,.group-total)>small{display:block!important;font-size:10px;color:#655f70;position:static;width:auto;height:auto;clip-path:none}
+ .budget-active .group-header :is(.group-planned-total,.group-spent-total,.group-total)>strong{font-size:12px;line-height:1.4;white-space:normal;overflow-wrap:anywhere}
+ .budget-active .category-row{row-gap:0;padding-block:8px}
+ .budget-active .category-info{grid-column:1/-1;grid-row:1}
+ .budget-active .category-assigned{grid-column:1;grid-row:2}
+ .budget-active .category-spent{grid-column:2;grid-row:2;align-self:center;font-size:13px;padding-right:0}
+ .budget-active .category-available.category-value-edit{grid-column:3;grid-row:2}
+ .budget-active.mobile-structure-open .group-header-actions>.icon-button{grid-row:3}
+ .budget-active .group-collapse{top:17px;transform:none}
+ .budget-active .assigned-input{max-width:100%;font-size:13px}
+ .budget-active .category-available .amount-badge{font-size:12px;white-space:normal;overflow-wrap:anywhere}
+}
