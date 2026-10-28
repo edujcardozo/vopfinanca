@@ -1,4 +1,4 @@
-import {mountRecentTransactions} from './recent-transactions.js?v=vpo-118';
+import {mountRecentTransactions} from './recent-transactions.js?v=vpo-119';
 import {categorySpendingPopup,filterSpendingPopup} from './category-spending-popup.js?v=vpo-118';
 import {openQuickCreate} from './quick-create.js?v=vpo-118';
 import {needsCategory} from './transaction-category-filter.js?v=vpo-118';
