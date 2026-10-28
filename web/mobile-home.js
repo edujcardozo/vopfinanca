@@ -1,5 +1,5 @@
 import {coupleCard} from './couple-ui.js?v=vpo-34';
-import {totals,getMonth,monthlyPlanTotals,monthlyCategoryTotals,shiftMonth,formatMoney} from './core.js?v=vpo-78';
+import {totals,getMonth,monthlyPlanTotals,monthlyCategoryTotals,shiftMonth,formatMoney} from './core.js?v=vpo-118';
 import {categoryIcon} from './category-icons.js?v=vpo-43';
 import {isCategoryVisible} from './group-actions.js?v=vpo-78';
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

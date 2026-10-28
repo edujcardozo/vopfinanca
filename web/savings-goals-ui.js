@@ -1,5 +1,5 @@
 import {saveSavingsGoal,savingsProgress} from './savings-goals.js';
-import {formatMoney,parseMoney} from './core.js?v=vpo-73';
+import {formatMoney,parseMoney} from './core.js?v=vpo-118';
 const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pencil='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 4 5 5M4 20l4-1L20 7a2 2 0 0 0-3-3L5 16l-1 4Z"/></svg>';
 export function createSavingsGoalsUI({root,getState,openDialog,closeDialog,onChange,notify=()=>{},documentObject=document,windowObject=window}){

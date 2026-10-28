@@ -70,6 +70,8 @@ export function checkedSharing(sharing,type='expense'){
 }
 export function saveTransaction(state,transaction,originalId=null){
   checkedSharing(transaction.sharing,transaction.type);
+  const previous=originalId?Object.values(state.months).flatMap(m=>m.transactions).find(t=>t.id===originalId):null;
+  const originalCreatedAt=previous?.createdAt;
   if(!validDate(transaction.date))throw new Error('Data inválida.');
   if(originalId&&!Object.values(state.months).some(m=>m.transactions.some(t=>t.id===originalId)))throw new Error('Este lançamento foi alterado. Abra novamente antes de editar.');
   if(transaction.payee)rememberPayee(state,transaction.payee);
@@ -78,6 +80,7 @@ export function saveTransaction(state,transaction,originalId=null){
     for(const m of Object.values(state.months)){const index=m.transactions.findIndex(t=>t.id===originalId);if(index!==-1){m.transactions.splice(index,1);found=true;break;}}
     if(!found)throw new Error('Este lançamento foi alterado. Abra novamente antes de editar.');
   }
+  if(originalId){delete transaction.createdAt;if(originalCreatedAt)transaction.createdAt=originalCreatedAt;}else transaction.createdAt=new Date().toISOString();
   ensureMonth(state,transaction.date.slice(0,7)).transactions.push(transaction);
 }
 export const validMonth=s=>typeof s==='string'&&/^\d{4}-(0[1-9]|1[0-2])$/.test(s)&&Number(s.slice(0,4))>=1900&&Number(s.slice(0,4))<=2199;
@@ -198,8 +201,9 @@ export function validateState(raw){
       if(++count>20000)fail();transactionIds.add(t.id);
       if(t.payee!==undefined&&(typeof t.payee!=='string'||!t.payee.trim()||t.payee.length>100))fail();
       if(t.memo!==undefined&&(typeof t.memo!=='string'||t.memo.length>280))fail();
+      if(t.createdAt!==undefined&&(typeof t.createdAt!=='string'||!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(t.createdAt)||!Number.isFinite(Date.parse(t.createdAt))))fail();
       const sharing=checkedSharing(t.sharing,t.type);
-      return {...(sharing?{sharing}:{}),id:t.id,type:t.type,amount:t.amount,description:t.description.trim(),date:t.date,categoryId:t.categoryId,...(t.payee!==undefined?{payee:t.payee.trim()}:{}),...(t.memo!==undefined?{memo:t.memo.trim()}:{})};
+      return {...(t.createdAt?{createdAt:t.createdAt}:{}),...(sharing?{sharing}:{}),id:t.id,type:t.type,amount:t.amount,description:t.description.trim(),date:t.date,categoryId:t.categoryId,...(t.payee!==undefined?{payee:t.payee.trim()}:{}),...(t.memo!==undefined?{memo:t.memo.trim()}:{})};
     });
     months[key]={assigned,transactions};
   }

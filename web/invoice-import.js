@@ -1,4 +1,4 @@
-import {validDate,parseMoney,saveTransaction,validateState,id,formatMoney} from './core.js?v=vpo-78';
+import {validDate,parseMoney,saveTransaction,validateState,id,formatMoney} from './core.js?v=vpo-118';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function parseInvoice(text){
  const rows=[];let row=[],field='',quoted=false;

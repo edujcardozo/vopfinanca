@@ -1,4 +1,4 @@
-import {searchPayeeKey} from './core.js?v=vpo-78';
+import {searchPayeeKey} from './core.js?v=vpo-118';
 import {categoryIcon} from './category-icons.js?v=vpo-43';
 import {visibleGroups} from './group-actions.js?v=vpo-78';
 export function matchingCategories(state,query,limit=50){
