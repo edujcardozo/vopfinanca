@@ -73,3 +73,5 @@
  .savings-form-footer button{min-height:34px}
 }
 @media(prefers-reduced-motion:reduce){.savings-progress>i{transition:none}}
+
+.sidebar-goal-name{display:flex;align-items:center;gap:8px;min-height:20px;overflow:visible}.sidebar-goal-name>span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.savings-goal-icon{display:block;flex:0 0 20px;width:20px;height:20px;fill:none;stroke:currentColor;shape-rendering:geometricPrecision}.sidebar-goal-name>.savings-goal-icon{color:#c4e991}.savings-card-heading>strong{display:flex;align-items:center;gap:9px;min-width:0}.savings-card-heading .savings-goal-icon{flex:0 0 22px;width:22px;height:22px;stroke:currentColor;color:#75639c}

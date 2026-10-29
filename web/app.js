@@ -29,7 +29,7 @@ import {householdForSharing,inactiveHousehold} from './household-context.js?v=vp
 import {accountUsername} from './account-identity.js?v=vpo-118';
 import {createPlanningHistoryUI,historyIcon} from './planning-history-ui.js?v=vpo-118';
 import {createPlanningHistoryIntro} from './planning-history-intro.js';
-import {createSavingsGoalsUI} from './savings-goals-ui.js?v=vpo-118';
+import {createSavingsGoalsUI} from './savings-goals-ui.js?v=vpo-124';
 import {revealTransactionComposer} from './transaction-focus.js';
 
 const $=s=>document.querySelector(s);
