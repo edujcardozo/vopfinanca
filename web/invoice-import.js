@@ -1,4 +1,4 @@
-import {savedCardField,selectedCard} from './saved-cards-ui.js?v=vpo-128';
+import {savedCardField,selectedCard} from './saved-cards-ui.js?v=vpo-129';
 import {saveInvoiceBill} from './invoice-bills-data.js?v=vpo-126';
 import {ensureUnclassifiedGroup,organizeUnclassifiedGroup} from './unclassified-group.js?v=vpo-123';
 import {validDate,validMonth,currentMonth,groupsFor,parseMoney,saveTransaction,validateState,id,formatMoney} from './core.js?v=vpo-126';

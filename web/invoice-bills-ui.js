@@ -1,4 +1,4 @@
-import {savedCardField,selectedCard} from './saved-cards-ui.js?v=vpo-128';
+import {savedCardField,selectedCard} from './saved-cards-ui.js?v=vpo-129';
 import {formatMoney,today,validDate,validMonth} from './core.js?v=vpo-126';
 import {invoiceBillTransactions,invoiceBillTotal,saveInvoiceBill,unlinkedInvoiceImports} from './invoice-bills-data.js?v=vpo-127';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

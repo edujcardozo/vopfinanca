@@ -1,29 +1,37 @@
 import {saveCard} from './saved-cards-data.js?v=vpo-126';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const key=s=>String(s||'').trim().replace(/\s+/g,' ').toLocaleLowerCase('pt-BR');
+const icon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 10h18M7 15h4"/></svg>';
 let sequence=0;
-function options(state){return (state.cards||[]).map(c=>`<option value="${esc(c.name)}"></option>`).join('');}
 export function savedCardField(state,{cardId='',name='',attribute='',label='Cartão · opcional'}={}){
  const card=(state.cards||[]).find(c=>c.id===cardId),list='saved-card-options-'+(++sequence);
- return `<div class="saved-card-field form-group" data-card-picker data-card-plan="${esc(state.planId)}"><label><span>${label}</span><input type="text" ${attribute} data-card-select list="${list}" value="${esc(card?.name||name)}" maxlength="70" placeholder="Digite ou escolha um cartão" autocomplete="off" aria-label="Nome do cartão" aria-autocomplete="list"></label><datalist id="${list}">${options(state)}</datalist><small data-card-error role="alert" hidden></small></div>`;
+ return `<div class="saved-card-field form-group" data-card-picker data-card-plan="${esc(state.planId)}"><label><span>${label}</span><span class="saved-card-input-wrap"><input type="text" ${attribute} data-card-select value="${esc(card?.name||name)}" maxlength="70" placeholder="Digite ou escolha um cartão" autocomplete="off" aria-label="Nome do cartão" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="${list}"><button type="button" data-card-toggle aria-label="Mostrar cartões salvos" tabindex="-1"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg></button><span class="saved-card-dropdown" data-card-panel hidden><span class="saved-card-menu-label">SEUS CARTÕES</span><span id="${list}" role="listbox" aria-label="Cartões salvos" data-card-options></span></span></span></label><small data-card-error role="alert" hidden></small></div>`;
 }
 export function selectedCard(state,root){const name=root.querySelector('[data-card-select]')?.value.trim()||'',card=state.cards?.find(c=>key(c.name)===key(name));return card?{name:card.name,cardId:card.id}:{name,cardId:''};}
 export function mountSavedCards({getState,onChange,notify=()=>{}}){
- function save(input){
-  const picker=input.closest('[data-card-picker]');if(!picker||input.disabled||input.closest('[hidden]'))return;
-  const error=picker.querySelector('[data-card-error]');error.hidden=true;
-  if(!input.value.trim()){input.value='';return;}
-  try{
-   if(picker.dataset.cardPlan!==getState().planId)throw Error('O orçamento mudou. Reabra este formulário.');
-   const before=(getState().cards||[]).length,card=saveCard(getState(),input.value);input.value=card.name;
-   document.querySelectorAll('[data-card-picker] datalist').forEach(list=>list.innerHTML=options(getState()));
-   // Native change already reaches the import's listener. Enter/focusout also
-   // dispatch change so its draft retains the new name across review pages.
-   if((getState().cards||[]).length!==before){onChange();notify('Cartão salvo. Ele já está disponível nos próximos lançamentos.');}
-  }catch(e){error.textContent=e.message;error.hidden=false;}
+ const menus=new WeakMap();let opened=null;
+ const inputOf=picker=>picker.querySelector('[data-card-select]');
+ function close(picker=opened){if(!picker)return;picker.querySelector('[data-card-panel]').hidden=true;inputOf(picker).setAttribute('aria-expanded','false');inputOf(picker).removeAttribute('aria-activedescendant');picker.classList.remove('card-menu-open');if(opened===picker)opened=null;}
+ function position(picker){const panel=picker.querySelector('[data-card-panel]'),r=picker.querySelector('.saved-card-input-wrap').getBoundingClientRect?.();if(!r?.height)return;const vv=window.visualViewport,top=vv?.offsetTop||0,bottom=top+(vv?.height||window.innerHeight||800),body=picker.closest('#dialog-body')?.getBoundingClientRect(),above=r.top-Math.max(top+8,body?.top||0)-8,below=Math.min(bottom-8,body?.bottom||bottom)-r.bottom-8;const up=below<220&&above>below;panel.classList.toggle('opens-up',up);panel.style.maxHeight=Math.max(70,Math.min(260,up?above:below))+'px';}
+ function active(picker,index){const menu=menus.get(picker);if(!menu?.items.length)return;menu.active=index;const rows=[...picker.querySelectorAll('[data-card-option]')];rows.forEach((row,i)=>row.setAttribute('aria-selected',String(i===index)));if(index>=0){inputOf(picker).setAttribute('aria-activedescendant',rows[index].id);rows[index].scrollIntoView?.({block:'nearest'});}else inputOf(picker).removeAttribute('aria-activedescendant');}
+ function open(picker,all=false){if(opened&&opened!==picker)close();opened=picker;const input=inputOf(picker),query=input.value.trim(),cards=getState().cards||[],matching=cards.filter(c=>all||key(c.name).includes(key(query))),exact=cards.some(c=>key(c.name)===key(query));
+ const items=[...matching.map(c=>({name:c.name,detail:'Cartão salvo',kind:'saved'})),...(!all&&query&&!exact?[{name:query,detail:'Guardar para os próximos lançamentos',kind:'create'}]:[]),{name:'',detail:'Não vincular a um cartão',kind:'none'}];menus.set(picker,{items,active:-1});const list=picker.querySelector('[data-card-options]');
+ list.innerHTML=items.map((item,i)=>`<span class="saved-card-option" role="option" aria-selected="false" id="${list.id}-${i}" data-card-option="${i}"><span class="saved-card-option-symbol">${item.kind==='create'?'+':item.kind==='none'?'—':icon}</span><span><strong>${item.kind==='create'?'Salvar “'+esc(item.name)+'”':esc(item.name||'Sem cartão')}</strong><small>${item.detail}</small></span>${item.kind==='saved'&&key(item.name)===key(query)?'<span class="saved-card-check" aria-hidden="true">✓</span>':''}</span>`).join('');picker.querySelector('[data-card-panel]').hidden=false;input.setAttribute('aria-expanded','true');picker.classList.add('card-menu-open');position(picker);
  }
- const changed=e=>{if(e.target.matches?.('[data-card-select]'))save(e.target);};
- document.addEventListener('change',changed);document.addEventListener('focusout',e=>{if(e.target.matches?.('[data-card-select]')){save(e.target);e.target.dispatchEvent(new (e.target.ownerDocument.defaultView.Event)('change',{bubbles:true}));}});
- document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches?.('[data-card-select]')){e.preventDefault();save(e.target);e.target.dispatchEvent(new (e.target.ownerDocument.defaultView.Event)('change',{bubbles:true}));}});
- return {save};
+ function save(input){const picker=input.closest('[data-card-picker]');if(!picker||input.disabled||input.closest('[hidden]'))return;const error=picker.querySelector('[data-card-error]');error.hidden=true;if(!input.value.trim()){input.value='';return;}
+ try{if(picker.dataset.cardPlan!==getState().planId)throw Error('O orçamento mudou. Reabra este formulário.');const before=(getState().cards||[]).length,card=saveCard(getState(),input.value);input.value=card.name;if((getState().cards||[]).length!==before){onChange();notify('Cartão salvo. Ele já está disponível nos próximos lançamentos.');}}
+ catch(e){error.textContent=e.message;error.hidden=false;}
+ }
+ function change(input){input.dispatchEvent(new (input.ownerDocument.defaultView.Event)('change',{bubbles:true}));}
+ function choose(picker,index){const item=menus.get(picker)?.items[index];if(!item)return;const input=inputOf(picker);input.value=item.name;close(picker);save(input);change(input);input.focus({preventScroll:true});close(picker);}
+ document.addEventListener('focusin',e=>{if(e.target.matches?.('[data-card-select]'))open(e.target.closest('[data-card-picker]'),true);});
+ document.addEventListener('input',e=>{if(e.target.matches?.('[data-card-select]')&&!e.isComposing)open(e.target.closest('[data-card-picker]'));});
+ document.addEventListener('compositionend',e=>{if(e.target.matches?.('[data-card-select]'))open(e.target.closest('[data-card-picker]'));});
+ document.addEventListener('change',e=>{if(e.target.matches?.('[data-card-select]'))save(e.target);});
+ document.addEventListener('focusout',e=>{if(e.target.matches?.('[data-card-select]')){const picker=e.target.closest('[data-card-picker]');if(picker.contains(e.relatedTarget))return;save(e.target);change(e.target);close(picker);}});
+ document.addEventListener('pointerdown',e=>{const option=e.target.closest?.('[data-card-option]');if(option)e.preventDefault();else if(opened&&!opened.contains(e.target))close();});
+ document.addEventListener('click',e=>{if(e.defaultPrevented)return;const toggle=e.target.closest?.('[data-card-toggle]'),option=e.target.closest?.('[data-card-option]');if(toggle){const picker=toggle.closest('[data-card-picker]'),isOpen=!picker.querySelector('[data-card-panel]').hidden;inputOf(picker).focus({preventScroll:true});if(isOpen)close(picker);else open(picker,true);}else if(option)choose(option.closest('[data-card-picker]'),Number(option.dataset.cardOption));});
+ document.addEventListener('keydown',e=>{if(!e.target.matches?.('[data-card-select]')||e.isComposing)return;const picker=e.target.closest('[data-card-picker]');if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();if(picker.querySelector('[data-card-panel]').hidden)open(picker,true);const menu=menus.get(picker);active(picker,menu.active<0?(e.key==='ArrowDown'?0:menu.items.length-1):(menu.active+(e.key==='ArrowDown'?1:-1)+menu.items.length)%menu.items.length);}else if(e.key==='Enter'){e.preventDefault();const menu=menus.get(picker);if(!picker.querySelector('[data-card-panel]').hidden&&menu?.active>=0)choose(picker,menu.active);else{save(e.target);change(e.target);close(picker);}}else if(e.key==='Escape'&&!picker.querySelector('[data-card-panel]').hidden){e.preventDefault();e.stopPropagation();close(picker);}else if(e.key==='Tab')close(picker);});
+ window.addEventListener('resize',()=>{if(opened)position(opened);});window.visualViewport?.addEventListener('resize',()=>{if(opened)position(opened);});
+ return {save,close};
 }
