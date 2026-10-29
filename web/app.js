@@ -5,7 +5,7 @@ import {openQuickCreate} from './quick-create.js?v=vpo-118';
 import {needsCategory} from './transaction-category-filter.js?v=vpo-118';
 import {overspendingInsights,overspendingHTML} from './overspending-insights.js?v=vpo-118';
 import {mountCategoryActivity} from './category-activity.js?v=vpo-118';
-import {mountInvoiceImport} from './invoice-import.js?v=vpo-118';
+import {mountInvoiceImport} from './invoice-import.js?v=vpo-121';
 import {createDialogPages} from './dialog-pages.js?v=vpo-118';
 import {coupleSummary,sharingLabel,expenseShares,saveSettlement} from './couple-core.js?v=vpo-118';
 import {coupleCard,coupleDetail} from './couple-ui.js?v=vpo-118';
@@ -676,7 +676,7 @@ setInterval(()=>{if(!$('#budget-app').hidden&&document.visibilityState!=='hidden
 $('#sync-recoveries').onclick=recoveryDialog;
 renderPreview();route();if(!$('#budget-app').hidden)sharingUI.refresh();
 
-mountInvoiceImport({getState:()=>state,getPeople:()=>household.people,storage:planStorage,notify:toast,apply:next=>{cloudSync.backupCurrent();state=next;persist();renderAll();}});
+mountInvoiceImport({getState:()=>state,getSelectedMonth:()=>selectedMonth,getPeople:()=>household.people,storage:planStorage,notify:toast,apply:next=>{cloudSync.backupCurrent();state=next;persist();renderAll();}});
 
 categoryActivity=mountCategoryActivity({getState:()=>state,getMonth:()=>selectedMonth,getView:()=>view,getPeople:()=>household.people,onEdit:txId=>transactionDialog('expense',txId),onOptions:(categoryId,trigger)=>categoryMenu(categoryId,trigger)});
 

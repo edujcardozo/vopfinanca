@@ -1,0 +1,25 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {dom} from './helpers/dom.mjs';
+import {MemoryStorage} from './helpers/sync-env.mjs';
+import {createState} from '../web/core.js';
+import {mountInvoiceImport} from '../web/invoice-import.js';
+
+test('CSV review lets user change target month, preview dates and restore original months before committing',async()=>{
+ const {document,window,event}=dom('<div class="app-header-actions"><button class="desktop-add"></button></div><div class="transaction-tools"></div>');
+ window.HTMLElement.prototype.scrollIntoView=()=>{};
+ let state=createState(false,'2026-10'),applied=0;
+ mountInvoiceImport({getState:()=>state,getSelectedMonth:()=> '2026-11',getPeople:()=>({edu:'Edu',larissa:'Larissa'}),storage:new MemoryStorage(),notify:()=>{},apply:next=>{state=next;applied++;}});
+ document.querySelector('.invoice-import-trigger').onclick();
+ const file=document.querySelector('[data-file]');Object.defineProperty(file,'files',{value:[{name:'fatura.csv',size:60,text:async()=> 'date,title,amount\n2026-08-31,Loja,10.00'}]});event(file,'change');await new Promise(setImmediate);
+ assert.equal(document.querySelector('[data-posting-month]').value,'2026-11');
+ assert.match(document.querySelector('[data-posting-preview]').textContent,/30\/11\/2026/);
+ const month=document.querySelector('[data-posting-month]');month.value='2027-02';event(month,'change');
+ assert.match(document.querySelector('[data-posting-preview]').textContent,/28\/02\/2027/);
+ event(document.querySelector('[data-original-months]'),'click');
+ assert.equal(document.querySelector('[data-posting-month]').value,'');assert.match(document.querySelector('[data-posting-preview]').textContent,/31\/08\/2026/);
+ const chosen=document.querySelector('[data-posting-month]');chosen.value='2027-02';event(chosen,'change');
+ event(document.querySelector('[data-commit]'),'click');
+ assert.equal(applied,1);assert.equal(state.months['2027-02'].transactions[0].date,'2027-02-28');
+ assert.match(state.months['2027-02'].transactions[0].memo,/31\/08\/2026/);
+});
