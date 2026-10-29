@@ -1,4 +1,4 @@
-import {formatMoney} from './core.js?v=vpo-118';
+import {formatMoney} from './core.js?v=vpo-125';
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function categorySpendingProgress(t){
   const net=t.assigned+t.carryover,funded=Math.max(0,net),priorShortfall=Math.max(0,-net),spentFunded=Math.min(t.spent,funded),remaining=Math.max(0,t.available),overspent=Math.max(0,-t.available);

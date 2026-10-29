@@ -2,7 +2,7 @@ import {donutSvg} from './vector-charts.js?v=vpo-81';
 import {createReportPeriod} from './report-period.js?v=vpo-34';
 import {categoryBudgetDetails} from './budget-progress.js?v=vpo-34';
 import {categoryIcon} from './category-icons.js?v=vpo-43';
-import {formatMoney,groupsFor,monthlyCategoryTotals} from './core.js?v=vpo-118';
+import {formatMoney,groupsFor,monthlyCategoryTotals} from './core.js?v=vpo-125';
 import {reportChartHeight,incomeMonthWindow} from './report-layout.js?v=vpo-74';
 import {buildReports} from './reports-core.js?v=vpo-73';
 

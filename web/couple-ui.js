@@ -1,4 +1,4 @@
-import {formatMoney} from './core.js?v=vpo-118';
+import {formatMoney} from './core.js?v=vpo-125';
 import {coupleSummary,expenseShares,sharingLabel,PERSON_NAMES,otherPerson} from './couple-core.js?v=vpo-73';
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const monthName=m=>new Intl.DateTimeFormat('pt-BR',{month:'long',year:'numeric'}).format(new Date(m+'-15T12:00:00'));

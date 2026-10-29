@@ -24,6 +24,12 @@ export function createDialogPages(dialog,{body,heading}){
  function fit(){
   frame=null;if(!dialog.open)return;
   const focused=document.activeElement,previousAnchor=units.find(el=>el.contains(focused))||anchor;
+  if(dialog.classList.contains('invoice-bills-modal')){
+   clearLayout();dialog.classList.remove('dialog-paged','dialog-tight');footer.hidden=true;units=[];pages=[];current=0;
+   const viewport=window.visualViewport?.height||window.innerHeight||600;
+   dialog.style.setProperty('--dialog-viewport-height',viewport+'px');dialog.style.setProperty('--dialog-center-y',((window.visualViewport?.offsetTop||0)+viewport/2)+'px');
+   return;
+  }
   if(dialog.classList.contains('transaction-dialog')&&(window.innerWidth||1000)<720){
    clearLayout();dialog.classList.remove('dialog-paged','dialog-tight');footer.hidden=true;units=[];pages=[];current=0;
    const width=window.innerWidth,visible=window.visualViewport?.height||window.innerHeight;

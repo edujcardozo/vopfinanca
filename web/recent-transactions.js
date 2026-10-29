@@ -1,4 +1,4 @@
-import {formatMoney} from './core.js?v=vpo-118';
+import {formatMoney} from './core.js?v=vpo-125';
 import {categoryIcon} from './category-icons.js?v=vpo-118';
 import {sharingLabel,PERSON_NAMES} from './couple-core.js?v=vpo-118';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

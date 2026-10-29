@@ -1,6 +1,6 @@
 import {sharingLabel,PERSON_NAMES} from './couple-core.js?v=vpo-73';
 import {categoryActivityData} from './category-activity.js?v=vpo-84';
-import {formatMoney} from './core.js?v=vpo-118';
+import {formatMoney} from './core.js?v=vpo-125';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function categorySpendingPopup(state,month,categoryId,people={}){
  people={...PERSON_NAMES,...people};

@@ -1,4 +1,4 @@
-import {monthlyCategoryTotals,formatMoney} from './core.js?v=vpo-118';
+import {monthlyCategoryTotals,formatMoney} from './core.js?v=vpo-125';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function categoryActivityData(state,month,categoryId){const category=state.categories.find(c=>c.id===categoryId);if(!category)return null;const transactions=(state.months[month]?.transactions||[]).filter(t=>t.type==='expense'&&t.categoryId===categoryId&&t.date.slice(0,7)===month).sort((a,b)=>b.date.localeCompare(a.date));return {category,transactions,...monthlyCategoryTotals(state,month,categoryId)};}
 export function mountCategoryActivity({getState,getMonth,getView,getPeople,onEdit,onOptions}){

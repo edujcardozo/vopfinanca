@@ -1,4 +1,4 @@
-import {currentMonth,validMonth,shiftMonth,getMonth,ensureMonth} from './core.js?v=vpo-118';
+import {currentMonth,validMonth,shiftMonth,getMonth,ensureMonth} from './core.js?v=vpo-125';
 import {isCategoryVisible} from './group-actions.js?v=vpo-78';
 
 export const HISTORY_METHODS=[

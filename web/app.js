@@ -1,35 +1,36 @@
-import {organizeUnclassifiedGroup} from './unclassified-group.js?v=vpo-123';
-import {matchesTransactionSearch} from './transaction-search.js?v=vpo-120';
-import {mountRecentTransactions} from './recent-transactions.js?v=vpo-119';
-import {categorySpendingPopup,filterSpendingPopup} from './category-spending-popup.js?v=vpo-118';
-import {openQuickCreate} from './quick-create.js?v=vpo-118';
-import {needsCategory} from './transaction-category-filter.js?v=vpo-118';
-import {overspendingInsights,overspendingHTML} from './overspending-insights.js?v=vpo-118';
-import {mountCategoryActivity} from './category-activity.js?v=vpo-118';
-import {mountInvoiceImport} from './invoice-import.js?v=vpo-123';
-import {createDialogPages} from './dialog-pages.js?v=vpo-118';
-import {coupleSummary,sharingLabel,expenseShares,saveSettlement} from './couple-core.js?v=vpo-118';
-import {coupleCard,coupleDetail} from './couple-ui.js?v=vpo-118';
-import {mobileHome} from './mobile-home.js?v=vpo-118';
-import {deleteCategory,categoryHasActivity} from './category-actions.js?v=vpo-118';
-import {deleteGroup,setGroupHidden,visibleGroups} from './group-actions.js?v=vpo-118';
-import {matchingCategories} from './category-search.js?v=vpo-118';
-import {categoryBudgetDetails,categorySpendingLabel} from './budget-progress.js?v=vpo-118';
-import {categoryIcon} from './category-icons.js?v=vpo-118';
-import {mountPayeeAutocomplete} from './payee-autocomplete.js?v=vpo-118';
-import {applyLayout} from './reorder-core.js?v=vpo-118';
-import {createReorder} from './reorder.js?v=vpo-118';
-import {STORAGE_KEY,formatMoney,parseMoney,today,currentMonth,validDate,validMonth,shiftMonth,id,createState,getMonth,ensureMonth,totals,monthlyPlanTotals,monthlyCategoryTotals,validateState,dateOffset,formatTransactionDate,payeeHistory,matchingPayees,payeeKey,searchPayeeKey,saveTransaction,groupsFor,createGroup,renameGroup,moveCategory} from './core.js?v=vpo-118';
-import {createReportsUI} from './reports-ui.js?v=vpo-118';
-import {wealthAt} from './reports-core.js?v=vpo-118';
-import {createCloudSync} from './cloud-sync.js?v=vpo-118';
-import {createSharingUI} from './sharing-ui.js?v=vpo-118';
+import {mountInvoiceBills,invoiceTransactionTag} from './invoice-bills-ui.js?v=vpo-125';
+import {organizeUnclassifiedGroup} from './unclassified-group.js?v=vpo-125';
+import {matchesTransactionSearch} from './transaction-search.js?v=vpo-125';
+import {mountRecentTransactions} from './recent-transactions.js?v=vpo-125';
+import {categorySpendingPopup,filterSpendingPopup} from './category-spending-popup.js?v=vpo-125';
+import {openQuickCreate} from './quick-create.js?v=vpo-125';
+import {needsCategory} from './transaction-category-filter.js?v=vpo-125';
+import {overspendingInsights,overspendingHTML} from './overspending-insights.js?v=vpo-125';
+import {mountCategoryActivity} from './category-activity.js?v=vpo-125';
+import {mountInvoiceImport} from './invoice-import.js?v=vpo-125';
+import {createDialogPages} from './dialog-pages.js?v=vpo-125';
+import {coupleSummary,sharingLabel,expenseShares,saveSettlement} from './couple-core.js?v=vpo-125';
+import {coupleCard,coupleDetail} from './couple-ui.js?v=vpo-125';
+import {mobileHome} from './mobile-home.js?v=vpo-125';
+import {deleteCategory,categoryHasActivity} from './category-actions.js?v=vpo-125';
+import {deleteGroup,setGroupHidden,visibleGroups} from './group-actions.js?v=vpo-125';
+import {matchingCategories} from './category-search.js?v=vpo-125';
+import {categoryBudgetDetails,categorySpendingLabel} from './budget-progress.js?v=vpo-125';
+import {categoryIcon} from './category-icons.js?v=vpo-125';
+import {mountPayeeAutocomplete} from './payee-autocomplete.js?v=vpo-125';
+import {applyLayout} from './reorder-core.js?v=vpo-125';
+import {createReorder} from './reorder.js?v=vpo-125';
+import {STORAGE_KEY,formatMoney,parseMoney,today,currentMonth,validDate,validMonth,shiftMonth,id,createState,getMonth,ensureMonth,totals,monthlyPlanTotals,monthlyCategoryTotals,validateState,dateOffset,formatTransactionDate,payeeHistory,matchingPayees,payeeKey,searchPayeeKey,saveTransaction,groupsFor,createGroup,renameGroup,moveCategory} from './core.js?v=vpo-125';
+import {createReportsUI} from './reports-ui.js?v=vpo-125';
+import {wealthAt} from './reports-core.js?v=vpo-125';
+import {createCloudSync} from './cloud-sync.js?v=vpo-125';
+import {createSharingUI} from './sharing-ui.js?v=vpo-125';
 import {platform} from './platform.js';
-import {householdForSharing,inactiveHousehold} from './household-context.js?v=vpo-118';
-import {accountUsername} from './account-identity.js?v=vpo-118';
-import {createPlanningHistoryUI,historyIcon} from './planning-history-ui.js?v=vpo-118';
+import {householdForSharing,inactiveHousehold} from './household-context.js?v=vpo-125';
+import {accountUsername} from './account-identity.js?v=vpo-125';
+import {createPlanningHistoryUI,historyIcon} from './planning-history-ui.js?v=vpo-125';
 import {createPlanningHistoryIntro} from './planning-history-intro.js';
-import {createSavingsGoalsUI} from './savings-goals-ui.js?v=vpo-124';
+import {createSavingsGoalsUI} from './savings-goals-ui.js?v=vpo-125';
 import {revealTransactionComposer} from './transaction-focus.js';
 
 const $=s=>document.querySelector(s);
@@ -43,7 +44,7 @@ const monthName=k=>new Intl.DateTimeFormat('pt-BR',{month:'long',year:'numeric'}
 const dayName=d=>new Intl.DateTimeFormat('pt-BR',{day:'numeric',month:'long',weekday:'long'}).format(new Date(d+'T12:00:00'));
 const collapsedGroups=new Set();
 let mobileStructure=false;
-let historyPlanning,savingsGoals,categoryActivity,recentActivity;
+let historyPlanning,savingsGoals,categoryActivity,recentActivity,invoiceBillsUI;
 let historyIntro,historyIntroReady=false;
 const routes={home:'inicio',budget:'planejar',transactions:'movimentos',overview:'visao',settings:'ajustes'};
 let state,hadStored=false,loadWarning=false,selectedMonth=currentMonth(),view='budget',txFilter='all',personFilter='all',uncategorizedOnly=false,toastTimer,undoAction=null;
@@ -129,6 +130,7 @@ function positionMonthRow(){
 function renderAll(){
   categoryActivity?.refresh();
   recentActivity?.refresh();
+  invoiceBillsUI?.render();
   $('#app-main').classList.toggle('budget-active',view==='budget');
   $('#app-main').classList.toggle('overview-active',view==='overview');
   $('#app-main').classList.toggle('home-active',view==='home');
@@ -266,7 +268,7 @@ function renderTransactions(){
   $('#transactions-list').innerHTML=filtered.map(t=>{
     const c=state.categories.find(c=>c.id===t.categoryId),income=t.type==='income';
     const heading=t.date!==date?`<h3 class="tx-date">${esc(dayName(t.date))}</h3>`:'';date=t.date;
-    return `${heading}<article class="tx-row"><span class="tx-icon ${income?'income':''}">${income?icon('plus'):esc(c?categoryIcon(c.name):'•')}</span><button type="button" class="tx-info tx-edit" data-edit-tx="${esc(t.id)}" aria-label="Editar lançamento: ${esc(t.payee||t.description)}"><strong>${esc(t.payee||t.description)}</strong><small class="tx-category-tag ${income?'income':''}">${income?'Entrada de dinheiro':esc(c?categoryIcon(c.name)+' '+c.name:'Categoria')}</small>${!income&&household.enabled?`<span class="tx-person-tag ${t.sharing?'':'unclassified'}">${esc(sharingLabel(t,household.people))}</span>`:''}${t.memo?`<span class="tx-memo">${esc(t.memo)}</span>`:''}</button><span class="tx-amount ${income?'income':''}">${income?'+':'−'} ${money(t.amount)}</span><button class="icon-button tx-delete" data-delete-tx="${esc(t.id)}" aria-label="Excluir ${esc(t.payee||t.description)}">${icon('trash')}</button></article>`;
+    return `${heading}<article class="tx-row"><span class="tx-icon ${income?'income':''}">${income?icon('plus'):esc(c?categoryIcon(c.name):'•')}</span><button type="button" class="tx-info tx-edit" data-edit-tx="${esc(t.id)}" aria-label="Editar lançamento: ${esc(t.payee||t.description)}"><strong>${esc(t.payee||t.description)}</strong><small class="tx-category-tag ${income?'income':''}">${income?'Entrada de dinheiro':esc(c?categoryIcon(c.name)+' '+c.name:'Categoria')}</small>${!income&&household.enabled?`<span class="tx-person-tag ${t.sharing?'':'unclassified'}">${esc(sharingLabel(t,household.people))}</span>`:''}${invoiceTransactionTag(state,t)}${t.memo?`<span class="tx-memo">${esc(t.memo)}</span>`:''}</button><span class="tx-amount ${income?'income':''}">${income?'+':'−'} ${money(t.amount)}</span><button class="icon-button tx-delete" data-delete-tx="${esc(t.id)}" aria-label="Excluir ${esc(t.payee||t.description)}">${icon('trash')}</button></article>`;
   }).join('');
 }
 function renderOverview(){reportUI.render();}
@@ -330,7 +332,7 @@ function openDialog(title,body,eyebrow='SEU PLANO',variant=''){
   historyIntro?.close();
   closeCategoryMenu(false);
   historyPlanning?.closeMenu();
-  if(dialog.open)dialog.close();dialog.classList.remove('transaction-dialog','couple-dialog','new-category-dialog','savings-dialog','savings-form-dialog','category-spending-dialog');
+  if(dialog.open)dialog.close();dialog.classList.remove('transaction-dialog','couple-dialog','new-category-dialog','savings-dialog','savings-form-dialog','category-spending-dialog','invoice-bills-modal');
   if(variant)dialog.classList.add(variant);
   $('#dialog-title').textContent=title;$('#dialog-eyebrow').textContent=eyebrow;$('#dialog-body').innerHTML=body;
   dialog.showModal();document.body.style.overflow='hidden';$('#dialog-title').tabIndex=-1;$('#dialog-title').focus({preventScroll:true});dialogPages.reset();
@@ -693,3 +695,5 @@ function monthlySpendingDialog(page=0){const insights=overspendingInsights(state
 document.addEventListener('input',e=>{if(e.target.matches('[data-spending-search]'))filterSpendingPopup($('#dialog-body'),e.target.value,state.hideBalances);});
 
 recentActivity=mountRecentTransactions({trigger:$('#recent-transactions-trigger'),getState:()=>state,getPeople:()=>household.people,onEdit:tx=>transactionDialog(tx.type,tx.id)});
+
+invoiceBillsUI=mountInvoiceBills({getState:()=>state,getMonth:()=>selectedMonth,openDialog,closeDialog,onChange:()=>{persist();renderAll();},notify:toast});

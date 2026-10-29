@@ -1,4 +1,4 @@
-import {currentMonth,shiftMonth,validMonth} from './core.js?v=vpo-118';
+import {currentMonth,shiftMonth,validMonth} from './core.js?v=vpo-125';
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const label=month=>new Intl.DateTimeFormat('pt-BR',{month:'short',year:'numeric'}).format(new Date(month+'-15T12:00:00')).replace('.','');
 const monthNames=Array.from({length:12},(_,i)=>new Intl.DateTimeFormat('pt-BR',{month:'short'}).format(new Date(2020,i,15)).replace('.',''));

@@ -93,3 +93,5 @@ O Pix manual é configurado apenas no projeto dedicado, na tabela privada `manua
 Para liberar um mês após conferir o recebimento no banco: Ajustes → Usuários e acessos → Usuários → opções do cliente → Confirmar Pix · 1 mês. O servidor fixa o valor pela configuração mensal, registra quem confirmou e preserva o teste de 15 dias e os períodos já pagos. O mês é calculado no horário de São Paulo; repetições do mesmo pedido não estendem o prazo. Enviar um comprovante pelo WhatsApp ou copiar o QR Code não confirma um pagamento. A renovação Pix é manual; Asaas permanece independente e uma autorização ativa precisa ser cancelada antes de mudar para Pix manual.
 
 Os objetivos de economia ficam no documento do orçamento compartilhado: nome, valor desejado e valor já guardado. Podem ser gerenciados pelo menu e pela lateral, com até três resumos e lista completa paginada. Eles não alteram os lançamentos nem o planejado das categorias.
+
+Para faturas com vencimento e quitação, execute `invoice-bills.sql` após `plan-freeze.sql`. Essa extensão protege os dados de faturas contra gravações de abas antigas e preserva as regras de acesso existentes.

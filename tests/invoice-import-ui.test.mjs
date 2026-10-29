@@ -13,6 +13,7 @@ test('CSV review lets user change target month, preview dates and restore origin
  document.querySelector('.invoice-import-trigger').onclick();
  const file=document.querySelector('[data-file]');Object.defineProperty(file,'files',{value:[{name:'fatura.csv',size:60,text:async()=> 'date,title,amount\n2026-08-31,Loja,10.00'}]});event(file,'change');await new Promise(setImmediate);
  assert.equal(document.querySelector('[data-posting-month]').value,'2026-11');
+ const due=document.querySelector('[data-invoice-due]');due.value='2026-12-10';event(due,'change');const card=document.querySelector('[data-invoice-card]');card.value='Nubank';event(card,'change');
  assert.match(document.querySelector('[data-posting-preview]').textContent,/30\/11\/2026/);
  const category=document.querySelector('[data-field="categoryId"]');
  assert.ok(category.querySelector('optgroup[label="Contas essenciais"] option[value="moradia"]'));
@@ -29,6 +30,7 @@ test('CSV review lets user change target month, preview dates and restore origin
  const chosen=document.querySelector('[data-posting-month]');chosen.value='2027-02';event(chosen,'change');
  event(document.querySelector('[data-commit]'),'click');
  assert.equal(state.months['2027-02'].transactions[0].categoryId,'mercado');
+ assert.equal(state.invoiceBills[0].dueDate,'2026-12-10');assert.equal(state.invoiceBills[0].card,'Nubank');
  assert.equal(applied,1);assert.equal(state.months['2027-02'].transactions[0].date,'2027-02-28');
  assert.match(state.months['2027-02'].transactions[0].memo,/31\/08\/2026/);
 });
