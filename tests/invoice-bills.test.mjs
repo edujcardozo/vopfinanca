@@ -30,3 +30,12 @@ test('hosted API retains invoice data and rejects an outdated tab before it can 
  assert.deepEqual((await (await api.request('/api/plan')).json()).state.invoiceBills,next.invoiceBills);
  }finally{api.sqlite.close();}
 });
+test('the original October Nubank import appears alongside newer CSV batches without changing any transactions',async()=>{
+ const {unlinkedInvoiceImports}=await import('../web/invoice-bills-data.js');const state=createState(false,'2026-10');
+ for(const [id,amount,type,memo]of [['old-one',4800,'expense','Importado do Nubank · Larissa · Categoria sugerida. Loja'],['old-two',8091,'expense','Importado do Nubank · Larissa · Categoria a revisar. Outra'],['manual',3000,'expense','Compra manual'],['income',50000,'income','Importado do Nubank · Larissa']])saveTransaction(state,{id,date:'2026-10-27',type,amount,payee:'Loja',description:'Loja',memo,categoryId:type==='expense'?'mercado':null,...(type==='expense'?{sharing:{paidBy:'larissa',eduPercent:50}}:{})});
+ state.months['2026-10'].transactions.find(t=>t.id==='old-two').sharing.paidBy='edu';
+ const draft=await prepareInvoice('date,title,amount\n2026-10-28,Nova loja,10.00',state),next=commitInvoice(state,draft.rows,'new-november','2026-11'),before=structuredClone(next.months);
+ const candidates=unlinkedInvoiceImports(next);assert.equal(candidates.length,2);assert.equal(candidates[0][0],'new-november');assert.equal(candidates[1][0],'legacy-nb-2026-10-larissa');assert.equal(candidates[1][1].length,2);assert.equal(candidates[1][1].reduce((n,t)=>n+t.amount,0),12891);assert.deepEqual(next.months,before);
+ saveInvoiceBill(next,{id:candidates[1][0],month:'2026-10',dueDate:'2026-11-10',card:'Nubank · Larissa',paidDate:null,transactionIds:candidates[1][1].map(t=>t.id)});
+ assert.equal(unlinkedInvoiceImports(next).length,1);assert.equal(invoiceBillTotal(next,next.invoiceBills[0]),12891);assert.deepEqual(next.months,before);
+});

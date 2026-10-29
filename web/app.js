@@ -1,5 +1,5 @@
 import {mountSavedCards,savedCardField,selectedCard} from './saved-cards-ui.js?v=vpo-126';
-import {mountInvoiceBills,invoiceTransactionTag} from './invoice-bills-ui.js?v=vpo-126';
+import {mountInvoiceBills,invoiceTransactionTag} from './invoice-bills-ui.js?v=vpo-127';
 import {organizeUnclassifiedGroup} from './unclassified-group.js?v=vpo-126';
 import {matchesTransactionSearch} from './transaction-search.js?v=vpo-126';
 import {mountRecentTransactions} from './recent-transactions.js?v=vpo-126';
