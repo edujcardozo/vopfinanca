@@ -1,3 +1,4 @@
+import {ensureUnclassifiedGroup,organizeUnclassifiedGroup} from './unclassified-group.js?v=vpo-123';
 import {validDate,validMonth,currentMonth,groupsFor,parseMoney,saveTransaction,validateState,id,formatMoney} from './core.js?v=vpo-118';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function parseInvoice(text){
@@ -32,9 +33,9 @@ export function invoicePostingDate(date,month=''){
 export function commitInvoice(state,rows,batch,month=''){
  if(month&&!validMonth(month))throw Error('Escolha um mês válido para os lançamentos.');
  const next=structuredClone(state),selected=rows.filter(r=>r.selected&&!r.exact);if(!selected.length)throw Error('Selecione ao menos uma compra.');
- let fallback=next.categories.find(c=>c.name==='A classificar');if(selected.some(r=>!r.categoryId)&&!fallback){const group=next.groups.find(g=>!g.hidden);if(!group)throw Error('Crie ou reexiba um grupo para classificar as compras.');fallback={id:id(),name:'A classificar',group:group.id,icon:'🏷️',target:0};next.categories.push(fallback);}
+ let fallback=next.categories.find(c=>c.name==='A classificar');if(selected.some(r=>!r.categoryId)&&!fallback){const group=ensureUnclassifiedGroup(next);fallback={id:id(),name:'A classificar',group:group.id,icon:'🏷️',target:0};next.categories.push(fallback);}
  for(const r of selected){if(Object.values(next.months).some(m=>m.transactions.some(t=>t.id===r.id)))throw Error('Uma destas compras já foi importada. Reabra o CSV.');saveTransaction(next,{id:r.id,type:'expense',date:invoicePostingDate(r.date,month),payee:r.payee,description:r.payee,amount:r.amount,categoryId:r.categoryId||fallback.id,memo:'Importação Nubank [lote:'+batch+']'+(invoicePostingDate(r.date,month)!==r.date?' · Data original do CSV: '+r.date.split('-').reverse().join('/'):''),sharing:{paidBy:r.paidBy,eduPercent:Number(r.eduPercent)}});}
- validateState(next);return next;
+ organizeUnclassifiedGroup(next);validateState(next);return next;
 }
 export function mountInvoiceImport({getState,apply,getPeople,getSelectedMonth,storage,notify}){
  const tools=document.querySelector('.transaction-tools'),button=document.createElement('button');button.type='button';button.className='subtle-button invoice-import-trigger';button.setAttribute('aria-label','Importar fatura CSV');button.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4m-4 4 4-4 4 4M5 14v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-5"/></svg><span>Importar fatura</span><small>CSV</small>';const headerActions=document.querySelector('.app-header-actions'),newTransaction=headerActions?.querySelector('.desktop-add');if(headerActions)headerActions.insertBefore(button,newTransaction||null);else tools.append(button);

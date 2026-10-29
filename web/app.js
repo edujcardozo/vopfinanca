@@ -1,3 +1,4 @@
+import {organizeUnclassifiedGroup} from './unclassified-group.js?v=vpo-123';
 import {matchesTransactionSearch} from './transaction-search.js?v=vpo-120';
 import {mountRecentTransactions} from './recent-transactions.js?v=vpo-119';
 import {categorySpendingPopup,filterSpendingPopup} from './category-spending-popup.js?v=vpo-118';
@@ -5,7 +6,7 @@ import {openQuickCreate} from './quick-create.js?v=vpo-118';
 import {needsCategory} from './transaction-category-filter.js?v=vpo-118';
 import {overspendingInsights,overspendingHTML} from './overspending-insights.js?v=vpo-118';
 import {mountCategoryActivity} from './category-activity.js?v=vpo-118';
-import {mountInvoiceImport} from './invoice-import.js?v=vpo-122';
+import {mountInvoiceImport} from './invoice-import.js?v=vpo-123';
 import {createDialogPages} from './dialog-pages.js?v=vpo-118';
 import {coupleSummary,sharingLabel,expenseShares,saveSettlement} from './couple-core.js?v=vpo-118';
 import {coupleCard,coupleDetail} from './couple-ui.js?v=vpo-118';
@@ -78,7 +79,14 @@ function applyCloudPlan(incoming){
 }
 function showSyncStatus(info){
   platform.onSyncStatus?.(info);
-  if(info.kind==='synced')queueMicrotask(()=>historyIntro?.maybeShow());
+  if(info.kind==='synced')queueMicrotask(()=>{
+    const status=cloudSync.status;
+    if(status.initialized&&!status.dirty&&!status.blocked&&!status.conflict&&!dialog.open&&$('#transaction-composer').hidden&&!document.querySelector('#category-menu')){
+      try{const next=structuredClone(state);if(organizeUnclassifiedGroup(next)){cloudSync.backupCurrent();state=next;persist();renderAll();}}
+      catch(error){toast(error.message);}
+    }
+    historyIntro?.maybeShow();
+  });
   const label={connecting:'Conectando à conta…',saving:'Salvando na conta…',pending:'Atualizando o plano…',synced:'Plano sincronizado',offline:'Sem conexão · cópia local',auth:'Entre na conta para sincronizar',conflict:'Conflito: revisão necessária',warning:'Verifique o salvamento',blocked:'Revise o acesso ao plano em Ajustes'}[info.kind]||info.message;
   $('#save-status').textContent=label;
   $('#sync-footer-use').setAttribute('href',info.kind==='synced'?'#i-check':['offline','auth','conflict','warning','blocked'].includes(info.kind)?'#i-warning':'#i-cloud');
