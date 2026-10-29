@@ -1,3 +1,4 @@
+import {matchesTransactionSearch} from './transaction-search.js?v=vpo-120';
 import {mountRecentTransactions} from './recent-transactions.js?v=vpo-119';
 import {categorySpendingPopup,filterSpendingPopup} from './category-spending-popup.js?v=vpo-118';
 import {openQuickCreate} from './quick-create.js?v=vpo-118';
@@ -242,7 +243,7 @@ function renderTransactions(){
   const filtered=transactions.filter(t=>{
     const category=state.categories.find(c=>c.id===t.categoryId);
     const personMatches=personFilter==='all'||personFilter==='unknown'&&t.type==='expense'&&!t.sharing||personFilter==='shared'&&t.sharing?.eduPercent>0&&t.sharing.eduPercent<100||['edu','larissa','edu-personal','larissa-personal'].includes(personFilter)&&matchesPayerFilter(t,personFilter);
-    return (!uncategorizedOnly||needsCategory(t,state.categories))&&personMatches&&(txFilter==='all'||t.type===txFilter)&&(!search||`${t.payee||''} ${t.memo||''} ${t.description} ${category?.name||'Entrada'}`.toLocaleLowerCase('pt-BR').includes(search));
+    return (!uncategorizedOnly||needsCategory(t,state.categories))&&personMatches&&(txFilter==='all'||t.type===txFilter)&&matchesTransactionSearch(t,category,search);
   });
   const filterSummary=$('#transaction-filter-summary');
   filterSummary.hidden=!(uncategorizedOnly||personFilter!=='all'||txFilter!=='all'||search);
