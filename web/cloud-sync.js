@@ -1,5 +1,5 @@
-import {id,createState,validateState} from './core.js?v=vpo-125';
-import {cloudPlan,plansEqual,mergePlans,pristineExample} from './sync-core.js?v=vpo-125';
+import {id,createState,validateState} from './core.js?v=vpo-126';
+import {cloudPlan,plansEqual,mergePlans,pristineExample} from './sync-core.js?v=vpo-126';
 export const SYNC_KEY='ynab-edu-cloud-v1',RECOVERY_KEY='ynab-edu-recovery-v1';
 const OUTBOX_PREFIX='ynab-edu-outbox-v1-';
 export function createCloudSync({getState,onApply,onStatus,onConflict,canApplyRemote=()=>true,hadStored=false,storage=globalThis.localStorage,fetcher=globalThis.fetch.bind(globalThis),autoSchedule=true,autoPoll=true}){

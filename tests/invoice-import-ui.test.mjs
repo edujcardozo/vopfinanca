@@ -8,12 +8,12 @@ import {mountInvoiceImport} from '../web/invoice-import.js';
 test('CSV review lets user change target month, preview dates and restore original months before committing',async()=>{
  const {document,window,event}=dom('<div class="app-header-actions"><button class="desktop-add"></button></div><div class="transaction-tools"></div>');
  window.HTMLElement.prototype.scrollIntoView=()=>{};
- let state=createState(false,'2026-10'),applied=0;
+ let state=createState(false,'2026-10'),applied=0;state.cards=[{id:'nubank-test',name:'Nubank'}];
  mountInvoiceImport({getState:()=>state,getSelectedMonth:()=> '2026-11',getPeople:()=>({edu:'Edu',larissa:'Larissa'}),storage:new MemoryStorage(),notify:()=>{},apply:next=>{state=next;applied++;}});
  document.querySelector('.invoice-import-trigger').onclick();
  const file=document.querySelector('[data-file]');Object.defineProperty(file,'files',{value:[{name:'fatura.csv',size:60,text:async()=> 'date,title,amount\n2026-08-31,Loja,10.00'}]});event(file,'change');await new Promise(setImmediate);
  assert.equal(document.querySelector('[data-posting-month]').value,'2026-11');
- const due=document.querySelector('[data-invoice-due]');due.value='2026-12-10';event(due,'change');const card=document.querySelector('[data-invoice-card]');card.value='Nubank';event(card,'change');
+ const due=document.querySelector('[data-invoice-due]');due.value='2026-12-10';event(due,'change');const card=document.querySelector('[data-card-select]');for(const o of card.querySelectorAll('option'))o.removeAttribute('selected');card.querySelector('[value="nubank-test"]').setAttribute('selected','');event(card,'change');
  assert.match(document.querySelector('[data-posting-preview]').textContent,/30\/11\/2026/);
  const category=document.querySelector('[data-field="categoryId"]');
  assert.ok(category.querySelector('optgroup[label="Contas essenciais"] option[value="moradia"]'));

@@ -1,36 +1,37 @@
-import {mountInvoiceBills,invoiceTransactionTag} from './invoice-bills-ui.js?v=vpo-125';
-import {organizeUnclassifiedGroup} from './unclassified-group.js?v=vpo-125';
-import {matchesTransactionSearch} from './transaction-search.js?v=vpo-125';
-import {mountRecentTransactions} from './recent-transactions.js?v=vpo-125';
-import {categorySpendingPopup,filterSpendingPopup} from './category-spending-popup.js?v=vpo-125';
-import {openQuickCreate} from './quick-create.js?v=vpo-125';
-import {needsCategory} from './transaction-category-filter.js?v=vpo-125';
-import {overspendingInsights,overspendingHTML} from './overspending-insights.js?v=vpo-125';
-import {mountCategoryActivity} from './category-activity.js?v=vpo-125';
-import {mountInvoiceImport} from './invoice-import.js?v=vpo-125';
-import {createDialogPages} from './dialog-pages.js?v=vpo-125';
-import {coupleSummary,sharingLabel,expenseShares,saveSettlement} from './couple-core.js?v=vpo-125';
-import {coupleCard,coupleDetail} from './couple-ui.js?v=vpo-125';
-import {mobileHome} from './mobile-home.js?v=vpo-125';
-import {deleteCategory,categoryHasActivity} from './category-actions.js?v=vpo-125';
-import {deleteGroup,setGroupHidden,visibleGroups} from './group-actions.js?v=vpo-125';
-import {matchingCategories} from './category-search.js?v=vpo-125';
-import {categoryBudgetDetails,categorySpendingLabel} from './budget-progress.js?v=vpo-125';
-import {categoryIcon} from './category-icons.js?v=vpo-125';
-import {mountPayeeAutocomplete} from './payee-autocomplete.js?v=vpo-125';
-import {applyLayout} from './reorder-core.js?v=vpo-125';
-import {createReorder} from './reorder.js?v=vpo-125';
-import {STORAGE_KEY,formatMoney,parseMoney,today,currentMonth,validDate,validMonth,shiftMonth,id,createState,getMonth,ensureMonth,totals,monthlyPlanTotals,monthlyCategoryTotals,validateState,dateOffset,formatTransactionDate,payeeHistory,matchingPayees,payeeKey,searchPayeeKey,saveTransaction,groupsFor,createGroup,renameGroup,moveCategory} from './core.js?v=vpo-125';
-import {createReportsUI} from './reports-ui.js?v=vpo-125';
-import {wealthAt} from './reports-core.js?v=vpo-125';
-import {createCloudSync} from './cloud-sync.js?v=vpo-125';
-import {createSharingUI} from './sharing-ui.js?v=vpo-125';
+import {mountSavedCards,savedCardField,selectedCard} from './saved-cards-ui.js?v=vpo-126';
+import {mountInvoiceBills,invoiceTransactionTag} from './invoice-bills-ui.js?v=vpo-126';
+import {organizeUnclassifiedGroup} from './unclassified-group.js?v=vpo-126';
+import {matchesTransactionSearch} from './transaction-search.js?v=vpo-126';
+import {mountRecentTransactions} from './recent-transactions.js?v=vpo-126';
+import {categorySpendingPopup,filterSpendingPopup} from './category-spending-popup.js?v=vpo-126';
+import {openQuickCreate} from './quick-create.js?v=vpo-126';
+import {needsCategory} from './transaction-category-filter.js?v=vpo-126';
+import {overspendingInsights,overspendingHTML} from './overspending-insights.js?v=vpo-126';
+import {mountCategoryActivity} from './category-activity.js?v=vpo-126';
+import {mountInvoiceImport} from './invoice-import.js?v=vpo-126';
+import {createDialogPages} from './dialog-pages.js?v=vpo-126';
+import {coupleSummary,sharingLabel,expenseShares,saveSettlement} from './couple-core.js?v=vpo-126';
+import {coupleCard,coupleDetail} from './couple-ui.js?v=vpo-126';
+import {mobileHome} from './mobile-home.js?v=vpo-126';
+import {deleteCategory,categoryHasActivity} from './category-actions.js?v=vpo-126';
+import {deleteGroup,setGroupHidden,visibleGroups} from './group-actions.js?v=vpo-126';
+import {matchingCategories} from './category-search.js?v=vpo-126';
+import {categoryBudgetDetails,categorySpendingLabel} from './budget-progress.js?v=vpo-126';
+import {categoryIcon} from './category-icons.js?v=vpo-126';
+import {mountPayeeAutocomplete} from './payee-autocomplete.js?v=vpo-126';
+import {applyLayout} from './reorder-core.js?v=vpo-126';
+import {createReorder} from './reorder.js?v=vpo-126';
+import {STORAGE_KEY,formatMoney,parseMoney,today,currentMonth,validDate,validMonth,shiftMonth,id,createState,getMonth,ensureMonth,totals,monthlyPlanTotals,monthlyCategoryTotals,validateState,dateOffset,formatTransactionDate,payeeHistory,matchingPayees,payeeKey,searchPayeeKey,saveTransaction,groupsFor,createGroup,renameGroup,moveCategory} from './core.js?v=vpo-126';
+import {createReportsUI} from './reports-ui.js?v=vpo-126';
+import {wealthAt} from './reports-core.js?v=vpo-126';
+import {createCloudSync} from './cloud-sync.js?v=vpo-126';
+import {createSharingUI} from './sharing-ui.js?v=vpo-126';
 import {platform} from './platform.js';
-import {householdForSharing,inactiveHousehold} from './household-context.js?v=vpo-125';
-import {accountUsername} from './account-identity.js?v=vpo-125';
-import {createPlanningHistoryUI,historyIcon} from './planning-history-ui.js?v=vpo-125';
+import {householdForSharing,inactiveHousehold} from './household-context.js?v=vpo-126';
+import {accountUsername} from './account-identity.js?v=vpo-126';
+import {createPlanningHistoryUI,historyIcon} from './planning-history-ui.js?v=vpo-126';
 import {createPlanningHistoryIntro} from './planning-history-intro.js';
-import {createSavingsGoalsUI} from './savings-goals-ui.js?v=vpo-125';
+import {createSavingsGoalsUI} from './savings-goals-ui.js?v=vpo-126';
 import {revealTransactionComposer} from './transaction-focus.js';
 
 const $=s=>document.querySelector(s);
@@ -406,6 +407,7 @@ function transactionDialog(type='expense',transactionId=null,options={}){
       <div class="form-group tx-payee-field"><label for="transaction-payee" id="payee-label">Estabelecimento</label><div class="payee-combobox"><div class="payee-input-wrap"><input id="transaction-payee" name="payee" value="${esc(existing?.payee||'')}" required maxlength="100" autocomplete="off" autocapitalize="words" spellcheck="false" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="payee-options" aria-describedby="payee-help" placeholder="Busque ou digite um novo"><button type="button" id="payee-toggle" aria-label="Mostrar estabelecimentos salvos" tabindex="-1">${icon('chevron')}</button></div><div id="payee-panel" class="payee-panel" hidden><div class="payee-panel-label">ESTABELECIMENTOS</div><div id="payee-options" role="listbox" aria-label="Estabelecimentos salvos"></div><div class="payee-panel-status" data-payee-status role="status" aria-live="polite"></div></div></div><small id="payee-help">Os novos nomes são guardados automaticamente ao salvar.</small></div>
       <div class="form-group" id="tx-category-field"><label for="transaction-category">Categoria</label><div class="payee-combobox category-combobox"><div class="payee-input-wrap"><input id="transaction-category" name="categorySearch" value="${esc(state.categories.find(c=>c.id===existing?.categoryId)?.name||'')}" placeholder="Digite para buscar uma categoria" maxlength="140" autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="category-options" required><button type="button" id="category-toggle" aria-label="Mostrar categorias" tabindex="-1">${icon('chevron')}</button></div><input type="hidden" name="categoryId" value="${esc(existing?.categoryId||'')}" hidden><div id="category-panel" class="payee-panel" hidden><div class="payee-panel-label">CATEGORIAS</div><div id="category-options" role="listbox" aria-label="Categorias disponíveis"></div><div class="payee-panel-status" data-payee-status role="status" aria-live="polite"></div></div></div></div>
       <label class="form-group transaction-date-field"><span>Data</span><span class="date-control">${icon('calendar')}<span class="date-text" id="transaction-date-value">${formatTransactionDate(date)}</span><span class="date-change">Alterar ${icon('chevron')}</span><input type="date" name="date" value="${date}" min="1900-01-01" max="2199-12-31" required aria-label="Data do lançamento"></span></label>
+      ${savedCardField(state,{cardId:existing?.cardId||'',attribute:'name=cardId'})}
       <div class="sharing-fields" id="tx-sharing-fields"><div class="sharing-grid"><div class="form-group tx-payer-field"><span id="transaction-payer-label">Quem pagou?</span><input type="hidden" name="paidBy" value=""><div class="payer-options" role="group" aria-labelledby="transaction-payer-label"><button type="button" class="payer-option" data-paid-by="edu" aria-label="${esc(people.edu)} pagou" aria-pressed="false"><span class="payer-glyph" aria-hidden="true">${esc(Array.from(people.edu)[0])}</span><span>${esc(people.edu)}</span><span class="payer-check" aria-hidden="true">✓</span></button><button type="button" class="payer-option" data-paid-by="larissa" aria-label="${esc(people.larissa)} pagou" aria-pressed="false"><span class="payer-glyph" aria-hidden="true">${esc(Array.from(people.larissa)[0])}</span><span>${esc(people.larissa)}</span><span class="payer-check" aria-hidden="true">✓</span></button></div></div><label class="form-group"><span>Como dividir?</span><select name="splitMode" aria-label="Como dividir a despesa"><option value="equal">Meio a meio · 50/50</option><option value="edu">Só ${esc(people.edu)}</option><option value="larissa">Só ${esc(people.larissa)}</option><option value="custom">Personalizar</option></select></label></div><label class="form-group custom-split" id="custom-split-field" hidden><span>Parte de ${esc(people.edu)} (%)</span><input type="number" name="eduPercent" min="0" max="100" step="1" inputmode="numeric" value="50"><small>A parte de ${esc(people.larissa)} completa 100%.</small></label><p class="sharing-preview" id="sharing-preview" aria-live="polite"></p></div>
       <div class="date-shortcuts" aria-label="Atalhos de data"><button type="button" data-quick-date="today">Hoje</button><button type="button" data-quick-date="yesterday">Ontem</button></div>
       <details class="memo-details" ${memo?'open':''}><summary>Adicionar observação <span>Opcional</span></summary><label class="form-group"><span class="visually-hidden">Observações do lançamento</span><textarea name="memo" maxlength="280" rows="2" placeholder="Ex.: compras da semana, almoço com a família">${esc(memo||'')}</textarea></label></details>
@@ -421,7 +423,8 @@ function transactionDialog(type='expense',transactionId=null,options={}){
   function updateType(){
     $$('[data-tx-type]').forEach(b=>{const active=b.dataset.txType===txType;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});
     const income=txType==='income';
-    $('#tx-sharing-fields').hidden=income||!household.enabled;['paidBy','splitMode','eduPercent'].forEach(name=>form.elements[name].disabled=income||!household.enabled);
+    $('#tx-sharing-fields').hidden=income||!household.enabled;
+    form.querySelector('[data-card-picker]').hidden=income;['paidBy','splitMode','eduPercent'].forEach(name=>form.elements[name].disabled=income||!household.enabled);
     $('#tx-category-field').hidden=income;form.elements.categoryId.disabled=income;form.elements.categorySearch.disabled=income;form.elements.categorySearch.required=!income;categoryPicker.close();
     $('#payee-label').textContent=income?'Recebido de':'Estabelecimento';
     form.elements.payee.placeholder=income?'Ex.: empresa, cliente, pessoa':'Ex.: Zaffari, Uber, farmácia';
@@ -484,7 +487,8 @@ function transactionDialog(type='expense',transactionId=null,options={}){
     const month=date.slice(0,7),categoryId=txType==='income'?null:String(f.get('categoryId')||'');
     if(txType==='expense'&&!state.categories.some(c=>c.id===categoryId))return formError('Escolha uma categoria válida.');
     const storedName=payeeHistory(state,txType).find(p=>payeeKey(p.name)===payeeKey(payee))?.name||payee;
-    const transaction={id:existing?.id||id(),type:txType,description:storedName,payee:storedName,memo,amount,date,categoryId};
+    const card=selectedCard(state,form);
+    const transaction={...(txType==='expense'&&card.cardId?{cardId:card.cardId}:{}),id:existing?.id||id(),type:txType,description:storedName,payee:storedName,memo,amount,date,categoryId};
     if(txType==='expense'&&household.enabled&&form.elements.paidBy.value){
       const p=splitPercent();if(!Number.isInteger(p)||p<0||p>100||form.elements.splitMode.value==='custom'&&!form.elements.eduPercent.value.trim())return formError('Informe um percentual inteiro entre 0 e 100 para '+people.edu+'.');
       transaction.sharing={paidBy:form.elements.paidBy.value,eduPercent:p};
@@ -697,3 +701,5 @@ document.addEventListener('input',e=>{if(e.target.matches('[data-spending-search
 recentActivity=mountRecentTransactions({trigger:$('#recent-transactions-trigger'),getState:()=>state,getPeople:()=>household.people,onEdit:tx=>transactionDialog(tx.type,tx.id)});
 
 invoiceBillsUI=mountInvoiceBills({getState:()=>state,getMonth:()=>selectedMonth,openDialog,closeDialog,onChange:()=>{persist();renderAll();},notify:toast});
+
+mountSavedCards({getState:()=>state,onChange:()=>{persist();renderAll();},notify:toast});

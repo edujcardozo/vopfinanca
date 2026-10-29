@@ -1,4 +1,4 @@
-import {currentMonth,shiftMonth,totals,groupsFor,validMonth} from './core.js?v=vpo-125';
+import {currentMonth,shiftMonth,totals,groupsFor,validMonth} from './core.js?v=vpo-126';
 
 export function wealthAt(state,month){
   const cash=totals(state,month).balance;

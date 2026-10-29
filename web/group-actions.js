@@ -1,4 +1,4 @@
-import {groupsFor} from './core.js?v=vpo-125';
+import {groupsFor} from './core.js?v=vpo-126';
 
 export const visibleGroups=state=>groupsFor(state).filter(group=>!group.hidden);
 export const isCategoryVisible=(state,category)=>!category.hidden&&groupsFor(state).some(group=>group.id===category.group&&!group.hidden);

@@ -1,4 +1,4 @@
-import {createGroup,groupsFor} from './core.js?v=vpo-125';
+import {createGroup,groupsFor} from './core.js?v=vpo-126';
 const key=value=>String(value).trim().toLocaleLowerCase('pt-BR');
 export function ensureUnclassifiedGroup(state){
  let group=groupsFor(state).find(g=>key(g.name)==='a classificar');

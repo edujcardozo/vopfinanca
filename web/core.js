@@ -1,4 +1,5 @@
-import {checkedInvoiceBills} from './invoice-bills-data.js?v=vpo-125';
+import {checkedSavedCards} from './saved-cards-data.js?v=vpo-126';
+import {checkedInvoiceBills} from './invoice-bills-data.js?v=vpo-126';
 import {checkedSavingsGoals} from './savings-goals.js';
 // All monetary values are integer centavos. No floating-point ledger arithmetic.
 export const STORAGE_KEY = 'ynab-edu-plan-v1';
@@ -97,7 +98,7 @@ const baseCategories=()=>[
   {id:'viagem',name:'Próxima viagem',group:'dreams',icon:'✈️',target:0}
 ];
 export function createState(example=true,month=currentMonth()){
-  const state={version:1,planId:id(),example,hideBalances:false,groups:defaultGroups(),categories:baseCategories(),months:{},wealth:{},payees:[],household:{version:1,settlements:[]},savingsGoals:[],invoiceBills:[]};
+  const state={version:1,planId:id(),example,hideBalances:false,groups:defaultGroups(),categories:baseCategories(),months:{},wealth:{},payees:[],household:{version:1,settlements:[]},savingsGoals:[],invoiceBills:[],cards:[]};
   state.months[month]={assigned:{},transactions:[]};
   if(example){
     state.months[month].assigned={moradia:200000,mercado:80000,transporte:35000,lazer:30000,reserva:120000,viagem:85000};
@@ -191,6 +192,7 @@ export function validateState(raw){
     if(!validMonth(month)||!plain(snapshot)||!cents(snapshot.otherAssets)||!cents(snapshot.debt))fail();
     wealth[month]={otherAssets:snapshot.otherAssets,debt:snapshot.debt};
   }
+  const cards=checkedSavedCards(raw.cards),cardIds=new Set(cards.map(c=>c.id));
   const months={};let count=0;
   for(const key of keys){
     const m=raw.months[key];
@@ -203,8 +205,9 @@ export function validateState(raw){
       if(t.payee!==undefined&&(typeof t.payee!=='string'||!t.payee.trim()||t.payee.length>100))fail();
       if(t.memo!==undefined&&(typeof t.memo!=='string'||t.memo.length>280))fail();
       if(t.createdAt!==undefined&&(typeof t.createdAt!=='string'||!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(t.createdAt)||!Number.isFinite(Date.parse(t.createdAt))))fail();
+      if(t.cardId!==undefined&&(!safeId(t.cardId)||!cardIds.has(t.cardId)||t.type!=='expense'))fail();
       const sharing=checkedSharing(t.sharing,t.type);
-      return {...(t.createdAt?{createdAt:t.createdAt}:{}),...(sharing?{sharing}:{}),id:t.id,type:t.type,amount:t.amount,description:t.description.trim(),date:t.date,categoryId:t.categoryId,...(t.payee!==undefined?{payee:t.payee.trim()}:{}),...(t.memo!==undefined?{memo:t.memo.trim()}:{})};
+      return {...(t.cardId?{cardId:t.cardId}:{}),...(t.createdAt?{createdAt:t.createdAt}:{}),...(sharing?{sharing}:{}),id:t.id,type:t.type,amount:t.amount,description:t.description.trim(),date:t.date,categoryId:t.categoryId,...(t.payee!==undefined?{payee:t.payee.trim()}:{}),...(t.memo!==undefined?{memo:t.memo.trim()}:{})};
     });
     months[key]={assigned,transactions};
   }
@@ -220,5 +223,6 @@ export function validateState(raw){
     settlementIds.add(r.id);return {id:r.id,from:r.from,amount:r.amount,date:r.date,memo:r.memo.trim()};
   });
   const savingsGoals=checkedSavingsGoals(raw.savingsGoals),invoiceBills=checkedInvoiceBills(raw.invoiceBills);
-  return {household:{version:1,settlements},version:1,planId:raw.planId||id(),example:raw.example===true,hideBalances:raw.hideBalances===true,groups,categories,months,wealth,payees,savingsGoals,invoiceBills};
+  if(invoiceBills.some(b=>b.cardId&&!cardIds.has(b.cardId)))fail();
+  return {household:{version:1,settlements},version:1,planId:raw.planId||id(),example:raw.example===true,hideBalances:raw.hideBalances===true,groups,categories,months,wealth,payees,savingsGoals,invoiceBills,cards};
 }

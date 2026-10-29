@@ -95,3 +95,5 @@ Para liberar um mês após conferir o recebimento no banco: Ajustes → Usuário
 Os objetivos de economia ficam no documento do orçamento compartilhado: nome, valor desejado e valor já guardado. Podem ser gerenciados pelo menu e pela lateral, com até três resumos e lista completa paginada. Eles não alteram os lançamentos nem o planejado das categorias.
 
 Para faturas com vencimento e quitação, execute `invoice-bills.sql` após `plan-freeze.sql`. Essa extensão protege os dados de faturas contra gravações de abas antigas e preserva as regras de acesso existentes.
+
+Para o cadastro reutilizável de cartões, execute `saved-cards.sql` após `invoice-bills.sql`. O cadastro guarda somente apelidos e referências; não guarda dados de pagamento.

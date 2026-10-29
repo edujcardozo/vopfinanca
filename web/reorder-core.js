@@ -1,4 +1,4 @@
-import {groupsFor} from './core.js?v=vpo-125';
+import {groupsFor} from './core.js?v=vpo-126';
 import {isCategoryVisible,visibleGroups} from './group-actions.js?v=vpo-78';
 // Only visible groups move. Hidden containers keep their slots and records.
 export function applyLayout(state,layout){

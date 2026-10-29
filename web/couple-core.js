@@ -1,4 +1,4 @@
-import {id,validDate,validMonth,validateState} from './core.js?v=vpo-125';
+import {id,validDate,validMonth,validateState} from './core.js?v=vpo-126';
 export const PERSON_NAMES={edu:'Edu',larissa:'Larissa'};
 export const otherPerson=person=>person==='edu'?'larissa':'edu';
 export function expenseShares(tx){

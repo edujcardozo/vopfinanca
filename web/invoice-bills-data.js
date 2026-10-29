@@ -6,8 +6,9 @@ export function checkedInvoiceBills(input=[]){
  const seen=new Set(),transactions=new Set();
  return input.map(b=>{
   if(!b||typeof b!=='object'||!safeId(b.id)||seen.has(b.id)||!month(b.month)||!date(b.dueDate)||typeof b.card!=='string'||b.card.length>70||b.paidDate!==null&&!date(b.paidDate)||!Array.isArray(b.transactionIds)||!b.transactionIds.length||b.transactionIds.length>3000)throw Error('Dados da fatura inválidos.');
+  if(b.cardId!==undefined&&!safeId(b.cardId))throw Error('Cartão da fatura inválido.');
   seen.add(b.id);for(const id of b.transactionIds){if(!safeId(id)||transactions.has(id))throw Error('Compra vinculada a mais de uma fatura.');transactions.add(id);}
-  return {id:b.id,month:b.month,dueDate:b.dueDate,card:b.card.trim(),paidDate:b.paidDate,transactionIds:[...b.transactionIds]};
+  return {...(b.cardId?{cardId:b.cardId}:{}),id:b.id,month:b.month,dueDate:b.dueDate,card:b.card.trim(),paidDate:b.paidDate,transactionIds:[...b.transactionIds]};
  });
 }
 export function invoiceBillTransactions(state,bill){const ids=new Set(bill.transactionIds);return Object.values(state.months).flatMap(m=>m.transactions).filter(t=>t.type==='expense'&&ids.has(t.id));}
